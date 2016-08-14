@@ -1,0 +1,1072 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Reference &mdash; DK+ 2.2.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+    <link rel="top" title="DK+ 2.2.1 documentation" href="index.html"/>
+        <link rel="next" title="Useful Links" href="useful_links.html"/>
+        <link rel="prev" title="Contribute" href="contribute.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DK+
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#index">Index</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="useful_links.html">Useful Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">DK+</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api_reference.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="networking"></span><dl class="class">
+<dt id="drone_network.Networking">
+<em class="property">class </em><code class="descclassname">drone_network.</code><code class="descname">Networking</code><span class="sig-paren">(</span><em>address</em>, <em>protocol</em>, <em>vehicle</em><span class="sig-paren">)</span><a class="headerlink" href="#drone_network.Networking" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">In this class you can add your own networking protocol method. See <a class="reference internal" href="#drone_network.Networking.create_udp_broadcast" title="drone_network.Networking.create_udp_broadcast"><code class="xref any py py-meth docutils literal"><span class="pre">Networking.create_udp_broadcast</span></code></a> for an example.</p>
+</div>
+<p>The necessary class to interface your drone with the outer world.</p>
+<ul class="simple">
+<li>Responsible for opening/closing sockets according to a chosen protocol (currently only broadcast messaging through UDP).</li>
+<li>Invokes the send/receive/task threads.</li>
+<li>Contains the vehicle&#8217;s drone list and message queue.</li>
+<li>Invokes the necessary parameter observers/listeners</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; The network address in (&#8216;address&#8217;, &#8216;port&#8217;) format.</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" id="protocol" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>protocol</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The desired network protocol as implemeted inside the class.</li>
+<li><strong>vehicle</strong> (<em>dronekit.Vehicle</em>) &#8211; The object <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle">vehicle</a> as returned from <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.connect">dronekit.connect()</a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="poll-rate"></span><dl class="data">
+<dt id="drone_network.Networking.POLL_RATE">
+<code class="descname">POLL_RATE</code><a class="headerlink" href="#drone_network.Networking.POLL_RATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to 0.5 seconds. How often to send the messages (in seconds).</p>
+</dd></dl>
+
+<span class="target" id="max-stay"></span><dl class="data">
+<dt id="drone_network.Networking.MAX_STAY">
+<code class="descname">MAX_STAY</code><a class="headerlink" href="#drone_network.Networking.MAX_STAY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to 5 seconds. How long should messages be kept for without update (in seconds).</p>
+</dd></dl>
+
+<span class="target" id="safety-zone"></span><dl class="data">
+<dt id="drone_network.Networking.SAFETY_ZONE">
+<code class="descname">SAFETY_ZONE</code><a class="headerlink" href="#drone_network.Networking.SAFETY_ZONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to 40 metres. The radius in metres around the drone that is considered the border of the safety zone.</p>
+</dd></dl>
+
+<span class="target" id="critical-zone"></span><dl class="data">
+<dt id="drone_network.Networking.CRITICAL_ZONE">
+<code class="descname">CRITICAL_ZONE</code><a class="headerlink" href="#drone_network.Networking.CRITICAL_ZONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to 10 metres. The radius in metres around the drone that is considered the border of the critical zone.</p>
+</dd></dl>
+
+<span class="target" id="msg-queue"></span><dl class="attribute">
+<dt id="drone_network.Networking.msg_queue">
+<code class="descname">msg_queue</code><a class="headerlink" href="#drone_network.Networking.msg_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/queue.html#Queue.Queue" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">Queue.Queue</span></code></a> object for storing received messages.
+Can be changed directly.</p>
+</dd></dl>
+
+<span class="target" id="vehicle-params"></span><dl class="attribute">
+<dt id="drone_network.Networking.vehicle_params">
+<code class="descname">vehicle_params</code><a class="headerlink" href="#drone_network.Networking.vehicle_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#params.Params" title="params.Params"><code class="xref py py-obj docutils literal"><span class="pre">params.Params</span></code></a> object to save the wanted parameters.
+It is not advised to modify it directly since the structure is updated automatically.</p>
+</dd></dl>
+
+<span class="target" id="drones-list"></span><dl class="attribute">
+<dt id="drone_network.Networking.drones">
+<code class="descname">drones</code><a class="headerlink" href="#drone_network.Networking.drones" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a> that saves the drone parameters of incoming drone messages.
+It is not advised to modify it directly since the structure is updated automatically.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.context">
+<code class="descname">context</code><a class="headerlink" href="#drone_network.Networking.context" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-obj docutils literal"><span class="pre">dictionary</span></code> that helps save important information just before any collision avoidance action.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This attribute is not used in current version. You can use <a class="reference internal" href="#context"><span class="std std-ref">context</span></a> instead.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.priority">
+<code class="descname">priority</code><a class="headerlink" href="#drone_network.Networking.priority" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> that indicates the drone&#8217;s priority number in case of a collision avoidance scheme. It is currently not used but may prove helpful for future versions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.sock_send">
+<code class="descname">sock_send</code><a class="headerlink" href="#drone_network.Networking.sock_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/socket.html#socket.socket" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">socket.socket</span></code></a> object used for sending messages.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.sock_receive">
+<code class="descname">sock_receive</code><a class="headerlink" href="#drone_network.Networking.sock_receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/socket.html#socket.socket" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">socket.socket</span></code></a> object used for receiving messages.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.t_send">
+<code class="descname">t_send</code><a class="headerlink" href="#drone_network.Networking.t_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#send-thread"><span class="std std-ref">SendThread</span></a> object that initializes the <a class="reference external" href="https://docs.python.org/2/library/threading.html#module-threading" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">threading</span></code></a> responsible for sending the drone parameters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.t_receive">
+<code class="descname">t_receive</code><a class="headerlink" href="#drone_network.Networking.t_receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#receive-thread"><span class="std std-ref">ReceiveThread</span></a> object that initializes the <a class="reference external" href="https://docs.python.org/2/library/threading.html#module-threading" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">threading</span></code></a> responsible for receiving the other drones&#8217; parameters and adding them to <a class="reference internal" href="#msg-queue"><span class="std std-ref">msg_queue</span></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drone_network.Networking.t_task">
+<code class="descname">t_task</code><a class="headerlink" href="#drone_network.Networking.t_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#receive-task-thread"><span class="std std-ref">ReceiveTaskThread</span></a> object that initializes the <a class="reference external" href="https://docs.python.org/2/library/threading.html#module-threading" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">threading</span></code></a> responsible for processing the drone parameters received.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drone_network.Networking.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#drone_network.Networking.run" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Opens the network sockets depending the explicitly stated <a class="reference internal" href="#protocol"><span class="std std-ref">protocol</span></a></li>
+<li>Starts the threads responsible for sending (<a class="reference internal" href="#drone_network.Networking.t_send" title="drone_network.Networking.t_send"><code class="xref any py py-attr docutils literal"><span class="pre">t_send</span></code></a>) and receiving messages (<a class="reference internal" href="#drone_network.Networking.t_receive" title="drone_network.Networking.t_receive"><code class="xref any py py-attr docutils literal"><span class="pre">t_receive</span></code></a>, <a class="reference internal" href="#drone_network.Networking.t_task" title="drone_network.Networking.t_task"><code class="xref any py py-attr docutils literal"><span class="pre">t_task</span></code></a>).</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="drone_network.Networking.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#drone_network.Networking.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the <a class="reference external" href="https://docs.python.org/2/library/socket.html#module-socket" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">socket</span></code></a> objects, opened by <code class="xref py py-obj docutils literal"><span class="pre">Networking.run()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drone_network.Networking.create_udp_broadcast">
+<code class="descname">create_udp_broadcast</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#drone_network.Networking.create_udp_broadcast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens two UDP sockets, one for sending and one for receiving messages. The sockets are set for broadcast messages by invoking the <code class="xref py py-obj docutils literal"><span class="pre">socket.SO_BROADCAST</span></code> flag.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; The network address in (&#8216;address&#8217;, &#8216;port&#8217;) format.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">exit_status = &#8216;1&#8217; if the method performs succesfully all the tasks, &#8216;0&#8217; otherwise.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/socket.html#socket.error" title="(in Python v2.7)"><strong>socket.error</strong></a> &#8211; When failing to run any <a class="reference external" href="https://docs.python.org/2/library/socket.html#module-socket" title="(in Python v2.7)"><code class="xref any docutils literal"><span class="pre">socket</span></code></a> commands</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="drone_network.Networking.populate_drones">
+<code class="descname">populate_drones</code><span class="sig-paren">(</span><em>scenario</em><span class="sig-paren">)</span><a class="headerlink" href="#drone_network.Networking.populate_drones" title="Permalink to this definition">¶</a></dt>
+<dd><p>A method that populates the <a class="reference internal" href="#drones-list"><span class="std std-ref">drones</span></a> list for testing purposes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scenario</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; A string specifying the wanted scenario. Must be implemented inside the method.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="send-thread"></span><dl class="class">
+<dt id="send_thread.SendThread">
+<em class="property">class </em><code class="descclassname">send_thread.</code><code class="descname">SendThread</code><span class="sig-paren">(</span><em>threading.Thread</em>, <em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#send_thread.SendThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>A subclass of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">threading.Thread</span></code></a>. A thread that when it is started, is responsible for sending the drone&#8217;s vehicle parameters at the address specified when creating a <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> instance. It is self invoked inside the <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> class.</p>
+<p>The class needs a <a class="reference external" href="https://docs.python.org/2/library/socket.html#module-socket" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">socket</span></code></a> to be open for sending messages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body">network: A <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="data">
+<dt>
+<code class="descname">daemon = True</code></dt>
+<dd><p>It is set to True so that the thread can keep running until the main thread finishes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="send_thread.SendThread.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#send_thread.SendThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>An infinite <a class="reference external" href="https://docs.python.org/2/reference/compound_stmts.html#while">while</a> loop that pickles the <a class="reference internal" href="#vehicle-params"><span class="std std-ref">vehicle_params</span></a> attribute and sends it as a message to the specified socket. <a class="reference external" href="https://docs.python.org/2/library/time.html#time.sleep" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">time.sleep</span></code></a> is invoked with the <a class="reference internal" href="#poll-rate"><span class="std std-ref">POLL_RATE</span></a> parameter in order to set the frequency of those messages.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Be careful when setting the frequency too high as this may flood the network and reduce performance. High frequency means small <a class="reference internal" href="#poll-rate"><span class="std std-ref">POLL_RATE</span></a> number.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>exception</strong> &#8211; When failing to send the message.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="receive-thread"></span><dl class="class">
+<dt id="receive_thread.ReceiveThread">
+<em class="property">class </em><code class="descclassname">receive_thread.</code><code class="descname">ReceiveThread</code><span class="sig-paren">(</span><em>threading.Thread</em>, <em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#receive_thread.ReceiveThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>A subclass of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">threading.Thread</span></code></a>. A thread that when it is started, is responsible for receiving any incoming messages from the address specified when creating a <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> instance. It is self invoked inside the <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> class.</p>
+<p>The class needs a bound <a class="reference external" href="https://docs.python.org/2/library/socket.html#module-socket" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">socket</span></code></a> to be open for receiving incoming messages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body">network: A <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="data">
+<dt>
+<code class="descname">daemon = True</code></dt>
+<dd><p>It is set to True so that the thread can keep running until the main thread finishes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="receive_thread.ReceiveThread.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#receive_thread.ReceiveThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>An infinite <a class="reference external" href="https://docs.python.org/2/reference/compound_stmts.html#while">while</a> loop that awaits for incoming messages with the <a class="reference external" href="https://docs.python.org/2/library/select.html#select.select">select()</a> function.
+If the received message is coming from a drone, then it adds it to the <a class="reference internal" href="#msg-queue"><span class="std std-ref">msg_queue</span></a> queue for further processing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="https://docs.python.org/2/library/pickle.html#pickle.UnpicklingError" title="(in Python v2.7)"><strong>pickle.UnpicklingError</strong></a> &#8211; if the receiving message is not pickled.</li>
+<li><strong>exception</strong> &#8211; if there is a problem with the sockets.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="receive-task-thread"></span><dl class="class">
+<dt id="receive_task_thread.ReceiveTaskThread">
+<em class="property">class </em><code class="descclassname">receive_task_thread.</code><code class="descname">ReceiveTaskThread</code><a class="headerlink" href="#receive_task_thread.ReceiveTaskThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>A subclass of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">threading.Thread</span></code></a>. A thread that when it is started, is responsible for processing any messages in <a class="reference internal" href="#msg-queue"><span class="std std-ref">msg_queue</span></a> queue. It is self invoked inside the <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body">network: A <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> object.</td>
+</tr>
+</tbody>
+</table>
+<dl class="data">
+<dt>
+<code class="descname">daemon = True</code></dt>
+<dd><p>It is set to True so that the thread can keep running until the main thread finishes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="receive_task_thread.ReceiveTaskThread.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#receive_task_thread.ReceiveTaskThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>An infinite <a class="reference external" href="https://docs.python.org/2/reference/compound_stmts.html#while">while</a> loop that processes the received messages one by one. Processing goes as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Unpickle the message</li>
+<li>Add a timestamp</li>
+<li>Calculate the distance between the two drones by calling <a class="reference internal" href="#geo_tools.get_distance_metres" title="geo_tools.get_distance_metres"><code class="xref py py-obj docutils literal"><span class="pre">geo_tools.get_distance_metres</span></code></a></li>
+<li>Reject message if distance is beyond the <a class="reference internal" href="#safety-zone"><span class="std std-ref">SAFETY_ZONE</span></a> limit.</li>
+<li>Add to <a class="reference internal" href="#drones-list"><span class="std std-ref">drones</span></a> list for further processing by the <a class="reference internal" href="#collision-thread"><span class="std std-ref">Collision Avoidance</span></a> thread.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><a class="reference external" href="https://docs.python.org/2/library/queue.html#Queue.Queue" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">Queue.Queue</span></code></a> is thread-safe, so after finishing the task on the message, <a class="reference external" href="https://docs.python.org/2/library/queue.html#Queue.Queue.task_done" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">Queue.Queue.task_done</span></code></a> has to be called.</p>
+</div>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/queue.html#Queue.Empty" title="(in Python v2.7)"><strong>Queue.Empty</strong></a> &#8211; If no messages are inside the <a class="reference internal" href="#msg-queue"><span class="std std-ref">msg_queue</span></a>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="collision-thread"></span><dl class="class">
+<dt id="collision_avoidance.CollisionThread">
+<em class="property">class </em><code class="descclassname">collision_avoidance.</code><code class="descname">CollisionThread</code><span class="sig-paren">(</span><em>threading.Thread</em><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for the collision avoidance part of the module. A specific <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> object needs to be running. Here is the whole API for collision avoidance matters like context switching, prioritization and control.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">This is the class where you can deploy your own cooperative collision avoidance algorithm and test it. Check out this <a class="reference internal" href="guide.html#deploy-protocol"><span class="std std-ref">Guide</span></a>.</p>
+</div>
+<dl class="attribute">
+<dt id="collision_avoidance.CollisionThread.near">
+<code class="descname">near</code><a class="headerlink" href="#collision_avoidance.CollisionThread.near" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a> that stores all the drones in the <a class="reference internal" href="#drones-list"><span class="std std-ref">drones</span></a> list that belong inside the <a class="reference internal" href="#safety-zone"><span class="std std-ref">SAFETY_ZONE</span></a> but out of the <a class="reference internal" href="#critical-zone"><span class="std std-ref">CRITICAL_ZONE</span></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="collision_avoidance.CollisionThread.critical">
+<code class="descname">critical</code><a class="headerlink" href="#collision_avoidance.CollisionThread.critical" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a> that stores all the drones in the <a class="reference internal" href="#drones-list"><span class="std std-ref">drones</span></a> list that belong inside the <a class="reference internal" href="#critical-zone"><span class="std std-ref">CRITICAL_ZONE</span></a> only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="collision_avoidance.CollisionThread.in_session">
+<code class="descname">in_session</code><a class="headerlink" href="#collision_avoidance.CollisionThread.in_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>It is <a class="reference external" href="https://docs.python.org/2/library/constants.html#True" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> when a collision avoidance scheme is in action and <a class="reference external" href="https://docs.python.org/2/library/constants.html#False" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">False</span></code></a> otherwise.</p>
+</dd></dl>
+
+<span class="target" id="context"></span><dl class="attribute">
+<dt id="collision_avoidance.CollisionThread.context">
+<code class="descname">context</code><a class="headerlink" href="#collision_avoidance.CollisionThread.context" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.namedtuple" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">collections.namedtuple</span></code></a> to save pre-collision avoidance information. Currently what is saved is <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle.mode">mode</a>, <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle.commands">mission</a> and <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.CommandSequence.next">next waypoint</a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on the protocol that is used during the instantiation of a <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> object, it calls repeatedly the according method. It is like a switch-case piece of code for routing to the desired protocol.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently the only supported protocol is the &#8216;naive priorities&#8217; one. If you want to experiment with other protocols, they must be implemented as a method inside this class.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <a class="reference external" href="https://docs.python.org/2/library/time.html#time.sleep" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">time.sleep</span></code></a> function must be called so that the main thread can acquire the lock, too.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.no_protocol">
+<code class="descname">no_protocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.no_protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>If no protocol is used then there is a simple <a class="reference internal" href="#collision_avoidance.CollisionThread.near" title="collision_avoidance.CollisionThread.near"><code class="xref py py-obj docutils literal"><span class="pre">near</span></code></a> and <a class="reference internal" href="#collision_avoidance.CollisionThread.critical" title="collision_avoidance.CollisionThread.critical"><code class="xref py py-obj docutils literal"><span class="pre">critical</span></code></a> lists update. Then the output of the nearby drones is printed on stdout by calling <a class="reference internal" href="#print-drones"><span class="std std-ref">print_drones_in_vicinity()</span></a>.</p>
+</dd></dl>
+
+<span class="target" id="priorities-protocol"></span><dl class="method">
+<dt id="collision_avoidance.CollisionThread.priorities_protocol">
+<code class="descname">priorities_protocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.priorities_protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on this protocol, whenever there are nearby drones, each drone acquires explicitly a priority number. Every drone waits until its priority number becomes &#8216;1&#8217;, so they can start taking actions. Waiting means keeping the same position in all three axes (lat, lon, altitude).</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Because of the high latency observed, a drone demonstrates a &#8220;momentum&#8221;. This is troublesome because the drone does not freeze instantly. Instead, it flies some metres away (depending the groundpseed) before it gradually stops. For this reason you have to be EXTRA CAREFUL when setting the <a class="reference internal" href="#safety-zone"><span class="std std-ref">SAFETY_ZONE</span></a> attribute.</p>
+</div>
+<p>The protocol goes as follows:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#collision_avoidance.CollisionThread.give_priorities" title="collision_avoidance.CollisionThread.give_priorities"><code class="xref py py-obj docutils literal"><span class="pre">give_priorities</span></code></a></li>
+<li>Update <a class="reference internal" href="#collision_avoidance.CollisionThread.near" title="collision_avoidance.CollisionThread.near"><code class="xref py py-obj docutils literal"><span class="pre">near</span></code></a> and <a class="reference internal" href="#collision_avoidance.CollisionThread.critical" title="collision_avoidance.CollisionThread.critical"><code class="xref py py-obj docutils literal"><span class="pre">critical</span></code></a> lists</li>
+<li><a class="reference internal" href="#collision_avoidance.CollisionThread.give_control" title="collision_avoidance.CollisionThread.give_control"><code class="xref py py-obj docutils literal"><span class="pre">give_control</span></code></a> or <a class="reference internal" href="#collision_avoidance.CollisionThread.take_control" title="collision_avoidance.CollisionThread.take_control"><code class="xref py py-obj docutils literal"><span class="pre">take_control</span></code></a> depending the priority number</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><a class="reference internal" href="#critical-zone"><span class="std std-ref">CRITICAL_ZONE</span></a> is not utilised so far but maybe it can prove useful in the future.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.give_priorities">
+<code class="descname">give_priorities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.give_priorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>The algorithm to spread the priority numbers to drones. Since each drone must hold the same algorithm, the prioritization is global.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Some might naturally think that this algorithm has flaws. It has been tested under worst-case scenarios and has given good results. A possible worst-case scenario is when there are three drones in line but not all drones see all. You can easily see that this &#8220;chained-prioritization&#8221; works just fine with the &#8216;priorities&#8217; protocol.</p>
+</div>
+<p>Priorities are given based on the following rules:</p>
+<ul class="simple">
+<li>If drone is grounded then its priority is low, exempting mode &#8216;ARMED&#8217;</li>
+<li>Then, if system status needs to be checked first, if it&#8217;s critical it has the highest priority of all</li>
+<li>Then, if status is OK then highest priority is given to highest mission importance first</li>
+<li>Then, among same mission importances, highest priority is given to the ones with less capabilities</li>
+<li>Then, if they have the same status, mission importance, capabilities fine-tune with battery level</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Updates the <a class="reference internal" href="#drones-list"><span class="std std-ref">drones</span></a> list with the correct priorities.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.take_control">
+<code class="descname">take_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.take_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes control from flight controller by changing the mode to POSHOLD and overriding the RC3 channel (throttle). If control is being taken for first time, then the state of the drone is first saved to <a class="reference internal" href="#context"><span class="std std-ref">context</span></a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<ul class="last simple">
+<li>FIXME: The &#8220;momentum&#8221; until the drone finally stops lasts for about 3-4 seconds. During this time, if initial speed is 4-6 m/s, the drone can stop more than 10 metres off the initial <a class="reference internal" href="#collision_avoidance.CollisionThread.take_control" title="collision_avoidance.CollisionThread.take_control"><code class="xref py py-obj docutils literal"><span class="pre">take_control</span></code></a> call.</li>
+<li>FIXME: If previous mode was POSHOLD then context saving will not happen. POSHOLD is a manual mode though, so most probably there will be no commands to be executed.</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Defensive coding has to be performed for the change of mode since commands by the flight controller are dropped silently.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.give_control">
+<code class="descname">give_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.give_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives control to flight controller by restoring the drone&#8217;s previous state and cancelling the RC3 channel override. The <a class="reference internal" href="#collision_avoidance.CollisionThread.in_session" title="collision_avoidance.CollisionThread.in_session"><code class="xref py py-obj docutils literal"><span class="pre">in_session</span></code></a> variable is returned to <a class="reference external" href="https://docs.python.org/2/library/constants.html#False" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">False</span></code></a> to signal the end of the collision avoidance actions.</p>
+<p>Use case: If the mode before was &#8216;AUTO&#8217; with loaded waypoints, then the drone will continue its mission from where it stopped.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.save_context">
+<code class="descname">save_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.save_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked at the first time of <a class="reference internal" href="#collision_avoidance.CollisionThread.take_control" title="collision_avoidance.CollisionThread.take_control"><code class="xref py py-obj docutils literal"><span class="pre">take_control()</span></code></a> call. All information is saved in the <a class="reference internal" href="#context"><span class="std std-ref">context</span></a> class attribute.</p>
+<p>What is currently saved is:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle.mode">Mode</a></li>
+<li><a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle.commands">Mission (loaded waypoints)</a></li>
+<li><a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.CommandSequence.next">Next waypoint</a></li>
+</ul>
+</div></blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">You are free to change the information changed according to your own collision avoidance protocol. You can see all the parameters that can be saved at the <a class="reference external" href="http://python.dronekit.io/automodule.html">DK-Python API reference</a> and the <a class="reference external" href="https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml">MAVLink messages (from line 2095)</a>.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.restore_context">
+<code class="descname">restore_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.restore_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restores drone&#8217;s saved state.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">In order to load the saved commands, the vehicle has to be in <a class="reference external" href="http://python.dronekit.io/guide/copter/guided_mode.html">GUIDED</a> mode.</p>
+</div>
+<p>The procedure goes as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Change to <a class="reference external" href="http://python.dronekit.io/guide/copter/guided_mode.html">GUIDED</a> mode</li>
+<li>Clear all the uploaded commands</li>
+<li>Upload the previous commands</li>
+<li>Change mode and next_waypoint</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Saving/Restoring the context does not have any meaning in the &#8216;priorities&#8217; protocol, since no extra actions are given to the controller, just an RC override. These functions are useful if you want to set a different flight plan for your collision avoidance protocol. They are invoked inside the &#8216;priorities&#8217; protocol for you to see that they are functional.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.update_drone_list">
+<code class="descname">update_drone_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.update_drone_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is responsible for:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Cleaning-up drones that have not given a heartbeat the last <a class="reference internal" href="#max-stay"><span class="std std-ref">MAX_STAY</span></a> seconds.</li>
+<li>Updating the lists (quite pythonically) containing the drones that are inside the <a class="reference internal" href="#safety-zone"><span class="std std-ref">SAFETY_ZONE</span></a> and the <a class="reference internal" href="#critical-zone"><span class="std std-ref">CRITICAL_ZONE</span></a></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<span class="target" id="print-drones"></span><dl class="method">
+<dt id="collision_avoidance.CollisionThread.print_drones_in_vicinity">
+<code class="descname">print_drones_in_vicinity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.print_drones_in_vicinity" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple function that prints to stdout the drones in the <a class="reference internal" href="#collision_avoidance.CollisionThread.near" title="collision_avoidance.CollisionThread.near"><code class="xref py py-obj docutils literal"><span class="pre">near</span></code></a> and <a class="reference internal" href="#collision_avoidance.CollisionThread.critical" title="collision_avoidance.CollisionThread.critical"><code class="xref py py-obj docutils literal"><span class="pre">critical</span></code></a> lists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.current_mission">
+<code class="descname">current_mission</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.current_mission" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple function that retrieves the commands uploaded to the controller. See more information <a class="reference external" href="http://python.dronekit.io/guide/auto_mode.html">here</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The mission object. See <a class="reference internal" href="#collision_avoidance.CollisionThread.restore_context" title="collision_avoidance.CollisionThread.restore_context"><code class="xref py py-obj docutils literal"><span class="pre">restore_context()</span></code></a> for an example of how to access its variables.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.CommandSequence">CommandSequence</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="collision_avoidance.CollisionThread.get_priority_num">
+<code class="descname">get_priority_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#collision_avoidance.CollisionThread.get_priority_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accesses the <a class="reference internal" href="#drones-list"><span class="std std-ref">drones</span></a> list (should be called after the <a class="reference internal" href="#collision_avoidance.CollisionThread.give_priorities" title="collision_avoidance.CollisionThread.give_priorities"><code class="xref py py-obj docutils literal"><span class="pre">give_priorities()</span></code></a> method) in order to get the vehicle&#8217;s priority number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The priority number of the vehicle.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="params"></span><dl class="class">
+<dt id="params.Params">
+<em class="property">class </em><code class="descclassname">params.</code><code class="descname">Params</code><span class="sig-paren">(</span><span class="optional">[</span><em>network=None</em>, <em>vehicle=None</em>, <em>dummy=False</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#params.Params" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class provides all the necessary vehicle attributes for the collision avoidance handling. All these parameters are updated automatically according to a threshold that is defined separately for every parameter. The parameters are sent every <a class="reference internal" href="#poll-rate"><span class="std std-ref">POLL_RATE</span></a> seconds if a <a class="reference internal" href="#send-thread"><span class="std std-ref">SendThread</span></a> object is running.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>network</strong> (<a class="reference internal" href="#drone_network.Networking" title="drone_network.Networking"><em>Networking</em></a>) &#8211; The <a class="reference internal" href="#networking"><span class="std std-ref">Networking</span></a> object.</li>
+<li><strong>vehicle</strong> (<em>Vehicle</em>) &#8211; The dronekit.Vehicle object.</li>
+<li><strong>dummy</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; If set to True then dummy parameters are added, for testing purposes.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="params.Params.ID">
+<code class="descname">ID</code><a class="headerlink" href="#params.Params.ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>A random ID, unique for every drone running the code. Uniqueness is guaranteed by running the <a class="reference external" href="https://docs.python.org/2/library/uuid.html#uuid.uuid4" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">uuid.uuid4</span></code></a> function. Please do <strong>not</strong> change this value by yourself.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.last_recv">
+<code class="descname">last_recv</code><a class="headerlink" href="#params.Params.last_recv" title="Permalink to this definition">¶</a></dt>
+<dd><p>A timestamp that is given upon receiving the specific drone&#8217;s parameters by <a class="reference internal" href="#receive-task-thread"><span class="std std-ref">ReceiveTaskThread</span></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.version">
+<code class="descname">version</code><a class="headerlink" href="#params.Params.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>The release version of dronekit that runs the vehicle.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.ekf_ok">
+<code class="descname">ekf_ok</code><a class="headerlink" href="#params.Params.ekf_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a> value that indicates EKF functionality.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.gps_fix">
+<code class="descname">gps_fix</code><a class="headerlink" href="#params.Params.gps_fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> value that indicates the vehicle&#8217;s GPS fix. Must be &#8216;3&#8217; in order to work properly.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.gps_sat">
+<code class="descname">gps_sat</code><a class="headerlink" href="#params.Params.gps_sat" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> value that specifies the number of satellites the GPS receives from (ideally 4 or more).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.gps_eph">
+<code class="descname">gps_eph</code><a class="headerlink" href="#params.Params.gps_eph" title="Permalink to this definition">¶</a></dt>
+<dd><p>The EPH (horizontal accuracy).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.gps_epv">
+<code class="descname">gps_epv</code><a class="headerlink" href="#params.Params.gps_epv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The EPV (vertical accuracy).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.set_global_alt">
+<code class="descname">set_global_alt</code><a class="headerlink" href="#params.Params.set_global_alt" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a> value that indicates if altitude in the global frame can be changed offboard.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.set_attitude">
+<code class="descname">set_attitude</code><a class="headerlink" href="#params.Params.set_attitude" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a> value that indicates if attitude (pitch, yaw, roll) can be changed offboard.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.mode">
+<code class="descname">mode</code><a class="headerlink" href="#params.Params.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current mode of vehicle. Access mode.name for an <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a> representation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.global_alt">
+<code class="descname">global_alt</code><a class="headerlink" href="#params.Params.global_alt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current altitude in the global frame.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.global_lat">
+<code class="descname">global_lat</code><a class="headerlink" href="#params.Params.global_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current latitude in the global frame.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.global_lon">
+<code class="descname">global_lon</code><a class="headerlink" href="#params.Params.global_lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current longititude in the global frame.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.distance_from_self">
+<code class="descname">distance_from_self</code><a class="headerlink" href="#params.Params.distance_from_self" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many metres away is the received drone from this vehicle. Set upon receiving the specific drone&#8217;s parameters by <a class="reference internal" href="#receive-task-thread"><span class="std std-ref">ReceiveTaskThread</span></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.mission_importance">
+<code class="descname">mission_importance</code><a class="headerlink" href="#params.Params.mission_importance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default value is 0. It is changed depending the use (check <a class="reference internal" href="#importance-setter"><span class="std std-ref">Mission Importance Setter</span></a> for more information)</p>
+<ul class="simple">
+<li>Level 0: for everyday users and hobbyists</li>
+<li>Level 1: for commercial users/companies</li>
+<li>Level 2: governmental missions, search&amp;rescue, national security</li>
+</ul>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.heading">
+<code class="descname">heading</code><a class="headerlink" href="#params.Params.heading" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where the drone is heading, in degrees, with 0 degrees being the North.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.next_wp">
+<code class="descname">next_wp</code><a class="headerlink" href="#params.Params.next_wp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Next waypoint number as obtained from uploaded commands.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.next_wp_lat">
+<code class="descname">next_wp_lat</code><a class="headerlink" href="#params.Params.next_wp_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Next waypoint&#8217;s global latitude.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.next_wp_lon">
+<code class="descname">next_wp_lon</code><a class="headerlink" href="#params.Params.next_wp_lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Next waypoint&#8217;s global longitude.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.next_wp_alt">
+<code class="descname">next_wp_alt</code><a class="headerlink" href="#params.Params.next_wp_alt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Next waypoint&#8217;s global altitude.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.battery_level">
+<code class="descname">battery_level</code><a class="headerlink" href="#params.Params.battery_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Battery level in percentage (100% is full).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.velocity">
+<code class="descname">velocity</code><a class="headerlink" href="#params.Params.velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>3-axis velocity in m/s.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.groundspeed">
+<code class="descname">groundspeed</code><a class="headerlink" href="#params.Params.groundspeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Groundspeed in m/s.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.airspeed">
+<code class="descname">airspeed</code><a class="headerlink" href="#params.Params.airspeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Airspeed in m/s. It can be different from groundspeed because of location&#8217;s air speed etc.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="params.Params.system_status">
+<code class="descname">system_status</code><a class="headerlink" href="#params.Params.system_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Must be &#8216;OK&#8217; to be able to fly. There are other statuses that indicate that something is wrong like &#8216;EMERGENCY&#8217;, &#8216;CRITICAL&#8217; etc.</p>
+</dd></dl>
+
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>Some attributes might not be readily available just by accesing the dronekit.Vehicle object. One example is the signal that the <em>next</em> waypoint has changed. If <a class="reference external" href="http://python.dronekit.io/automodule.html">DK-Python</a> does not mention the attribute you want to observe/send, you will have to check the <a class="reference external" href="https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml">MAVLink message list</a> and use the &#64;vehicle.on_message decorator.</p>
+<p><strong>Example:</strong>
+Checking if the next waypoint has changed. If it has changed print the destination coordinates and assign them to the vehicle&#8217;s parameters for easier access`:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="nd">@vehicle</span><span class="o">.</span><span class="n">on_message</span><span class="p">(</span><span class="s1">&#39;MISSION_CURRENT&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">message_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">vehicle_params</span><span class="o">.</span><span class="n">next_wp</span> <span class="o">==</span> <span class="n">message</span><span class="o">.</span><span class="n">seq</span><span class="p">:</span>
+                        <span class="k">return</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span> <span class="s1">&#39;Next waypoint changed&#39;</span>
+                        <span class="n">network</span><span class="o">.</span><span class="n">vehicle_params</span><span class="o">.</span><span class="n">next_wp</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">seq</span>
+
+                        <span class="n">cmd</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">commands</span>
+
+                        <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="nb">print</span> <span class="s1">&#39;No waypoints found&#39;</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                                <span class="nb">print</span> <span class="s1">&#39;Waypoint&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="s1">&#39; out of &#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span>
+                                <span class="n">pos</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">next</span> <span class="o">-</span> <span class="mi">1</span>
+
+                                <span class="nb">print</span> <span class="s1">&#39;Frame, Lat, Lon, Alt:&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">frame</span><span class="p">,</span> <span class="n">cmd</span><span class="p">[</span>
+                                <span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">cmd</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">cmd</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">z</span>
+                                <span class="n">network</span><span class="o">.</span><span class="n">vehicle_params</span><span class="o">.</span><span class="n">next_wp_lat</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+                                <span class="n">network</span><span class="o">.</span><span class="n">vehicle_params</span><span class="o">.</span><span class="n">next_wp_lon</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+                                <span class="n">network</span><span class="o">.</span><span class="n">vehicle_params</span><span class="o">.</span><span class="n">next_wp_alt</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">z</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span> <span class="s2">&quot;Error: &quot;</span><span class="p">,</span> <span class="n">e</span>
+</pre></div>
+</div>
+</div>
+<span class="target" id="add-listeners"></span><dl class="method">
+<dt id="params.Params.add_listeners">
+<code class="descname">add_listeners</code><span class="sig-paren">(</span><em>network</em>, <em>vehicle</em><span class="sig-paren">)</span><a class="headerlink" href="#params.Params.add_listeners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses function decorators to observe the attributes in the <a class="reference internal" href="#params"><span class="std std-ref">Params</span></a> class. See the source code or read this <a class="reference internal" href="guide.html#add-params"><span class="std std-ref">Guide</span></a> for further information. Note that changes are thresholded in order to minimize writes. Thresholding has been done based on own experience, observations and for certain purposes.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you add a new attribute in this class then you will have to add its observer in this function, too. Otherwise the value will not be updated and will send wrong information about it.</p>
+</div>
+</dd></dl>
+
+<span class="target" id="print-params-all"></span><dl class="method">
+<dt id="params.Params.print_all">
+<code class="descname">print_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#params.Params.print_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints to stdout all the attributes observed in the <a class="reference internal" href="#params"><span class="std std-ref">Params</span></a> class.</p>
+</dd></dl>
+
+<span class="target" id="importance-setter"></span><dl class="method">
+<dt>
+<code class="descname">mission_importance</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span></dt>
+<dd><p>A setter function. This attribute must not be able to be changed by the user for safety reasons.
+Mission importance must have the following semantics:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Level 0: for everyday users and hobbyists</li>
+<li>Level 1: for commercial users/companies</li>
+<li>Level 2: governmental missions, search&amp;rescue, national security</li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Since the language is Python and the script can be changed by anyone, it is not safe to assume that the mission_importance attribute performs its role. Server-based authentication has to be deployed in order to verify the change in mission_importance. Do <strong>NOT</strong> utilise it as it is now.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geo_tools">
+<em class="property">class </em><code class="descname">geo_tools</code><a class="headerlink" href="#geo_tools" title="Permalink to this definition">¶</a></dt>
+<dd><p>A set of functions with code from here and there for geographical transformations.</p>
+<dl class="method">
+<dt id="geo_tools.get_location_metres">
+<code class="descname">get_location_metres</code><span class="sig-paren">(</span><em>lat</em>, <em>lon</em>, <em>alt</em>, <em>dNorth</em>, <em>dEast</em><span class="sig-paren">)</span><a class="headerlink" href="#geo_tools.get_location_metres" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the latitude/longitude <cite>dNorth</cite> and <cite>dEast</cite> metres from the specified original location. The returned location has the same <cite>alt</cite> value as the original.</p>
+<p>The function is useful when you want to move the vehicle around specifying locations relative to
+the current vehicle position.
+The algorithm is relatively accurate over small distances (10m within 1km) except close to the poles.
+For more information see:
+<a class="reference external" href="http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters">http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters</a></p>
+<dl class="data">
+<dt>
+<code class="descname">earth_radius=6378137.0</code></dt>
+<dd><p>According to theory.</p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lat</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Current global latitude in decimal degrees</li>
+<li><strong>lon</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Current global longitude in decimal degrees.</li>
+<li><strong>alt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Current relative altitude in decimal degrees.</li>
+<li><strong>dNorth</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; North offset in metres.</li>
+<li><strong>dEast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; East offset in metres.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">LocationGlobal: The new offset coordinates in decimal degrees.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple(lat, lon, alt)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geo_tools.get_distance_metres">
+<code class="descname">get_distance_metres</code><span class="sig-paren">(</span><em>lat1</em>, <em>lon1</em>, <em>lat2</em>, <em>lon2</em><span class="sig-paren">)</span><a class="headerlink" href="#geo_tools.get_distance_metres" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ground distance in metres between two coordinate sets.
+This method is an approximation, and will not be accurate over large distances and close to the earth&#8217;s poles. It comes from the ArduPilot test code:
+<a class="reference external" href="https://github.com/diydrones/ardupilot/blob/master/Tools/autotest/common.py">https://github.com/diydrones/ardupilot/blob/master/Tools/autotest/common.py</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lat1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; First latitude in global frame in decimal degrees.</li>
+<li><strong>lon1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; First longitude in global frame in decimal degrees.</li>
+<li><strong>lat2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Second latitude in global frame in decimal degrees.</li>
+<li><strong>lon2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; Second longitude in global frame in decimal degrees.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Ground distance between coordinates in metres</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geo_tools.distance_to_current_waypoint">
+<code class="descname">distance_to_current_waypoint</code><span class="sig-paren">(</span><em>vehicle</em><span class="sig-paren">)</span><a class="headerlink" href="#geo_tools.distance_to_current_waypoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets distance in metres to the current waypoint.
+It returns None for the first waypoint (Home location).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vehicle</strong> (<em>Vehicle</em>) &#8211; The dronekit.Vehicle object for which we seek distance to current waypoint.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Distance to current waypoint in metres.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="index">
+<h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="useful_links.html" class="btn btn-neutral float-right" title="Useful Links" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="contribute.html" class="btn btn-neutral" title="Contribute" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Leonidas Antoniou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

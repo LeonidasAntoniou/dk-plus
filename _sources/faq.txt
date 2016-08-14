@@ -1,0 +1,6 @@
+.. _faq:
+
+FAQ
+===
+
+No questions have been reported so far.
