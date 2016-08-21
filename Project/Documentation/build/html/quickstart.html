@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Setup &mdash; DK+ 2.2.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+    <link rel="top" title="DK+ 2.2.1 documentation" href="index.html"/>
+        <link rel="next" title="Guide" href="guide.html"/>
+        <link rel="prev" title="Release Notes" href="release_notes.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DK+
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-2-x">Python 2.x</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dronekit-python">Dronekit-Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wireless-networking">Wireless Networking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#firewall-rules">Firewall Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#first-example">First example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful_links.html">Useful Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">DK+</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Setup</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/quickstart.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h1>
+<p>In this chapter you will find any relevant information to get you started with this API.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are not familliarized with Dronekit-Python already, it is advised that you read the official <a class="reference external" href="http://python.dronekit.io/">Dronekit-Python Documentation</a></p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This API was developed for <strong>Dronekit-Python 2.x</strong> so it is not guaranteed that future versions of Dronekit will be backwards compatible with <strong>DK+</strong>.</p>
+</div>
+<div class="section" id="python-2-x">
+<h3>Python 2.x<a class="headerlink" href="#python-2-x" title="Permalink to this headline">¶</a></h3>
+<p>DK+ uses the <a class="reference external" href="https://docs.python.org/2/">Python 2.7</a> programming language. The API has been tested in <strong>Linux</strong> Operating System but it is not believed that there is going to be a problem with <strong>Windows</strong> because of the portability of Python.</p>
+</div>
+<div class="section" id="dronekit-python">
+<h3>Dronekit-Python<a class="headerlink" href="#dronekit-python" title="Permalink to this headline">¶</a></h3>
+<p>In order to get DK+ up and running you will need to <a class="reference external" href="http://python.dronekit.io/guide/quick_start.html">install dronekit-python</a> first. This is a necessary installation since DK+ is an API that <em>extends</em> Dronekit. If you want to simulate your vehicle on the console (and you probably want), you also need to download and install <a class="reference external" href="http://python.dronekit.io/develop/sitl_setup.html">Dronekit SITL</a></p>
+</div>
+<div class="section" id="wireless-networking">
+<span id="wireless-interface"></span><h3>Wireless Networking<a class="headerlink" href="#wireless-networking" title="Permalink to this headline">¶</a></h3>
+<p>If you want to setup your system&#8217;s network interfaces (join ad-hoc networks, AP, etc), there is extra useful documentation on <a class="reference external" href="https://wireless.wiki.kernel.org/en/users/documentation">Linux-Wireless</a> and <a class="reference external" href="http://slicepi.com/creating-an-ad-hoc-network-for-your-raspberry-pi/">SlicePi</a>.</p>
+</div>
+<div class="section" id="firewall-rules">
+<span id="firewall"></span><h3>Firewall Rules<a class="headerlink" href="#firewall-rules" title="Permalink to this headline">¶</a></h3>
+<p>Since your computer will be communicating with other hardware, you have to make sure that your system accept incoming/outgoing messages of your protocol.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">If you receive packets but the program is not receiving it without any raised exception, then probably the packets are blocked by your firewall.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently, the only communication protocol that is supported is UDP. Though <strong>0MQ</strong> has not been implemeted in this project, you can get more information about protocols and networking in this very handy <a class="reference external" href="http://zguide.zeromq.org">0MQ guide</a>.</p>
+</div>
+<p>If you run a Linux distribution then you may have to change <a class="reference external" href="https://help.ubuntu.com/community/IptablesHowTo">iptables</a> to accept a selection/all incoming and outgoing UDP packets.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The following command adds two firewall exceptions, to accept incoming and outgoing UDP packets. Be extra careful and proceed at your own risk.</p>
+</div>
+<p>Open the Linux Console and try:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">I</span> <span class="n">INPUT</span> <span class="o">-</span><span class="n">p</span> <span class="n">udp</span> <span class="o">-</span><span class="n">j</span> <span class="n">ACCEPT</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">I</span> <span class="n">OUTPUT</span> <span class="o">-</span><span class="n">p</span> <span class="n">udp</span> <span class="o">-</span><span class="n">j</span> <span class="n">ACCEPT</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="first-example">
+<span id="id1"></span><h2>First example<a class="headerlink" href="#first-example" title="Permalink to this headline">¶</a></h2>
+<p>This example demonstrates the integration between Dronekit and DK+. The code at first creates a <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle">Vehicle</a> object at the specified connection_string (e.g &#8216;<a class="reference external" href="tcp:127.0.0.1:5760">tcp:127.0.0.1:5760</a>&#8216;) and then this object is passed as a parameter to DKplus <a class="reference internal" href="api_reference.html#networking"><span class="std std-ref">Networking</span></a> class. With the <a class="reference external" href="http://python.dronekit.io/automodule.html#dronekit.Vehicle">Vehicle</a> object and an established network using the specified address, a <a class="reference internal" href="api_reference.html#collision-thread"><span class="std std-ref">CollisionThread</span></a> protocol, here the &#8216;priorities&#8217; protocol, can be used.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dronekit</span> <span class="k">import</span> <span class="n">connect</span>
+<span class="kn">from</span> <span class="nn">drone_network</span> <span class="k">import</span> <span class="n">Networking</span>
+<span class="kn">from</span> <span class="nn">collision_avoidance</span> <span class="k">import</span> <span class="n">CollisionThread</span>
+
+<span class="c1"># Connect to the Vehicle</span>
+<span class="nb">print</span> <span class="s1">&#39;Connecting to vehicle on: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">connection_string</span>
+<span class="n">vehicle</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">wait_ready</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">#Create the interface with UDP broadcast sockets</span>
+<span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;192.168.2.255&quot;</span><span class="p">,</span> <span class="mi">54545</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">Networking</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;UDP_BROADCAST&quot;</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">)</span>
+
+<span class="c1">#Add collision avoidance algorithm</span>
+<span class="n">t_collision</span> <span class="o">=</span> <span class="n">CollisionThread</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="s1">&#39;priorities&#39;</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add your own commands here!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since Networking and CollisionAvoidance spawn <a class="reference external" href="https://docs.python.org/2/library/threading.html">threads</a>, there is the need to explicitly run the threads. You can achieve this by adding the following lines of code before arming the vehicle.</p>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">print</span> <span class="s2">&quot;Initializing interface&quot;</span>
+<span class="n">network</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="nb">print</span> <span class="s2">&quot;Starting collision avoidance scheme&quot;</span>
+<span class="n">t_collision</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can save the above lines of code to a python script &#8216;first_example.py&#8217; and view the results at the console after navigating to your folder and typing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">first_example</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>If everything goes well, on your console you should see something like the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Starting</span> <span class="n">copter</span> <span class="n">simulator</span> <span class="p">(</span><span class="n">SITL</span><span class="p">)</span>
+<span class="n">SITL</span> <span class="n">already</span> <span class="n">Downloaded</span><span class="o">.</span>
+<span class="n">Connecting</span> <span class="n">to</span> <span class="n">vehicle</span> <span class="n">on</span><span class="p">:</span> <span class="n">tcp</span><span class="p">:</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">5760</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">APM</span><span class="p">:</span><span class="n">Copter</span> <span class="n">V3</span><span class="o">.</span><span class="mi">3</span> <span class="p">(</span><span class="n">d6053245</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Frame</span><span class="p">:</span> <span class="n">QUAD</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Calibrating</span> <span class="n">barometer</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Initialising</span> <span class="n">APM</span><span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">barometer</span> <span class="n">calibration</span> <span class="n">complete</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">GROUND</span> <span class="n">START</span>
+<span class="n">Initializing</span> <span class="n">interface</span>
+<span class="n">Network</span> <span class="n">interface</span> <span class="n">started</span> <span class="n">succesfully</span>
+<span class="n">Starting</span> <span class="n">collision</span> <span class="n">avoidance</span> <span class="n">scheme</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">After these lines of code you can add any code you like. It is advised to start with the <a class="reference external" href="http://python.dronekit.io/examples/index.html">Examples</a> of dronekit-python first. You can also check the file <code class="xref py py-obj docutils literal"><span class="pre">mav_exchange.py</span></code> which is a variation of the Dronekit <a class="reference external" href="http://python.dronekit.io/examples/index.html">Examples</a> with the DK+ integrated.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="guide.html" class="btn btn-neutral float-right" title="Guide" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="release_notes.html" class="btn btn-neutral" title="Release Notes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Leonidas Antoniou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
