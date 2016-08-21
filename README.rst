@@ -5,4 +5,4 @@ DK+ is an API extension of the `dronekit-python <https://github.com/dronekit/dro
 
 Please visit the documentation page for all the information concerning the project:
 
-https://leonidasantoniou.github.io/dk-plus/index.html
+https://leonidasantoniou.github.io/dk-plus/
