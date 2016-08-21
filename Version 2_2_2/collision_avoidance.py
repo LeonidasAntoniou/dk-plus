@@ -8,6 +8,7 @@ Spawns a thread by instantiation
 Author: Leonidas Antoniou 
 mail: leonidas.antoniou@gmail.com
 """
+from multiprocessing import Process
 import threading, time, itertools
 import geo_tools as geo
 from dronekit import VehicleMode, Command
@@ -27,6 +28,9 @@ class CollisionThread(threading.Thread):
 		self.algorithm = algorithm
 		self.in_session = False
 		self.context = None
+
+		self.update_proc = Process(target=self.update_drone_list)
+		self.priority_proc = Process(target=self.give_priorities)
 
 	def run(self):
 		#Deploy your collision avoidance algorithm here
@@ -51,7 +55,9 @@ class CollisionThread(threading.Thread):
 	def no_protocol(self):
 		#What to do if no protocol is specified
 		#Currently it just outputs the drones in vicinity 
-		self.update_drone_list()
+		self.update_proc.start()
+		self.update_proc.join()
+		
 		self.print_drones_in_vicinity()
 
 	def priorities_protocol(self):
@@ -61,8 +67,12 @@ class CollisionThread(threading.Thread):
 		#Currently works for AUTO mode
 
 		#Give priorities 
-		self.give_priorities()
-		self.update_drone_list()
+		self.priority_proc.start()
+		self.priority_proc.join()
+
+		self.update_proc.start()
+		self.update_proc.join()
+		
 		self.print_drones_in_vicinity()
 
 		#Nothing to do if no drones are around and drone is not in avoidance state

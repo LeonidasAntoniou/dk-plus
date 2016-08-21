@@ -7,6 +7,9 @@ Release Notes
 
 Version 2.2.2 (2016-08-21)
 --------------------------
+Added
++++++
+Multiprocessing capabilities in some collision avoidance methods
 
 Fixed
 +++++++
