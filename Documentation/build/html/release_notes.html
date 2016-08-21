@@ -88,6 +88,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="intro.html">Introduction</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="about.html">About</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Release Notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#version-2-2-2-2016-08-21">Version 2.2.2 (2016-08-21)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fixed">Fixed</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#version-2-2-1-2016-08-09">Version 2.2.1 (2016-08-09)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#added">Added</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#changed">Changed</a></li>
@@ -119,16 +123,16 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#version-1-2-0-2016-06-5">Version 1.2.0 (2016-06-5)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id9">Changed</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#fixed">Fixed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Fixed</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#version-1-1-0-2016-06-2">Version 1.1.0 (2016-06-2)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id10">Added</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id11">Changed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">Added</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">Changed</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#version-1-0-0-2016-05-15">Version 1.0.0 (2016-05-15)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id12">Added</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13">Added</a></li>
 </ul>
 </li>
 </ul>
@@ -140,6 +144,7 @@
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="useful_links.html">Useful Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 
             
@@ -192,6 +197,15 @@
 <p class="first admonition-title">Note</p>
 <p class="last">All notable changes to the DK+ will be documented here.
 This project adheres to <a class="reference external" href="http://semver.org/">Semantic Versioning</a>.</p>
+</div>
+<div class="section" id="version-2-2-2-2016-08-21">
+<h2>Version 2.2.2 (2016-08-21)<a class="headerlink" href="#version-2-2-2-2016-08-21" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed some threading issues</li>
+</ul>
+</div>
 </div>
 <div class="section" id="version-2-2-1-2016-08-09">
 <h2>Version 2.2.1 (2016-08-09)<a class="headerlink" href="#version-2-2-1-2016-08-09" title="Permalink to this headline">¶</a></h2>
@@ -297,8 +311,8 @@ This project adheres to <a class="reference external" href="http://semver.org/">
 <li>More defensive broad() function.</li>
 </ul>
 </div>
-<div class="section" id="fixed">
-<h3>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>Fixed<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>listen_task() is running as another thread.</li>
 </ul>
@@ -306,14 +320,14 @@ This project adheres to <a class="reference external" href="http://semver.org/">
 </div>
 <div class="section" id="version-1-1-0-2016-06-2">
 <h2>Version 1.1.0 (2016-06-2)<a class="headerlink" href="#version-1-1-0-2016-06-2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id10">
-<h3>Added<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id11">
+<h3>Added<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Function handling listen() after-processing (listen_task()).</li>
 </ul>
 </div>
-<div class="section" id="id11">
-<h3>Changed<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h3>Changed<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Listening socket changed to non-blocking.</li>
 <li>Listen() and Broad() functions are single-threaded.</li>
@@ -322,8 +336,8 @@ This project adheres to <a class="reference external" href="http://semver.org/">
 </div>
 <div class="section" id="version-1-0-0-2016-05-15">
 <h2>Version 1.0.0 (2016-05-15)<a class="headerlink" href="#version-1-0-0-2016-05-15" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id12">
-<h3>Added<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>Added<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Listen and Broadcast methods for communication with other drones (listen(), broad()).</li>
 <li>Extra listeners for drone parameters.</li>
