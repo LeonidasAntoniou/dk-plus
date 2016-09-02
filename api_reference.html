@@ -353,6 +353,22 @@ It is not advised to modify it directly since the structure is updated automatic
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="send_thread.SendThread.create_md5_checksum">
+<code class="descname">create_md5_checksum</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#send_thread.SendThread.create_md5_checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the MD5 digest of the given pickled data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params:</th><td class="field-body">data: A <a class="reference external" href="https://docs.python.org/2/library/pickle.html">pickled</a> format of a <a class="reference internal" href="#params"><span class="std std-ref">Params</span></a> object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <a class="reference external" href="https://docs.python.org/2/library/hashlib.html#hashlib.hash.digest">digest</a> of data input</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="receive-thread"></span><dl class="class">
@@ -388,6 +404,24 @@ If the received message is coming from a drone, then it adds it to the <a class=
 <li><strong>exception</strong> &#8211; if there is a problem with the sockets.</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="receive_thread.ReceiveThread.verify_md5_checksum">
+<code class="descname">verify_md5_checksum</code><span class="sig-paren">(</span><em>raw_msg</em><span class="sig-paren">)</span><a class="headerlink" href="#receive_thread.ReceiveThread.verify_md5_checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an MD5 hash of the received vehicle&#8217;s parameters and compares to the already given one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>raw_msg</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; The unpickled received message in (data, checksum) form. Data is still pickled so that the digest can be calculated.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/constants.html#True">True</a> if the verification succeeds, <a class="reference external" href="https://docs.python.org/2/library/constants.html#False">False</a> if not, <a class="reference external" href="https://docs.python.org/2/library/constants.html#None">None</a> if the received message is not the right format.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><cite>bool</cite></td>
 </tr>
 </tbody>
 </table>
