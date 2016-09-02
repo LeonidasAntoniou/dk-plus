@@ -32,6 +32,7 @@ mail: leonidas.antoniou@gmail.com
 
 import socket, select, Queue, select, time, threading
 import cPickle as pickle
+from collections import namedtuple
 
 #Custom modules
 import geo_tools as geo
@@ -49,6 +50,9 @@ class Networking:
 	CRITICAL_ZONE = 10 	#metres
 	POLL_RATE = 0.5 	#how often to broadcast/receive messages
 	
+	#Message type for parameters sending
+	params_message = namedtuple('params_message', ['vehicle_params', 'checksum'])
+
 	def __init__(self, address, protocol, vehicle):
 		self.address = address
 		self.vehicle = vehicle
