@@ -55,8 +55,10 @@ class CollisionThread(threading.Thread):
 	def no_protocol(self):
 		#What to do if no protocol is specified
 		#Currently it just outputs the drones in vicinity 
-		self.update_proc.start()
-		self.update_proc.join()
+		
+		#self.update_proc.start()
+		#self.update_proc.join()
+		self.update_drone_list()
 		
 		self.print_drones_in_vicinity()
 
@@ -67,11 +69,13 @@ class CollisionThread(threading.Thread):
 		#Currently works for AUTO mode
 
 		#Give priorities 
-		self.priority_proc.start()
-		self.priority_proc.join()
+		#self.priority_proc.start()
+		#self.priority_proc.join()
+		self.give_priorities()
 
-		self.update_proc.start()
-		self.update_proc.join()
+		#self.update_proc.start()
+		#self.update_proc.join()
+		self.update_drone_list()
 		
 		self.print_drones_in_vicinity()
 

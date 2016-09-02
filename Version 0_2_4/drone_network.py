@@ -49,9 +49,6 @@ class Networking:
 	SAFETY_ZONE = 40 	#metres
 	CRITICAL_ZONE = 10 	#metres
 	POLL_RATE = 0.5 	#how often to broadcast/receive messages
-	
-	#Message type for parameters sending
-	params_message = namedtuple('params_message', ['vehicle_params', 'checksum'])
 
 	def __init__(self, address, protocol, vehicle):
 		self.address = address

@@ -3,7 +3,6 @@ import cPickle as pickle
 
 class SendThread(threading.Thread):
 
-
 	def __init__(self, network):
 		threading.Thread.__init__(self)
 		self.daemon = True
@@ -16,15 +15,17 @@ class SendThread(threading.Thread):
 		while True:
 			try:
 				data = pickle.dumps(self.network.vehicle_params)
-				checksum = create_md5_checksum(data)
-				message = self.network.params_message(data, checksum)
+				checksum = self.create_md5_checksum(data)
+
+				msg = (data, checksum)
+				pickled_msg = pickle.dumps(msg)
 
 			except Exception, e:
 				data = " "
 				print "Pickling Error: ", e
 			
 			try:
-				self.network.sock_send.sendto(message, self.network.address)
+				self.network.sock_send.sendto(pickled_msg, self.network.address)
 
 			except Exception, e:
 				print "Failed to broadcast: ", e
@@ -33,7 +34,7 @@ class SendThread(threading.Thread):
 
 			time.sleep(self.network.POLL_RATE) #broadcast every POLL_RATE seconds
 
-	def create_md5_checksum(data):
+	def create_md5_checksum(self, data):
 		#Create MD5 checksum for message verification
 		m = hashlib.md5()
 		m.update(data)

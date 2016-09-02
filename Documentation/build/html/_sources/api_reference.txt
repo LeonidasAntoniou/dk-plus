@@ -162,6 +162,15 @@ API Reference
 
 		:raises exception: When failing to send the message.
 
+	.. method:: create_md5_checksum(data)
+
+		Creates the MD5 digest of the given pickled data.
+
+		:params:
+
+			data: A `pickled <https://docs.python.org/2/library/pickle.html>`_ format of a :ref:`Params <params>` object.
+		:return: The `digest <https://docs.python.org/2/library/hashlib.html#hashlib.hash.digest>`_ of data input
+
 
 .. _receive-thread:
 
@@ -187,6 +196,13 @@ API Reference
 		:raises pickle.UnpicklingError: if the receiving message is not pickled.
 		:raises exception: if there is a problem with the sockets.
 
+	.. method:: verify_md5_checksum(raw_msg)
+
+		Creates an MD5 hash of the received vehicle's parameters and compares to the already given one
+
+		:param tuple raw_msg: The unpickled received message in (data, checksum) form. Data is still pickled so that the digest can be calculated.
+		:return: `True <https://docs.python.org/2/library/constants.html#True>`_ if the verification succeeds, `False <https://docs.python.org/2/library/constants.html#False>`_ if not, `None <https://docs.python.org/2/library/constants.html#None>`_ if the received message is not the right format.
+		:rtype: `bool`
 
 .. _receive-task-thread:
 
