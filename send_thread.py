@@ -24,5 +24,7 @@ class SendThread(threading.Thread):
 
 			except Exception, e:
 				print "Failed to broadcast: ", e
+				#Failsafe
+				break
 
 			time.sleep(1) #broadcast every 1s

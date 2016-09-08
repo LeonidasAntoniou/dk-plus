@@ -48,5 +48,6 @@ class ReceiveThread(threading.Thread):
 
 			except Exception, e:
 				print "Error in socket (most probably because socket is closed by another thread): ", e
+				#Failsafe
 				break
 			

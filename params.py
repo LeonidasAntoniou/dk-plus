@@ -4,9 +4,6 @@ but it is constantly updated through attribute listeners on main program.
 
 These parameters can provide the basic info for a future collision avoidance scheme. 
 Any functions that can refer to the parameters can be written here.
-
-Version 1.3
--Added mission importance parameter
 """
 from dronekit import connect, Command, VehicleMode, LocationGlobalRelative, LocationGlobal, socket
 import uuid, random, time
@@ -29,13 +26,13 @@ class Params:
 			self.global_lat = -35.3632086902
 			self.global_lon = 149.165274916
 			self.distance_from_self = None
-			self.mission_importance = None 
+			self.mission_importance = 0 
 			self.heading = 300 				#degrees
 			self.next_wp = None
 			self.next_wp_lat = None
 			self.next_wp_lon = None
 			self.next_wp_alt = None
-			self.battery_level = 80 			#percentage
+			self.battery_level = 100 			#percentage
 			self.velocity = [0.5, -3.1, 0.7]		#m/s, airspeed
 			self.groundspeed = 3.46				#m/s
 			self.airspeed = 3.46				#m/s
@@ -43,7 +40,7 @@ class Params:
 
 		else:
 			self.ID = uuid.uuid4().int #Random UUID
-			self.last_recv = time.time()
+			self.last_recv = None
 			self.version = vehicle.version.release_version()
 			self.ekf_ok = vehicle.ekf_ok
 			self.gps_fix = vehicle.gps_0.fix_type

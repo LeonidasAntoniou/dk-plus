@@ -1,10 +1,6 @@
 """
-Version 2.0
--Transferred all methods (broad, listen, task, collision) to classes with threading capabilities
--Geographical methods transferred to geo_tools module
--Listeners transferred to vehicle_listeners class
-
--There seems to be a random bug causing critical system statusS
+Version 2.1
+-Added remote actions capabilities
 """
 import time
 from dronekit import connect, VehicleMode, Command
@@ -48,15 +44,18 @@ if not args.connect:
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
+
 #Create the interface with UDP broadcast sockets
-address = ("192.168.1.255", 54545)
+address = ("192.168.2.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle)
+
 
 #Add vehicle parameters listeners
 add_listeners(network, vehicle)
 
+
 #Add collision avoidance algorithm
-t_collision = CollisionThread(network, None)
+t_collision = CollisionThread(network, 'priorities')
 
 
 			
@@ -198,6 +197,7 @@ network.run()
 print "Starting collision avoidance scheme"
 t_collision.start()
 
+
 print 'Create a new mission (for current location)'
 adds_square_mission(vehicle.location.global_frame,50)
 
@@ -218,19 +218,21 @@ vehicle.mode = VehicleMode("AUTO")
 #   distance to the next waypoint.
 
 while True:
-	try:
-	    nextwaypoint = vehicle.commands.next
-	    print 'Distance to waypoint (%s): %s' % (nextwaypoint, geo.distance_to_current_waypoint(vehicle))
-	  
-	    if nextwaypoint == 3: #Skip to next waypoint
-	        print 'Skipping to Waypoint 5 when reach waypoint 3'
-	        vehicle.commands.next = 5
-	    if nextwaypoint == 5: #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
-	        print "Exit 'standard' mission when start heading to final waypoint (5)"
-	        break;
-	    time.sleep(1)
-	except KeyboardInterrupt:
-		break;
+    try:
+        nextwaypoint = vehicle.commands.next
+        if vehicle.commands.count != 0:
+            print 'Distance to waypoint (%s): %s' % (nextwaypoint, geo.distance_to_current_waypoint(vehicle))
+
+            if nextwaypoint == 3: #Skip to next waypoint
+                print 'Skipping to Waypoint 5 when reach waypoint 3'
+                vehicle.commands.next = 5
+            if nextwaypoint == 5: #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
+                print "Exit 'standard' mission when start heading to final waypoint (5)"
+                break
+        
+        time.sleep(1)
+    except KeyboardInterrupt:
+    	break
 
 
 #Close broadcast thread and socket
