@@ -1,7 +1,6 @@
 """
-Version 1.2
--listen_task is done in a different thread
--more defensive broad() function
+Version 1.3
+-Added collision lists functionality
 """
 import time, math, sys, socket, threading, select, rpdb2
 from collections import namedtuple
@@ -11,9 +10,13 @@ from pymavlink import mavutil
 import cPickle as pickle
 
 
-MAX_STAY = 5 #seconds until entry is removed from structure
-Geo = namedtuple("Geo", "lat lon")
-simple_msg = namedtuple("simple_msg", "ID text")
+MAX_STAY = 5 #seconds until entry is removed from list
+SAFETY_ZONE = 40 #metres
+CRITICAL_ZONE = 10 #metres
+
+Geo = namedtuple("Geo", "lat lon") #For argument passing in get_distance_metres
+simple_msg = namedtuple("simple_msg", "ID text") #Struct-like message type
+count = 0
 
 """
 ------------------------------------------------------------------------------------------------------
@@ -57,7 +60,14 @@ vehicle = connect(connection_string, wait_ready=True)
 
 #Parameter dictionary 
 self_params = Params(vehicle=vehicle)
+
+#Lists that keep parameter data. 
+#-params stores all data received
+#-near stores all drones in params that are within a close range
+#-critical stores all drones in near that are within critical range
 params = []
+near = []
+critical = []
 
 def update_params(message):
 	global params
@@ -79,7 +89,7 @@ def update_params(message):
 			#New entry
 			params.append(message)
 
-	#Remove entries that have not been updated the last four seconds
+	#Remove entries that have not been updated the last MAX_STAY seconds
 	params = [item for item in params if (time.time() - item.last_recv <= MAX_STAY)]
 
 
@@ -128,9 +138,11 @@ def broad():
 		time.sleep(1) #broadcast every 1s
 
 def listen():
+	global count
 	while True:
 		ready = select.select([sock_listen], [], [], 2.0) #wait until a message is received - timeout 1s
 		if ready[0]:
+			count = count + 1
 			d = sock_listen.recvfrom(4096)
 			raw_msg = d[0]
 			sender_addr = d[1]
@@ -152,8 +164,8 @@ def listen():
 
 					else:
 						#If drone parameters are received, another function is called since 
-						#we want the thread dedicated to receiving messages. 
-						print "Received drone info" 
+						#we want this thread dedicated to receiving messages. 
+						#print "Received drone info" 
 						task = threading.Thread(target=listen_task, args=(msg, ))
 						task.start()
 						
@@ -177,6 +189,74 @@ def listen_task(message):
 
 	#Go to updater
 	update_params(message)
+
+"""
+-----------------------------------------------------------------------------------
+-----------------------Keep collision drone lists updated--------------------------
+-----------------------------------------------------------------------------------
+"""
+
+def collision():
+	global near, critical
+
+	while True:
+		#No drones in range
+		if len(params) == 0:
+			return
+
+		
+		else: 
+		
+			#From the detected drones, add any within a 40-metre to 10-metre range
+			near = [item for item in params if (get_distance_metres(\
+														Geo(self_params.global_lat, self_params.global_lon), \
+														Geo(item.global_lat, item.global_lon)) <= SAFETY_ZONE) \
+											& (get_distance_metres(\
+														Geo(self_params.global_lat, self_params.global_lon), \
+														Geo(item.global_lat, item.global_lon)) > CRITICAL_ZONE) \
+											& (abs(self_params.global_alt - item.global_alt) <= SAFETY_ZONE)]
+
+
+			#From the near drones, add any within a 10-metre range
+			critical = [item for item in params if (get_distance_metres(\
+														Geo(self_params.global_lat, self_params.global_lon), \
+														Geo(item.global_lat, item.global_lon)) <= CRITICAL_ZONE) \
+											& (abs(self_params.global_alt - item.global_alt) <= CRITICAL_ZONE)]
+
+			
+			"""A premature check for the possibility of collision"""
+			## * * * Not that simple! * * * Check dot/scalar products
+			#Collision is most probable if the opponent's heading has at most -180 degrees difference with the drone's heading
+			#Some tolerance is taken into account due to autopilot/weather conditions
+			#Collision is impossible to happen if opponent's heading is between drone's heading and drone's heading + 180 degrees
+			#collide = [item for item in near if (item.heading >= abs(abs((self_params.heading - HEADING_TOLERANCE) - 180) - 360) & \
+			#									   item.heading <= (self_params.heading + HEADING_TOLERANCE))]
+
+			#for i in range(0, len(collide)):
+				#print "Drone probable to collide!!! ID: ", (collide[i]).ID
+				#print "Opponent drone: Lat %s, Lon %s, Alt %s, Heading %s" % ((collide[i]).global_lat,(collide[i]).global_lon, \
+																			#(collide[i]).global_alt, (collide[i]).heading)
+				#print "Our drone: Lat %s, Lon %s, Alt %s, Heading %s" % (self_params.lat,self_params.lon, \
+																		#self_params.alt, self_params.heading)
+			
+			""" Print info
+			for i in range(0, len(near)):
+				print "Drone approaching! ID: ", (near[i]).ID
+				#set priorities
+				#take action
+
+			for i in range(0, len(critical)):
+				print "Drone too close!!!! ID: ", (critical[i]).ID
+				#all halt
+			"""
+
+			
+
+		time.sleep(1)
+		
+	
+
+
 
 """
 -----------------------------------------------------------------------------------
@@ -560,6 +640,13 @@ t_broad.daemon = True
 t_listen.start()
 t_broad.start()
 
+start = time.time()
+
+#Create and start the thread responsible for collision handling
+t_collision = threading.Thread(target=collision)
+t_collision.daemon = True
+t_collision.start()
+
 # From Copter 3.3 you will be able to take off using a mission item. Plane must take off using a mission item (currently).
 arm_and_takeoff(10)
 
@@ -587,13 +674,23 @@ while True:
 	    if nextwaypoint==5: #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
 	        print "Exit 'standard' mission when start heading to final waypoint (5)"
 	        break;
+
+	    print params
+	    print near
+	    print critical
+	    
 	    time.sleep(1)
 	except KeyboardInterrupt:
 		break;
 
 for param in params:
 	print param.last_recv
-print time.time()
+
+end = time.time()
+print end
+
+print "Messages received: ", count
+print "Seconds passed: ", end - start
 
 #Close broadcast thread and socket
 print "Close sockets"
