@@ -32,6 +32,7 @@ mail: leonidas.antoniou@gmail.com
 
 import socket, select, Queue, select, time, threading
 import cPickle as pickle
+from multiprocessing import Pipe
 
 #Custom modules
 import geo_tools as geo
@@ -80,6 +81,9 @@ class Networking:
 		self.t_receive = ReceiveProcess(self, self.msg_queue)
 		self.t_task = ReceiveTaskProcess(self, self.msg_queue)
 
+		#Create a pipe for communication between drone_network and collision_avoidance process
+		self.drone_conn, self.collision_conn = Pipe()
+		
 	def run(self):
 		"""
 			1.Opens the network sockets depending the explicitly stated protocol

@@ -45,6 +45,7 @@ network = Networking(address, "UDP_BROADCAST", vehicle)
 
 #Add collision avoidance algorithm
 t_collision = CollisionProcess(network, 'priorities')
+
 """---------------------------------------------- TESTING THE INTERFACE --------------------------------------- """
 """----------------------------------------------------------------------------------------------------------------
 --------------------------------------------------Basic Mission----------------------------------------------------

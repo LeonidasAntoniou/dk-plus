@@ -8,7 +8,7 @@ Spawns a thread by instantiation
 Author: Leonidas Antoniou 
 mail: leonidas.antoniou@gmail.com
 """
-from multiprocessing import Process
+from multiprocessing import Process, Pipe
 import multiprocessing, time, itertools, logging
 import geo_tools as geo
 from dronekit import VehicleMode, Command
@@ -21,7 +21,6 @@ Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 class CollisionProcess(multiprocessing.Process):
 	def __init__(self, network, algorithm=None):
 		multiprocessing.Process.__init__(self)
-		multiprocessing.log_to_stderr(logging.DEBUG)
 		self.daemon = True
 		self.network = network
 		self.near = []
@@ -29,9 +28,7 @@ class CollisionProcess(multiprocessing.Process):
 		self.algorithm = algorithm
 		self.in_session = False
 		self.context = None
-
-		#self.update_proc = Process(target=self.update_drone_list)
-		#self.priority_proc = Process(target=self.give_priorities)
+		self.pipe = network.collision_conn
 
 	def run(self):
 		#Deploy your collision avoidance algorithm here
@@ -57,12 +54,7 @@ class CollisionProcess(multiprocessing.Process):
 		#What to do if no protocol is specified
 		#Currently it just outputs the drones in vicinity 
 
-		self.update_drone_list()
-		"""
-		self.update_proc.start()
-		self.update_proc.join()
-		"""
-		
+		self.update_drone_list()		
 		self.print_drones_in_vicinity()
 
 	def priorities_protocol(self):
@@ -74,13 +66,6 @@ class CollisionProcess(multiprocessing.Process):
 		#Give priorities 
 		self.give_priorities()
 		self.update_drone_list()
-		"""
-		self.priority_proc.start()
-		self.priority_proc.join()
-
-		self.update_proc.start()
-		self.update_proc.join()
-		"""
 		self.print_drones_in_vicinity()
 
 		#Nothing to do if no drones are around and drone is not in avoidance state
