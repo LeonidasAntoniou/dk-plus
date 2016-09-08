@@ -5,41 +5,68 @@ but it is constantly updated through attribute listeners on main program.
 These parameters can provide the basic info for a future collision avoidance scheme. 
 Any functions that can refer to the parameters can be written here.
 
-Version 1.0
--Basic parameters chosen
--Initialization of attributes
--Print_all functionality
+Version 1.1
+-Added extra constructor for the creation of dummy parameters
 """
 from dronekit import connect, Command, VehicleMode, LocationGlobalRelative, LocationGlobal, socket
 import uuid
 
 class Params:
-	def __init__(self, vehicle):
-		self.ID = uuid.uuid4().int #Random UUID
-		self.last_recv = None
-		self.version = vehicle.version.release_version()
-		self.ekf_ok = vehicle.ekf_ok
-		self.gps_fix = vehicle.gps_0.fix_type
-		self.gps_sat = vehicle.gps_0.satellites_visible
-		self.gps_eph = vehicle.gps_0.eph
-		self.gps_epv = vehicle.gps_0.epv
-		self.set_global_alt = vehicle.capabilities.set_altitude_target_global_int
-		self.set_attitude = vehicle.capabilities.set_attitude_target
-		self.mode = vehicle.mode.name
-		self.global_alt = vehicle.location.global_relative_frame.alt
-		self.global_lat = vehicle.location.global_relative_frame.lat
-		self.global_lon = vehicle.location.global_relative_frame.lon
-		self.distance_from_self = None
-		self.heading = vehicle.heading 					#degrees
-		self.next_wp = None
-		self.next_wp_lat = None
-		self.next_wp_lon = None
-		self.next_wp_alt = None
-		self.battery_level = vehicle.battery.level 		#percentage
-		self.velocity = vehicle.velocity				#m/s, airspeed
-		self.groundspeed = vehicle.groundspeed			#m/s
-		self.airspeed = vehicle.airspeed				#m/s
-		self.system_status = vehicle.system_status.state
+	def __init__(self, vehicle=None, dummy=False):
+		if dummy:
+			self.ID = 1000
+			self.last_recv = None
+			self.version = 1
+			self.ekf_ok = False
+			self.gps_fix = 3
+			self.gps_sat = 10
+			self.gps_eph = 100
+			self.gps_epv = 200
+			self.set_global_alt = True
+			self.set_attitude = True
+			self.mode = "AUTO"
+			self.global_alt = 300
+			self.global_lat = 149.164230
+			self.global_lon = -35.363261
+			self.distance_from_self = None
+			self.heading = 300 					#degrees
+			self.next_wp = None
+			self.next_wp_lat = None
+			self.next_wp_lon = None
+			self.next_wp_alt = None
+			self.battery_level = 80 			#percentage
+			self.velocity = [0.5, -3.1, 0.7]		#m/s, airspeed
+			self.groundspeed = 3.46				#m/s
+			self.airspeed = 3.46				#m/s
+			self.system_status = "OK"
+
+		else:
+			self.ID = uuid.uuid4().int #Random UUID
+			self.last_recv = None
+			self.version = vehicle.version.release_version()
+			self.ekf_ok = vehicle.ekf_ok
+			self.gps_fix = vehicle.gps_0.fix_type
+			self.gps_sat = vehicle.gps_0.satellites_visible
+			self.gps_eph = vehicle.gps_0.eph
+			self.gps_epv = vehicle.gps_0.epv
+			self.set_global_alt = vehicle.capabilities.set_altitude_target_global_int
+			self.set_attitude = vehicle.capabilities.set_attitude_target
+			self.mode = vehicle.mode.name
+			self.global_alt = vehicle.location.global_relative_frame.alt
+			self.global_lat = vehicle.location.global_relative_frame.lat
+			self.global_lon = vehicle.location.global_relative_frame.lon
+			self.distance_from_self = None
+			self.heading = vehicle.heading 					#degrees
+			self.next_wp = None
+			self.next_wp_lat = None
+			self.next_wp_lon = None
+			self.next_wp_alt = None
+			self.battery_level = vehicle.battery.level 		#percentage
+			self.velocity = vehicle.velocity				#m/s, airspeed
+			self.groundspeed = vehicle.groundspeed			#m/s
+			self.airspeed = vehicle.airspeed				#m/s
+			self.system_status = vehicle.system_status.state
+		
 
 	def print_all(self):
 		print "Printing parameter set of drone with ID:", self.ID

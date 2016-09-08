@@ -1,3 +1,9 @@
+"""
+Version 1.1
+-Listening socket set to non-blocking
+-Listener/broadcaster one thread instead of new every 1s
+-Listener thread more lightweight since processing is performed in another task
+"""
 import time, math, sys, socket, threading, select
 from collections import namedtuple
 from params import Params
@@ -44,7 +50,6 @@ vehicle = connect(connection_string, wait_ready=True)
 
 
 
-
 """
 --------------------------------------------------------------------------------------------------
 ---------------------------------Parameters (check Params class)----------------------------------
@@ -52,12 +57,11 @@ vehicle = connect(connection_string, wait_ready=True)
 """
 
 #Parameter dictionary 
-global self_params, t_broad, t_listen, sock_broad, sock_listen
-
-self_params = Params(vehicle)
+self_params = Params(vehicle=vehicle)
 params = []
 
 def update_params(message):
+	global params
 	found = False
 
 	#First element
@@ -68,12 +72,15 @@ def update_params(message):
 	else:
 		for i in range(0, len(params)):
 			if (params[i]).ID == message.ID:
+				print "Entry already found:"
 				params[i] = message
 				found = True
+				params[i].print_all()
 				break
 		if found == False:
+			print "New entry"
 			params.append(message)
-			#params[i+1].print_all()
+			params[i+1].print_all()
 
 	#Remove entries that have not been updated the last four seconds
 	params = [item for item in params if time.time() - item.last_recv <= MAX_STAY]
@@ -86,69 +93,90 @@ def update_params(message):
 ---------------------------------- Broadcast process ---------------------------------
 --------------------------------------------------------------------------------------
 """
+
+#Address is set to broadcast, port chosen arbitrarily
+#Used both for sending and receiving
 address = ("192.168.1.255", 54545)
+
+#Setting up a UDP socket for sending broadcast messages
 sock_broad = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock_broad.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
+#Setting up a UDP socket for receiving broadcast messages
+#Set to non-blocking because we have select() for that reason
 sock_listen = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock_listen.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+sock_listen.setblocking(0)
 sock_listen.bind(address)
 
+#These functions will be running concurrently until the end of the main process 
+#This is achieved by creating a daemon thread for each one of the broad and listen functions
 def broad():
-	global t_broad, sock_broad
-	t_broad = threading.Timer(1.0, broad)
-	t_broad.start()
 
-	try:
-		if type(self_params)!='string':
-			data = pickle.dumps(self_params, pickle.HIGHEST_PROTOCOL)
-		else:
-			data = self_params
-	except Exception, e:
-		data = " "
-		print "Error in thread: ", e
-	
-	assert sock_broad.sendto(data, address), "Failed to broadcast"
+	while True:
+		try:
+			if type(self_params)!='string':
+				data = pickle.dumps(self_params, pickle.HIGHEST_PROTOCOL)
+			else:
+				data = self_params
+		except Exception, e:
+			data = " "
+			print "Unpickling Error: ", e
+		
+		assert sock_broad.sendto(data, address), "Failed to broadcast"
+		time.sleep(1) #broadcast every 1s
 
 
 def listen():
-	global t_listen, sock_listen
-	t_listen = threading.Timer(1.0, listen)
-	t_listen.start()
+	
+	while True:
+		ready = select.select([sock_listen], [], [], 1.0) #wait until a message is received - timeout 1s
+		if ready[0]:
+			d = sock_listen.recvfrom(4096)
+			raw_msg = d[0]
+			sender_addr = d[1]
+			sender_ip = (d[1])[0]
 
-	ready = select.select([sock_listen], [], [], 1.0)
-	if ready[0]:
-		d = sock_listen.recvfrom(4096)
-		raw_msg = d[0]
-		sender_addr = d[1]
-		sender_ip = (d[1])[0]
+			
+			#Ignore messages from drones in distance more than SAFETY_ZONE
 
-		#Ignore messages from self
-		#Ignore messages from drones in distance more than SAFETY_ZONE
+			#Drone parameters are sent in pickle format. 
+			#If message is not pickled then we are free to just read it
+			try:
+				msg = pickle.loads(raw_msg)
+				if msg.ID == self_params.ID: #Ignore messages from self. ID is given based on uuid at initialization time
+					print "Ignoring msg"
 
-		try:
-			msg = pickle.loads(raw_msg)
-			if msg.ID == self_params.ID:
-				print "Ignoring msg"
-				return
+				else:
+					if isinstance(msg, simple_msg): #A simple message structure is defined just in case
+						print "Received from:", sender_addr, "Message: ", msg.text
 
-			if isinstance(msg, simple_msg):
-				print "Received from:", sender_addr, "Message: ", msg.text
+					else:
+						#If drone parameters are received, another function is called since 
+						#we want the thread dedicated to receiving messages. 
+						print "Received drone info" 
+						listen_task(msg)
+						
+			except pickle.UnpicklingError:
+				msg = raw_msg
+				print "Received from:", sender_addr, "Message: ", msg
 
-			else:
-				print "Received drone info"
-				#Calculate distance
-				self_coord = Geo(self_params.global_lat, self_params.global_lon)
-				msg_coord = Geo(msg.global_lat, msg.global_lon)
-				msg.distance_from_self = get_distance_metres(self_coord, msg_coord)
+"""
+Calculates distance from drone and assigns a timestamp
+Afterwards the whole drone info is passed to the drone structure through the updater
+!!!Need to calculate processing time here since the value can be fatally outdated!!!
+"""
+def listen_task(message):
+	#Calculate distance
+	self_coord = Geo(self_params.global_lat, self_params.global_lon)
+	msg_coord = Geo(message.global_lat, message.global_lon)
+	message.distance_from_self = get_distance_metres(self_coord, msg_coord)
 
-				msg.last_recv = time.time()
-				update_params(msg)
+	#Add timestamp
+	message.last_recv = time.time()
 
-		except pickle.UnpicklingError:
-			msg = raw_msg
-			print "Received from:", sender_addr, "Message: ", msg
-
+	#Go to updater
+	update_params(message)
 
 """
 -----------------------------------------------------------------------------------
@@ -308,7 +336,7 @@ def message_listener(self, name, message):
 		print "Error: ", e
 
 """
-	Updates the other drones' parameters, called by listen()
+	Updates the other drones' parameters, called by listen_task()
 """
 def update_params(message):
 	global params
@@ -523,8 +551,14 @@ print 'Create a new mission (for current location)'
 adds_square_mission(vehicle.location.global_frame,50)
 
 #Creating and starting the broadcast and listen threads
-broad()
-listen()
+t_broad = threading.Thread(target=broad)
+t_listen = threading.Thread(target=listen)
+
+t_listen.daemon = True
+t_broad.daemon = True
+
+t_listen.start()
+t_broad.start()
 
 # From Copter 3.3 you will be able to take off using a mission item. Plane must take off using a mission item (currently).
 arm_and_takeoff(10)
@@ -559,9 +593,7 @@ while True:
 
 
 #Close broadcast thread and socket
-print "Close broadcast process and socket"
-t_broad.cancel()
-t_listen.cancel()
+print "Close sockets"
 sock_broad.close()
 sock_listen.close()
 
