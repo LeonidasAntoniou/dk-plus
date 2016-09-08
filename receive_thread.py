@@ -10,16 +10,17 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import threading, select
+import threading, select, hashlib
 import cPickle as pickle
 
 class ReceiveThread(threading.Thread):
 
-	def __init__(self, network):
+	def __init__(self, network, q):
 		threading.Thread.__init__(self)
 		self.daemon = True
 		self.network = network
-
+		self.msg_queue = q
+		self.count = 0
 
 	def run(self):
 		while True:
@@ -33,21 +34,47 @@ class ReceiveThread(threading.Thread):
 					sender_addr = d[1]
 					sender_ip = (d[1])[0]
 
-					#Drones send pickled messages. 
-					#If message is not pickled then we are free to just ignore it.
+					#Keep verified messages, ignore the rest
 					try:
 						msg = pickle.loads(raw_msg)
-						if msg.ID == self.network.vehicle_params.ID: #Ignore messages from self. ID is given based on uuid at initialization time
-							pass
+						if self.verify_md5_checksum(msg):
+							data = pickle.loads(msg[0])
+							
+							if data.ID == self.network.vehicle_params.ID: #Ignore messages from self. ID is given based on uuid at initialization time
+								pass
 
+							else:
+								self.msg_queue.put((data, sender_addr, sender_ip))
+								self.count = self.count + 1
 						else:
-							self.network.msg_queue.put((msg, sender_addr, sender_ip))
-								
+							print "Received wrong data, ignoring"
+						
 					except pickle.UnpicklingError:
 						pass
-
+					
 			except Exception, e:
-				print "Error in socket (most probably because socket is closed by another thread): ", e
+				print "Error in receive_thread: ", e
 				#Failsafe
 				break
 			
+	def verify_md5_checksum(self, raw_msg):
+
+		if type(raw_msg) is tuple:
+
+			#Get MD5 of received message
+			m = hashlib.md5()
+			m.update(raw_msg[0])
+			received_data_hashed = m.digest()
+
+			#Get received checksum
+			received_checksum = raw_msg[1]
+
+			if received_data_hashed == received_checksum:
+				#print 'Message verified!'
+				return True
+
+			else:
+				return False
+
+		else:
+			return None

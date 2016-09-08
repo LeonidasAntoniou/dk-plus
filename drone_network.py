@@ -32,6 +32,7 @@ mail: leonidas.antoniou@gmail.com
 
 import socket, select, Queue, select, time, threading
 import cPickle as pickle
+from collections import namedtuple
 
 #Custom modules
 import geo_tools as geo
@@ -48,7 +49,7 @@ class Networking:
 	SAFETY_ZONE = 40 	#metres
 	CRITICAL_ZONE = 10 	#metres
 	POLL_RATE = 0.5 	#how often to broadcast/receive messages
-	
+
 	def __init__(self, address, protocol, vehicle):
 		self.address = address
 		self.vehicle = vehicle
@@ -76,8 +77,11 @@ class Networking:
 
 		#Create transceiver and worker threads
 		self.t_send = SendThread(self)
-		self.t_receive = ReceiveThread(self)
-		self.t_task = ReceiveTaskThread(self)
+		self.t_receive = ReceiveThread(self, self.msg_queue)
+		self.t_task = ReceiveTaskThread(self, self.msg_queue)
+
+		self.receive_count = self.t_receive.count
+		self.task_count = self.t_task.count
 
 	def run(self):
 		"""
@@ -145,7 +149,7 @@ class Networking:
 		"""
 		entries = []
 
-		if scenario == 'ten_dummies':
+		if scenario == 'test_priorities':
 			"""
 				Gives dummy values to test priorities
 				Correct priority is: 9 7 4 5 2 3 1 8 0 6
@@ -246,7 +250,7 @@ class Networking:
 			for i in range(0, 10):
 				self.drones.append(entries[i])
 
-		elif scenario == 'two_dummies':
+		elif scenario == 'scenario_2':
 			"""
 				Two static drones are at first outside the vicinity of the approaching drone
 				Then they can be seen but highest priority has the flying drone
