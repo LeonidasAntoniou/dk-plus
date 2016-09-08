@@ -3,6 +3,28 @@ The absolutely necessary class to interface your drone with the outer world.
 -Responsible for opening/closing sockets according to a chosen protocol (currently only broadcast messaging through UDP).
 -Invokes the send/receive/task threads.
 -Contains the vehicle's drone list and message queue.
+-Invokes the necessary parameter observers/listeners 
+
+Example:
+from dronekit import connect
+from drone_network import Networking
+from collision_avoidance import CollisionThread
+from vehicle_listeners import add_listeners
+
+
+#Connect a vehicle to dronekit
+connection_string = 'tcp:127.0.0.1:5760' 				#localhost in a free port
+vehicle = connect(connection_string, wait_ready=True)
+
+
+#Use the vehicle object to initialize the networking
+address = ("192.168.2.255", 54545)						#x.x.x.255 is usually the broadcast address
+network = Networking(address, "UDP_BROADCAST", vehicle)	#choosing UDP_BROADCAST (the only supported so far)
+
+
+#Add collision avoidance algorithm. drone_etwork is needed again for access in up-to-date vehicle parameters
+#Here a collision avoidance algorithm must be explicitly stated and implemented inside the CollisionThread class
+t_collision = CollisionThread(network, 'priorities')
 
 Author: Leonidas Antoniou 
 mail: leonidas.antoniou@gmail.com
@@ -14,24 +36,31 @@ import cPickle as pickle
 #Custom modules
 import geo_tools as geo
 from params import Params
+#from vehicle_listeners import add_listeners
 
 from send_thread import SendThread
 from receive_thread import ReceiveThread
 from receive_task_thread import ReceiveTaskThread
 
+
 class Networking:
-	MAX_STAY = 5 #seconds until entry is removed from structure
-	SAFETY_ZONE = 40 #metres
-	CRITICAL_ZONE = 10 #metres
-	POLL_RATE = 0.5 #s
+	MAX_STAY = 5 		#seconds until entry is removed from structure
+	SAFETY_ZONE = 40 	#metres
+	CRITICAL_ZONE = 10 	#metres
+	POLL_RATE = 0.5 	#how often to broadcast/receive messages
 	
 	def __init__(self, address, protocol, vehicle):
 		self.address = address
 		self.vehicle = vehicle
 		self.protocol = protocol
+
+		#Queue is filled with incoming messages (receive_thread) and emptied by receive worker (receive_task_thread)
 		self.msg_queue = Queue.Queue()
 
-		self.vehicle_params = Params(vehicle=vehicle)
+		#Loads the initial vehicle's values according to class Params
+		self.vehicle_params = Params(network=self, vehicle=vehicle)
+
+		#For collision avoidance purposes
 		self.drones = []
 		self.context = {'mode':None, 'mission':None, 'next_wp':None}
 		self.priority = None
@@ -40,7 +69,7 @@ class Networking:
 		self.drones.append(self.vehicle_params)
 
 		#Normally it is kept as is until the first receive_thread
-		self.populate_drones('two_dummies')
+		#self.populate_drones('two_dummies')
 
 		self.sock_send = None
 		self.sock_receive = None
@@ -51,6 +80,11 @@ class Networking:
 		self.t_task = ReceiveTaskThread(self)
 
 	def run(self):
+		"""
+			1.Opens the network sockets depending the explicitly stated protocol
+			2.Starts the threads responsible for sending (t_send) and receiving messages (t_receive, t_task)
+		"""
+
 		#Start networking protocol
 		if self.protocol == "UDP_BROADCAST":
 			if self.create_udp_broadcast(self.address):
@@ -70,11 +104,20 @@ class Networking:
 		self.t_task.start()
 
 	def stop(self):
+		"""
+			Closes the sockets
+		"""
+
 		self.sock_receive.close()	#Release the resource
-		self.sock_send.close()	#Release the resource
+		self.sock_send.close()		#Release the resource
 
 
 	def create_udp_broadcast(self, address):
+		"""
+			If drone_network class is initialized with the UDP_Broadcast protocol
+			it opens a UDP socket in the broadcast address
+			If anything goes wrong an error appears which is handled out of the function
+		"""
 		try:
 			#Setting up a UDP socket for sending broadcast messages
 			self.sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -96,13 +139,16 @@ class Networking:
 			return exit_status
 
 	def populate_drones(self, scenario):
-
+		"""
+			For experimenting purposes, can be ommited along with the self.populate_drones() call
+			inside the __init__ function
+		"""
 		entries = []
 
 		if scenario == 'ten_dummies':
 			"""
-			Gives dummy values to test priorities
-			Correct priority is: 9 7 4 5 2 3 1 8 0 6
+				Gives dummy values to test priorities
+				Correct priority is: 9 7 4 5 2 3 1 8 0 6
 			"""
 			for i in range(0, 10):
 				entries.append(Params(dummy=True))
@@ -202,8 +248,8 @@ class Networking:
 
 		elif scenario == 'two_dummies':
 			"""
-			Two static drones are at first outside the vicinity of the approaching drone
-			Then they can be seen but highest priority has the flying drone
+				Two static drones are at first outside the vicinity of the approaching drone
+				Then they can be seen but highest priority has the flying drone
 			"""
 			for i in range(0, 2):
 				entries.append(Params(dummy=True))

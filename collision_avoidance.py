@@ -70,17 +70,12 @@ class CollisionThread(threading.Thread):
 			return
 
 		#Get priority number
-		priority_num = None
-		for drone in self.network.drones:
-			if drone.ID == self.network.vehicle_params.ID:
-				priority_num = drone.priority
-				break
-
-		print "Flying drone's priority number is: ", priority_num
+		priority_num = self.get_priority_num()
 
 		#Perform actions
 		self.in_session = True
 		if priority_num == 1:
+			print "Before give_control()"
 			self.give_control()
 
 		else:
@@ -163,26 +158,27 @@ class CollisionThread(threading.Thread):
 		"""
 
 	def take_control(self):
+		"""Changes speed to zero by changing mode and overriding the RC3 channel"""
 
-		#Change speed to zero
-		if self.network.vehicle.mode.name == 'GUIDED':
+		if self.network.vehicle.mode.name == 'POSHOLD':
 			#Already in POSHOLD mode
 			pass
 		else:
-			#Save context and change mode
+			#Save context 
 			self.save_context()
 
-			self.network.vehicle.mode = VehicleMode("GUIDED")
-			while self.network.vehicle.mode.name != "GUIDED":
+			#Change mode and assert
+			self.network.vehicle.mode = VehicleMode("POSHOLD")
+			while self.network.vehicle.mode.name != "POSHOLDs":
 				pass
-		
-			print "Control taken!"
 
 		#Give RC command so that we can bypass RC failsafe, 1500 means stay steady
 		self.network.vehicle.channels.overrides['3'] = 1500	#throttle
+		print "Control taken!"
 
 	def give_control(self):
-		#Give control by restoring to pre-avoidance state
+		"""Gives control by restoring to pre-avoidance state"""
+		
 		if self.context != None:
 			self.restore_context()
 
@@ -311,4 +307,13 @@ class CollisionThread(threading.Thread):
 		cmds.wait_ready()
 		return cmds
 
+	def get_priority_num(self):
+		priority_num = None
+		for drone in self.network.drones:
+			if drone.ID == self.network.vehicle_params.ID:
+				priority_num = drone.priority
+				break
+
+		print "Flying drone's priority number is: ", priority_num
+		return priority_num
 

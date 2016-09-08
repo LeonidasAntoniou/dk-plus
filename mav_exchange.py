@@ -1,33 +1,28 @@
-"""
-Version 2.1
--Added remote actions capabilities
-"""
 import time
 from dronekit import connect, VehicleMode, Command
-from pymavlink import mavutil 
+from pymavlink import mavutil
 
 #Import custom modules
 from params import Params
 import geo_tools as geo
 from drone_network import Networking
 from collision_avoidance import CollisionThread
-from vehicle_listeners import add_listeners
-
 """
 ------------------------------------------------------------------------------------------------------
 ---------------------------------------- Simulation---------------------------------------------------
 ------------------------------------------------------------------------------------------------------
 """
 #Set up option parsing to get connection string
-import argparse  
-parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
-parser.add_argument('--connect', 
-                   help="Vehicle connection target string. If not specified, SITL automatically started and used.")
+import argparse
+parser = argparse.ArgumentParser(
+    description='Control Copter and send commands in GUIDED mode ')
+parser.add_argument(
+    '--connect',
+    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
 args = parser.parse_args()
 
 connection_string = args.connect
 sitl = None
-
 
 #Start SITL if no connection string specified
 if not args.connect:
@@ -35,42 +30,26 @@ if not args.connect:
     from dronekit_sitl import SITL
     sitl = SITL()
     sitl.download('copter', '3.3', verbose=True)
-    sitl_args = ['-I0', '--model', 'quad', '--home=-35.363261,149.165230,584,353']
+    sitl_args = ['-I0', '--model', 'quad',
+                 '--home=-35.363261,149.165230,584,353']
     sitl.launch(sitl_args, await_ready=True, restart=True)
-    connection_string='tcp:127.0.0.1:5760'
-
+    connection_string = 'tcp:127.0.0.1:5760'
 
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
-
 #Create the interface with UDP broadcast sockets
 address = ("192.168.2.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle)
 
-
-#Add vehicle parameters listeners
-add_listeners(network, vehicle)
-
-
 #Add collision avoidance algorithm
 t_collision = CollisionThread(network, 'priorities')
-
-
-			
-
-
 """---------------------------------------------- TESTING THE INTERFACE --------------------------------------- """
-
-
-
-
-
 """----------------------------------------------------------------------------------------------------------------
 --------------------------------------------------Basic Mission----------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------"""
-	
+
 
 def arm_and_takeoff(aTargetAltitude):
     """
@@ -83,29 +62,29 @@ def arm_and_takeoff(aTargetAltitude):
         print " Waiting for vehicle to initialise..."
         time.sleep(1)
 
-        
     print "Arming motors"
     # Copter should arm in GUIDED mode
     vehicle.mode = VehicleMode("GUIDED")
-    vehicle.armed = True    
+    vehicle.armed = True
 
     # Confirm vehicle armed before attempting to take off
-    while not vehicle.armed:      
+    while not vehicle.armed:
         print " Waiting for arming..."
         time.sleep(1)
 
     print "Taking off!"
-    vehicle.simple_takeoff(aTargetAltitude) # Take off to target altitude
+    vehicle.simple_takeoff(aTargetAltitude)  # Take off to target altitude
 
     # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command 
     #  after Vehicle.simple_takeoff will execute immediately).
     while True:
-        print " Altitude: ", vehicle.location.global_relative_frame.alt 
-        #Break and return from function just below target altitude.        
-        if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.95: 
+        print " Altitude: ", vehicle.location.global_relative_frame.alt
+        #Break and return from function just below target altitude.
+        if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
             print "Reached target altitude"
             break
         time.sleep(1)
+
 
 """
 arm_and_takeoff(10)
@@ -131,10 +110,6 @@ time.sleep(10)
 vehicle.mode = VehicleMode("LAND")
 time.sleep(10)
 """
-
-
-
-
 """-----------------------------------------------------------------------------------
 ---------------------------------------Mission Upload---------------------------------
 -----------------------------------------------------------------------------------"""
@@ -146,8 +121,7 @@ def download_mission():
     """
     cmds = vehicle.commands
     cmds.download()
-    cmds.wait_ready() # wait until download is complete.
-
+    cmds.wait_ready()  # wait until download is complete.
 
 
 def adds_square_mission(aLocation, aSize):
@@ -157,18 +131,21 @@ def adds_square_mission(aLocation, aSize):
 
     The function assumes vehicle.commands matches the vehicle mission state 
     (you must have called download at least once in the session and after clearing the mission)
-    """	
+    """
 
     cmds = vehicle.commands
 
     print " Clear any existing commands"
-    cmds.clear() 
-    
+    cmds.clear()
+
     print " Define/add new commands."
-    # Add new commands. The meaning/order of the parameters is documented in the Command class. 
-     
+    # Add new commands. The meaning/order of the parameters is documented in the Command class.
+
     #Add MAV_CMD_NAV_TAKEOFF command. This is ignored if the vehicle is already in the air.
-    cmds.add(Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, 0, 0, 0, 10))
+    cmds.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, 0, 0, 0,
+                10))
 
     #Define the four MAV_CMD_NAV_WAYPOINT locations and add the commands
     lat = aLocation.lat
@@ -179,16 +156,30 @@ def adds_square_mission(aLocation, aSize):
     point3 = geo.get_location_metres(lat, lon, alt, -aSize, aSize)
     point4 = geo.get_location_metres(lat, lon, alt, -aSize, -aSize)
 
-    cmds.add(Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0, point1.lat, point1.lon, 11))
-    cmds.add(Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0, point2.lat, point2.lon, 12))
-    cmds.add(Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0, point3.lat, point3.lon, 13))
-    cmds.add(Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0, point4.lat, point4.lon, 14))
+    cmds.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0,
+                point1.lat, point1.lon, 11))
+    cmds.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0,
+                point2.lat, point2.lon, 12))
+    cmds.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0,
+                point3.lat, point3.lon, 13))
+    cmds.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0,
+                point4.lat, point4.lon, 14))
     #add dummy waypoint "5" at point 4 (lets us know when have reached destination)
-    cmds.add(Command( 0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0, point4.lat, point4.lon, 14))    
+    cmds.add(
+        Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0,
+                point4.lat, point4.lon, 14))
 
     print " Upload new commands to vehicle"
     cmds.upload()
-
 
 
 print "Initializing interface"
@@ -197,9 +188,8 @@ network.run()
 print "Starting collision avoidance scheme"
 t_collision.start()
 
-
 print 'Create a new mission (for current location)'
-adds_square_mission(vehicle.location.global_frame,50)
+adds_square_mission(vehicle.location.global_frame, 50)
 
 # From Copter 3.3 you will be able to take off using a mission item. Plane must take off using a mission item (currently).
 arm_and_takeoff(10)
@@ -220,20 +210,20 @@ while True:
     try:
         nextwaypoint = vehicle.commands.next
         if vehicle.commands.count != 0:
-            print 'Distance to waypoint (%s): %s' % (nextwaypoint, geo.distance_to_current_waypoint(vehicle))
+            print 'Distance to waypoint (%s): %s' % (
+                nextwaypoint, geo.distance_to_current_waypoint(vehicle))
 
-            if nextwaypoint == 3: #Skip to next waypoint
+            if nextwaypoint == 3:  #Skip to next waypoint
                 print 'Skipping to Waypoint 5 when reach waypoint 3'
                 vehicle.commands.next = 5
-            if nextwaypoint == 5: #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
+            if nextwaypoint == 5:  #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
                 print "Exit 'standard' mission when start heading to final waypoint (5)"
                 vehicle.mode = VehicleMode('RTL')
                 #break
-        
+
         time.sleep(1)
     except KeyboardInterrupt:
-    	break
-
+        break
 
 #Close broadcast thread and socket
 print "Close sockets"
@@ -246,8 +236,3 @@ vehicle.close()
 # Shut down simulator if it was started.
 if sitl is not None:
     sitl.stop()
-
-
-
-
-	
