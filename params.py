@@ -5,16 +5,16 @@ but it is constantly updated through attribute listeners on main program.
 These parameters can provide the basic info for a future collision avoidance scheme. 
 Any functions that can refer to the parameters can be written here.
 
-Version 1.1
--Added extra constructor for the creation of dummy parameters
+Version 1.2
+-Dummy parameters are randomized in a convenient way
 """
 from dronekit import connect, Command, VehicleMode, LocationGlobalRelative, LocationGlobal, socket
-import uuid
+import uuid, random
 
 class Params:
 	def __init__(self, vehicle=None, dummy=False):
 		if dummy:
-			self.ID = 1000
+			self.ID = random.randint(1000,9999)
 			self.last_recv = None
 			self.version = 1
 			self.ekf_ok = False
@@ -25,9 +25,9 @@ class Params:
 			self.set_global_alt = True
 			self.set_attitude = True
 			self.mode = "AUTO"
-			self.global_alt = 300
-			self.global_lat = 149.164230
-			self.global_lon = -35.363261
+			self.global_alt = 10			#SHOULD BE RANDOMIZED
+			self.global_lat = 149.165230	#SHOULD BE RANDOMIZED
+			self.global_lon = -35.363261	#SHOULD BE RANDOMIZED
 			self.distance_from_self = None
 			self.heading = 300 					#degrees
 			self.next_wp = None
@@ -95,4 +95,4 @@ class Params:
 		print "Airspeed (m/s):\t\t\t", self.airspeed 
 		print "System status:\t\t\t", self.system_status 
 		print "\n\n"
-
+		

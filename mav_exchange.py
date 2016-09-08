@@ -1,10 +1,9 @@
 """
-Version 1.1
--Listening socket set to non-blocking
--Listener/broadcaster one thread instead of new every 1s
--Listener thread more lightweight since processing is performed in another task
+Version 1.2
+-listen_task is done in a different thread
+-more defensive broad() function
 """
-import time, math, sys, socket, threading, select
+import time, math, sys, socket, threading, select, rpdb2
 from collections import namedtuple
 from params import Params
 from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal, Command
@@ -72,18 +71,16 @@ def update_params(message):
 	else:
 		for i in range(0, len(params)):
 			if (params[i]).ID == message.ID:
-				print "Entry already found:"
+				#Registered entry
 				params[i] = message
 				found = True
-				params[i].print_all()
 				break
 		if found == False:
-			print "New entry"
+			#New entry
 			params.append(message)
-			params[i+1].print_all()
 
 	#Remove entries that have not been updated the last four seconds
-	params = [item for item in params if time.time() - item.last_recv <= MAX_STAY]
+	params = [item for item in params if (time.time() - item.last_recv <= MAX_STAY)]
 
 
 
@@ -123,14 +120,16 @@ def broad():
 			data = " "
 			print "Unpickling Error: ", e
 		
-		assert sock_broad.sendto(data, address), "Failed to broadcast"
+		try:
+			sock_broad.sendto(data, address)
+		except Exception, e:
+			print "Failed to broadcast: ", e
+
 		time.sleep(1) #broadcast every 1s
 
-
 def listen():
-	
 	while True:
-		ready = select.select([sock_listen], [], [], 1.0) #wait until a message is received - timeout 1s
+		ready = select.select([sock_listen], [], [], 2.0) #wait until a message is received - timeout 1s
 		if ready[0]:
 			d = sock_listen.recvfrom(4096)
 			raw_msg = d[0]
@@ -145,7 +144,7 @@ def listen():
 			try:
 				msg = pickle.loads(raw_msg)
 				if msg.ID == self_params.ID: #Ignore messages from self. ID is given based on uuid at initialization time
-					print "Ignoring msg"
+					pass
 
 				else:
 					if isinstance(msg, simple_msg): #A simple message structure is defined just in case
@@ -155,7 +154,8 @@ def listen():
 						#If drone parameters are received, another function is called since 
 						#we want the thread dedicated to receiving messages. 
 						print "Received drone info" 
-						listen_task(msg)
+						task = threading.Thread(target=listen_task, args=(msg, ))
+						task.start()
 						
 			except pickle.UnpicklingError:
 				msg = raw_msg
@@ -591,6 +591,9 @@ while True:
 	except KeyboardInterrupt:
 		break;
 
+for param in params:
+	print param.last_recv
+print time.time()
 
 #Close broadcast thread and socket
 print "Close sockets"
