@@ -29,10 +29,15 @@ class CollisionProcess(multiprocessing.Process):
 		self.in_session = False
 		self.context = None
 		self.pipe = network.collision_conn
+		self.drones = []
 
 	def run(self):
 		#Deploy your collision avoidance algorithm here
-		while True:			
+		while True:	
+
+			#Get drones list from network.drones
+			self.drones = self.pipe.recv()
+
 			if self.algorithm == None:
 				self.no_protocol()
 
@@ -43,8 +48,6 @@ class CollisionProcess(multiprocessing.Process):
 				pass
 
 			time.sleep(0.5)				
-
-
 
 
 
@@ -108,7 +111,7 @@ class CollisionProcess(multiprocessing.Process):
 
 		#Assign each drone to its priority list
 		priority_num = 1
-		for drone in self.network.drones:
+		for drone in self.drones:
 			has_capabilities = drone.set_global_alt or drone.set_attitude
 			has_mayday = (drone.system_status == 'CRITICAL') or (drone.system_status == 'EMERGENCY')
 
@@ -151,7 +154,7 @@ class CollisionProcess(multiprocessing.Process):
 
 		#Combine everything back to drones list
 		drones = [top, high, medium, low]
-		self.network.drones = list(itertools.chain.from_iterable(drones))
+		self.pipe.send(list(itertools.chain.from_iterable(drones)))
 
 		"""
 		#Print priorities
@@ -245,23 +248,25 @@ class CollisionProcess(multiprocessing.Process):
 
 	def update_drone_list(self):
 
+		temp = []
+
 		#Empty previous list components
 		self.near[:] = []
 		self.critical[:] = []
 
 		#1.Remove entries that have not been updated for the last MAX_STAY seconds
-		self.network.drones = [item for item in self.network.drones if \
+		temp = [item for item in self.drones if \
 			(item.last_recv == None)\
 			or (time.time() - item.last_recv <= self.network.MAX_STAY)]
 
 		#2.Update own vehicle parameter entry in the right position
-		for i in range(0, len(self.network.drones)):
-			if self.network.drones[i].ID == self.network.vehicle_params.ID:
-				self.network.drones[i] = self.network.vehicle_params
+		for i in range(0, len(self.drones)):
+			if self.drones[i].ID == self.network.vehicle_params.ID:
+				self.drones[i] = self.network.vehicle_params
 				break	
 
 		#3.Update near-zone and critical-zone lists
-		drone_list = self.network.drones
+		drone_list = self.drones
 
 		#Only our drone is in the list
 		if len(drone_list) == 1:
@@ -284,6 +289,9 @@ class CollisionProcess(multiprocessing.Process):
 				(item.ID != own.ID) \
 				&(geo.get_distance_metres (own.global_lat, own.global_lon, item.global_lat, item.global_lon) <= self.network.CRITICAL_ZONE) \
 				& (abs(own.global_alt - item.global_alt) <= self.network.CRITICAL_ZONE)]
+
+		#Update the network.drones value
+		self.pipe.send(temp)
 
 	def print_drones_in_vicinity(self):
 		#Print drone IDs that are in close and critical range
@@ -312,7 +320,7 @@ class CollisionProcess(multiprocessing.Process):
 
 	def get_priority_num(self):
 		priority_num = None
-		for drone in self.network.drones:
+		for drone in self.drones:
 			if drone.ID == self.network.vehicle_params.ID:
 				priority_num = drone.priority
 				break

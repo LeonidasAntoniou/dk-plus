@@ -7,6 +7,7 @@ from params import Params
 import geo_tools as geo
 from drone_network import Networking
 from collision_avoidance import CollisionProcess
+
 """
 ------------------------------------------------------------------------------------------------------
 ---------------------------------------- Simulation---------------------------------------------------
@@ -219,12 +220,16 @@ while True:
                 vehicle.commands.next = 5
             if nextwaypoint == 5:  #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
                 print "Exit 'standard' mission when start heading to final waypoint (5)"
-                vehicle.mode = VehicleMode('RTL')
-                #break
+                #vehicle.mode = VehicleMode('RTL')
+                break
 
         time.sleep(1)
     except KeyboardInterrupt:
         break
+
+print 'Statistics:'
+print 'Messages received:', network.t_receive.count
+print 'Messages processed:', network.t_task.count
 
 #Close broadcast thread and socket
 print "Close sockets"

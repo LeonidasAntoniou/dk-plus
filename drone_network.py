@@ -39,9 +39,10 @@ import geo_tools as geo
 from params import Params
 #from vehicle_listeners import add_listeners
 
-from send_thread import SendProcess
-from receive_thread import ReceiveProcess
-from receive_task_thread import ReceiveTaskProcess
+from send_thread import SendThread
+from receive_thread import ReceiveThread
+from receive_task_thread import ReceiveTaskThread
+from drones_pipe_thread import PipeThread
 
 
 class Networking:
@@ -80,9 +81,7 @@ class Networking:
 		self.t_send = SendProcess(self)
 		self.t_receive = ReceiveProcess(self, self.msg_queue)
 		self.t_task = ReceiveTaskProcess(self, self.msg_queue)
-
-		#Create a pipe for communication between drone_network and collision_avoidance process
-		self.drone_conn, self.collision_conn = Pipe()
+		self.t_pipe = PipeThread(self)
 		
 	def run(self):
 		"""
@@ -107,6 +106,7 @@ class Networking:
 		self.t_receive.start()
 		self.t_send.start()
 		self.t_task.start()
+		self.t_pipe.start()
 
 	def stop(self):
 		"""
