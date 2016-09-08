@@ -27,4 +27,4 @@ class SendThread(threading.Thread):
 				#Failsafe
 				break
 
-			time.sleep(1) #broadcast every 1s
+			time.sleep(self.network.POLL_RATE) #broadcast every POLL_RATE seconds

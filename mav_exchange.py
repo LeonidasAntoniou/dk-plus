@@ -211,7 +211,6 @@ vehicle.commands.next = 0
 # Set mode to AUTO to start mission
 vehicle.mode = VehicleMode("AUTO")
 
-
 # Monitor mission. 
 # Demonstrates getting and setting the command number 
 # Uses distance_to_current_waypoint(), a convenience function for finding the 
@@ -228,7 +227,8 @@ while True:
                 vehicle.commands.next = 5
             if nextwaypoint == 5: #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
                 print "Exit 'standard' mission when start heading to final waypoint (5)"
-                break
+                vehicle.mode = VehicleMode('RTL')
+                #break
         
         time.sleep(1)
     except KeyboardInterrupt:

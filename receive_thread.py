@@ -25,7 +25,7 @@ class ReceiveThread(threading.Thread):
 		while True:
 
 			try:
-				ready = select.select([self.network.sock_receive], [], [], 2.0) #wait until a message is received - timeout 1s
+				ready = select.select([self.network.sock_receive], [], [], 2.0) #wait until a message is received - timeout 2s
 
 				if ready[0]:
 					d = self.network.sock_receive.recvfrom(4096)

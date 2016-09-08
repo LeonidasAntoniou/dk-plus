@@ -10,10 +10,12 @@ mail: leonidas.antoniou@gmail.com
 """
 import threading, time, itertools
 import geo_tools as geo
-from dronekit import VehicleMode
+from dronekit import VehicleMode, Command
 from operator import attrgetter
+from pymavlink import mavutil 
+from collections import namedtuple
 
-
+Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 class CollisionThread(threading.Thread):
 	def __init__(self, network, algorithm=None):
@@ -23,9 +25,8 @@ class CollisionThread(threading.Thread):
 		self.near = []
 		self.critical = []
 		self.algorithm = algorithm
-		self.control_taken = False
-		self.firstTime = True
 		self.in_session = False
+		self.context = None
 
 	def run(self):
 		#Deploy your collision avoidance algorithm here
@@ -39,7 +40,7 @@ class CollisionThread(threading.Thread):
 			else:
 				pass
 
-			time.sleep(1)				
+			time.sleep(0.5)				
 
 
 
@@ -64,6 +65,7 @@ class CollisionThread(threading.Thread):
 		self.update_drone_list()
 		self.print_drones_in_vicinity()
 
+		#Nothing to do if no drones are around and drone is not in avoidance state
 		if len(self.near) == 0 and not self.in_session:
 			return
 
@@ -82,7 +84,6 @@ class CollisionThread(threading.Thread):
 			self.give_control()
 
 		else:
-			#Keep loitering (if GPS is faulty then drone will "toilet-bowl")
 			self.take_control()
 
 
@@ -162,91 +163,92 @@ class CollisionThread(threading.Thread):
 		"""
 
 	def take_control(self):
-		#Change groundspeed to zero
 
-		"""
-		#The fun way to do it
-		msg = self.network.vehicle.message_factory.mav_cmd_do_change_speed_encode(
-			0, 0,    # target system, target component
-    		mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED, #command
-    		0, #confirmation
-    		0, #speed type, ignore on ArduCopter
-		    0, # speed
-		    0, 0, 0, 0, 0 #ignore other parameters
-		    )
-
-		self.network.vehicle.send_mavlink(msg)
-		"""
-
-		#First time in the session
-		if self.firstTime:
-			self.network.context.append(round(self.network.vehicle_params.groundspeed))
-			self.firstTime = False
-
-		#Change mode to GUIDED and assert
-		self.network.vehicle.mode = VehicleMode("GUIDED")
-		while self.network.vehicle.mode.name != "GUIDED":
+		#Change speed to zero
+		if self.network.vehicle.mode.name == 'GUIDED':
+			#Already in POSHOLD mode
 			pass
+		else:
+			#Save context and change mode
+			self.save_context()
 
-		#In GUIDED mode we are free to change the speed to zero
-		self.network.vehicle.groundspeed = 0.0
-		print "Control taken!"
+			self.network.vehicle.mode = VehicleMode("GUIDED")
+			while self.network.vehicle.mode.name != "GUIDED":
+				pass
+		
+			print "Control taken!"
+
+		#Give RC command so that we can bypass RC failsafe, 1500 means stay steady
+		self.network.vehicle.channels.overrides['3'] = 1500	#throttle
 
 	def give_control(self):
+		#Give control by restoring to pre-avoidance state
+		if self.context != None:
+			self.restore_context()
 
-		#Change mode to AUTO and assert
-		self.network.vehicle.mode = VehicleMode("AUTO")
-		while self.network.vehicle.mode.name != "AUTO":
-			pass
+		#Cancel RC override
+		self.network.vehicle.channels.overrides['3'] = None
 
-		#Continue with pre-collision speed and end session
-		#self.network.vehicle.groundspeed = self.network.context[0]
-		self.firstTime = True
+		#End session
 		self.in_session = False
 		print "Control given!"
 
 	def save_context(self):
-		"""Currently keeping information about mode, altitude and mission"""
-
-		#Clear previous entry
-		self.network.context = []
+		"""Currently keeping information about mode and mission"""
 
 		#Save context: mode, mission
-		self.network.context.append(self.network.vehicle_params.mode)
-		self.network.context.append(self.current_mission())
-		self.network.context.append(self.network.vehicle.commands.next)
-		self.network.context.append(self.network.vehicle_params.groundspeed)
-
-		"""
-		#Print context
-		print "Context saved:"
-		print "Mode: ", self.network.context[0]
-		print "Waypoints:"
-		for wp in self.network.context[1]:
-			print wp
-		print "Next waypoint:", self.network.context[2]
-		"""
+		mode_name = self.network.vehicle.mode.name
+		cur_mission = self.current_mission()
+		next_waypoint = self.network.vehicle.commands.next
+		self.context = Context(mode_name, cur_mission, next_waypoint)
+		
 
 	def restore_context(self):
 		"""Returns to the state before collision avoidance handling"""
 
-		#Clear collision avoidance actions
-		commands = self.current_mission()
-		commands.clear()
+		#Set to GUIDED mode to add any new commands
+		if self.network.vehicle.mode.name != 'GUIDED':
+			self.network.vehicle.mode = VehicleMode("GUIDED")
+			while self.network.vehicle.mode.name != "GUIDED":
+				pass
 
-		#Upload all pre-collision waypoints
-		for cmd in self.network.context[1]:
-			commands.add(cmd)
+		#Save x, y, z values of mission waypoints in lists since commands.clear() 
+		#seems to clear every instance of CommandSequence object
+		x = []
+		y = []
+		z = []
 
-		commands.upload()
-		self.network.vehicle.next = self.network.context[2]
-		self.network.vehicle.mode = VehicleMode(self.network.context[0])
-		self.network.vehicle.groundspeed = self.network.context[3]
-		print "Context restored"
+		for wp in self.context.mission:
+			x.append(wp.x)
+			y.append(wp.y)
+			z.append(wp.z)
+
+		cmds = self.network.vehicle.commands
+		cmds.clear()
+
+		#Add pre-avoidance context:
+		#Waypoints
+		print "List length: ", len(x)
+		for i in range(0, len(x)):
+			cmds.add(Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 
+				0, 0, 0, 0, 0, 0, x[i], y[i], z[i]))
+
+		cmds.upload()
+
+		#Next waypoint
+		self.network.vehicle.commands.next = self.context.next_wp
+
+		#Flight mode
+		self.network.vehicle.mode = VehicleMode(self.context.mode)
+		while self.network.vehicle.mode.name != self.context.mode:
+			pass
+
 
 	def update_drone_list(self):
-		self.near = []
-		self.critical = []
+
+		#Empty previous list components
+		self.near[:] = []
+		self.critical[:] = []
 
 		#1.Remove entries that have not been updated for the last MAX_STAY seconds
 		self.network.drones = [item for item in self.network.drones if \
@@ -288,11 +290,16 @@ class CollisionThread(threading.Thread):
 		#Print drone IDs that are in close and critical range
 		#Inform if no such drones are found
 		if len(self.near)==0 and len(self.critical)==0:
-			print "No dangerous drones found"
+			#print "No dangerous drones found"
+			pass
 
 		else:
+			own_lat = self.network.vehicle_params.global_lat
+			own_lon = self.network.vehicle_params.global_lon
+
 			for drone in self.near:
 				print "Drone approaching! ID: ", drone.ID
+				print "Distance: ", geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon)
 
 			for drone in self.critical:
 				print "Drone too close!!!! ID: ", drone.ID
@@ -301,7 +308,7 @@ class CollisionThread(threading.Thread):
 		#Retrieves current mission of vehicle
 		cmds = self.network.vehicle.commands
 		cmds.download
-		cmds.wait_ready() #may lock
+		cmds.wait_ready()
 		return cmds
 
 

@@ -23,7 +23,8 @@ class Networking:
 	MAX_STAY = 5 #seconds until entry is removed from structure
 	SAFETY_ZONE = 40 #metres
 	CRITICAL_ZONE = 10 #metres
-
+	POLL_RATE = 0.5 #s
+	
 	def __init__(self, address, protocol, vehicle):
 		self.address = address
 		self.vehicle = vehicle
@@ -32,7 +33,7 @@ class Networking:
 
 		self.vehicle_params = Params(vehicle=vehicle)
 		self.drones = []
-		self.context = []
+		self.context = {'mode':None, 'mission':None, 'next_wp':None}
 		self.priority = None
 		
 		#First entry in drones list will be our own vehicle
