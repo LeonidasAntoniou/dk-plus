@@ -41,7 +41,7 @@ from params import Params
 from send_thread import SendThread
 from receive_thread import ReceiveThread
 from receive_task_thread import ReceiveTaskThread
-
+from drones_pipe_thread import PipeThread
 
 class Networking:
 	MAX_STAY = 5 		#seconds until entry is removed from structure
@@ -79,6 +79,7 @@ class Networking:
 		self.t_send = SendThread(self)
 		self.t_receive = ReceiveThread(self, self.msg_queue)
 		self.t_task = ReceiveTaskThread(self, self.msg_queue)
+		self.t_pipe = PipeThread(self)
 		
 	def run(self):
 		"""
@@ -103,6 +104,7 @@ class Networking:
 		self.t_receive.start()
 		self.t_send.start()
 		self.t_task.start()
+		self.t_pipe.start()
 
 	def stop(self):
 		"""

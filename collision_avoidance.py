@@ -16,8 +16,6 @@ from operator import attrgetter
 from pymavlink import mavutil 
 from collections import namedtuple
 
-from drones_pipe_thread import PipeThread
-
 Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 class CollisionProcess(multiprocessing.Process):
@@ -30,14 +28,17 @@ class CollisionProcess(multiprocessing.Process):
 		self.algorithm = algorithm
 		self.in_session = False
 		self.context = None
-		self.drones = []
 
-		self.t_pipe = PipeThread(self.network)
-		self.pipe = self.t_pipe.collision_conn
+		self.pipe = self.network.t_pipe.collision_conn
+
+		#Initialize structures
+		self.drones = self.network.drones
+		self.vehicle_mode = self.network.vehicle.mode
+		self.vehicle_params = self.network.vehicle_params
+
+		
 
 	def run(self):
-
-		self.t_pipe.start()
 
 		#Deploy your collision avoidance algorithm here
 		while True:	
@@ -46,9 +47,10 @@ class CollisionProcess(multiprocessing.Process):
 			ready = select.select([self.pipe], [], [], 0.6)
 
 			if ready[0]:
-				print "Drone parameters received!"
 				d = self.pipe.recv()
-				self.drones = d
+				self.drones = d[0]
+				self.vehicle_mode = d[1]
+				self.vehicle_params = d[2]
 
 			if self.algorithm == None:
 				self.no_protocol()
@@ -178,7 +180,7 @@ class CollisionProcess(multiprocessing.Process):
 	def take_control(self):
 		"""Changes speed to zero by changing mode and overriding the RC3 channel"""
 
-		if self.network.vehicle.mode.name == 'POSHOLD':
+		if self.vehicle.mode.name == 'POSHOLD':
 			#Already in POSHOLD mode
 			pass
 		else:
@@ -186,12 +188,12 @@ class CollisionProcess(multiprocessing.Process):
 			self.save_context()
 
 			#Change mode and assert
-			self.network.vehicle.mode = VehicleMode("POSHOLD")
-			while self.network.vehicle.mode.name != "POSHOLD":
+			self.vehicle.mode = VehicleMode("POSHOLD")
+			while self.vehicle.mode.name != "POSHOLD":
 				pass
 
 		#Give RC command so that we can bypass RC failsafe, 1500 means stay steady
-		self.network.vehicle.channels.overrides['3'] = 1500	#throttle
+		self.vehicle.channels.overrides['3'] = 1500	#throttle
 		print "Control taken!"
 
 	def give_control(self):
@@ -201,7 +203,7 @@ class CollisionProcess(multiprocessing.Process):
 			self.restore_context()
 
 		#Cancel RC override
-		self.network.vehicle.channels.overrides['3'] = None
+		self.vehicle.channels.overrides['3'] = None
 
 		#End session
 		self.in_session = False
@@ -211,9 +213,9 @@ class CollisionProcess(multiprocessing.Process):
 		"""Currently keeping information about mode and mission"""
 
 		#Save context: mode, mission
-		mode_name = self.network.vehicle.mode.name
+		mode_name = self.vehicle.mode.name
 		cur_mission = self.current_mission()
-		next_waypoint = self.network.vehicle.commands.next
+		next_waypoint = self.vehicle.commands.next
 		self.context = Context(mode_name, cur_mission, next_waypoint)
 		
 
@@ -221,9 +223,9 @@ class CollisionProcess(multiprocessing.Process):
 		"""Returns to the state before collision avoidance handling"""
 
 		#Set to GUIDED mode to add any new commands
-		if self.network.vehicle.mode.name != 'GUIDED':
-			self.network.vehicle.mode = VehicleMode("GUIDED")
-			while self.network.vehicle.mode.name != "GUIDED":
+		if self.vehicle.mode.name != 'GUIDED':
+			self.vehicle.mode = VehicleMode("GUIDED")
+			while self.vehicle.mode.name != "GUIDED":
 				pass
 
 		#Save x, y, z values of mission waypoints in lists since commands.clear() 
@@ -237,7 +239,7 @@ class CollisionProcess(multiprocessing.Process):
 			y.append(wp.y)
 			z.append(wp.z)
 
-		cmds = self.network.vehicle.commands
+		cmds = self.vehicle.commands
 		cmds.clear()
 
 		#Add pre-avoidance context:
@@ -250,11 +252,11 @@ class CollisionProcess(multiprocessing.Process):
 		cmds.upload()
 
 		#Next waypoint
-		self.network.vehicle.commands.next = self.context.next_wp
+		self.vehicle.commands.next = self.context.next_wp
 
 		#Flight mode
-		self.network.vehicle.mode = VehicleMode(self.context.mode)
-		while self.network.vehicle.mode.name != self.context.mode:
+		self.vehicle.mode = VehicleMode(self.context.mode)
+		while self.vehicle.mode.name != self.context.mode:
 			pass
 
 
@@ -271,8 +273,8 @@ class CollisionProcess(multiprocessing.Process):
 
 		#2.Update own vehicle parameter entry in the right position
 		for i in range(0, len(self.drones)):
-			if self.drones[i].ID == self.network.vehicle_params.ID:
-				self.drones[i] = self.network.vehicle_params
+			if self.drones[i].ID == self.vehicle_params.ID:
+				self.drones[i] = self.vehicle_params
 				break	
 
 		#3.Update near-zone and critical-zone lists
@@ -284,7 +286,7 @@ class CollisionProcess(multiprocessing.Process):
 		
 		else: 
 			#This value is slightly not concurrent 
-			own = self.network.vehicle_params
+			own = self.vehicle_params
 
 			#From the detected drones, add any within a SAFETY-to-CRITICAL-metre range
 			self.near = [item for item in drone_list if \
@@ -308,8 +310,8 @@ class CollisionProcess(multiprocessing.Process):
 			pass
 
 		else:
-			own_lat = self.network.vehicle_params.global_lat
-			own_lon = self.network.vehicle_params.global_lon
+			own_lat = self.vehicle_params.global_lat
+			own_lon = self.vehicle_params.global_lon
 
 			for drone in self.near:
 				print "Drone approaching! ID: ", drone.ID
@@ -320,7 +322,7 @@ class CollisionProcess(multiprocessing.Process):
 
 	def current_mission(self):
 		#Retrieves current mission of vehicle
-		cmds = self.network.vehicle.commands
+		cmds = self.vehicle.commands
 		cmds.download
 		cmds.wait_ready()
 		return cmds
@@ -328,7 +330,7 @@ class CollisionProcess(multiprocessing.Process):
 	def get_priority_num(self):
 		priority_num = None
 		for drone in self.drones:
-			if drone.ID == self.network.vehicle_params.ID:
+			if drone.ID == self.vehicle_params.ID:
 				priority_num = drone.priority
 				break
 

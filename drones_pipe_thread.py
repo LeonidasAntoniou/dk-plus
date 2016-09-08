@@ -14,6 +14,6 @@ class PipeThread(threading.Thread):
 
 		while True:
 
-			#send every feed_interval the drone parameters
-			self.drone_conn.send(self.network.drones)
+			#send the conflicting drone parameters, the running instance and the current parameters
+			self.drone_conn.send((self.network.drones, self.network.vehicle.mode, self.network.vehicle_params))
 			time.sleep(feed_interval)
