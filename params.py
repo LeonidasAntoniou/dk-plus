@@ -259,7 +259,7 @@ class Params:
         print "Global altitude:\t\t", self.global_alt
         print "Global latitude:\t\t", self.global_lat
         print "Global longitude:\t\t", self.global_lon
-        print "Mission Importance:\t\t", self._mission_importance
+        print "Mission Importance:\t\t", self.mission_importance
         print "Heading (degrees):\t\t", self.heading
         print "Next waypoint number:\t\t", self.next_wp
         print "Next waypoint latitude:\t\t", self.next_wp_lat

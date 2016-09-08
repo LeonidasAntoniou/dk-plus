@@ -6,8 +6,7 @@ from pymavlink import mavutil
 from params import Params
 import geo_tools as geo
 from drone_network import Networking
-from collision_avoidance import CollisionThread
-
+from collision_avoidance import CollisionProcess
 """
 ------------------------------------------------------------------------------------------------------
 ---------------------------------------- Simulation---------------------------------------------------
@@ -45,7 +44,7 @@ address = ("192.168.2.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle)
 
 #Add collision avoidance algorithm
-t_collision = CollisionThread(network, 'priorities')
+t_collision = CollisionProcess(network, 'priorities')
 """---------------------------------------------- TESTING THE INTERFACE --------------------------------------- """
 """----------------------------------------------------------------------------------------------------------------
 --------------------------------------------------Basic Mission----------------------------------------------------
@@ -219,16 +218,12 @@ while True:
                 vehicle.commands.next = 5
             if nextwaypoint == 5:  #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
                 print "Exit 'standard' mission when start heading to final waypoint (5)"
-                #vehicle.mode = VehicleMode('RTL')
-                break
+                vehicle.mode = VehicleMode('RTL')
+                #break
 
         time.sleep(1)
     except KeyboardInterrupt:
         break
-
-print 'Statistics:'
-print 'Messages received:', network.t_receive.count
-print 'Messages processed:', network.t_task.count
 
 #Close broadcast thread and socket
 print "Close sockets"

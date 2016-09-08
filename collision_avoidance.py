@@ -9,7 +9,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 from multiprocessing import Process
-import threading, time, itertools
+import multiprocessing, time, itertools, logging
 import geo_tools as geo
 from dronekit import VehicleMode, Command
 from operator import attrgetter
@@ -18,9 +18,10 @@ from collections import namedtuple
 
 Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
-class CollisionThread(threading.Thread):
+class CollisionProcess(multiprocessing.Process):
 	def __init__(self, network, algorithm=None):
-		threading.Thread.__init__(self)
+		multiprocessing.Process.__init__(self)
+		multiprocessing.log_to_stderr(logging.DEBUG)
 		self.daemon = True
 		self.network = network
 		self.near = []
@@ -29,8 +30,8 @@ class CollisionThread(threading.Thread):
 		self.in_session = False
 		self.context = None
 
-		self.update_proc = Process(target=self.update_drone_list)
-		self.priority_proc = Process(target=self.give_priorities)
+		#self.update_proc = Process(target=self.update_drone_list)
+		#self.priority_proc = Process(target=self.give_priorities)
 
 	def run(self):
 		#Deploy your collision avoidance algorithm here
@@ -55,10 +56,12 @@ class CollisionThread(threading.Thread):
 	def no_protocol(self):
 		#What to do if no protocol is specified
 		#Currently it just outputs the drones in vicinity 
-		
-		#self.update_proc.start()
-		#self.update_proc.join()
+
 		self.update_drone_list()
+		"""
+		self.update_proc.start()
+		self.update_proc.join()
+		"""
 		
 		self.print_drones_in_vicinity()
 
@@ -69,14 +72,15 @@ class CollisionThread(threading.Thread):
 		#Currently works for AUTO mode
 
 		#Give priorities 
-		#self.priority_proc.start()
-		#self.priority_proc.join()
 		self.give_priorities()
-
-		#self.update_proc.start()
-		#self.update_proc.join()
 		self.update_drone_list()
-		
+		"""
+		self.priority_proc.start()
+		self.priority_proc.join()
+
+		self.update_proc.start()
+		self.update_proc.join()
+		"""
 		self.print_drones_in_vicinity()
 
 		#Nothing to do if no drones are around and drone is not in avoidance state
@@ -219,7 +223,7 @@ class CollisionThread(threading.Thread):
 		#Set to GUIDED mode to add any new commands
 		if self.network.vehicle.mode.name != 'GUIDED':
 			self.network.vehicle.mode = VehicleMode("GUIDED")
-			while self.network.vehicle.mode.name != "GUIDED": #Wait until mode is changed
+			while self.network.vehicle.mode.name != "GUIDED":
 				pass
 
 		#Save x, y, z values of mission waypoints in lists since commands.clear() 

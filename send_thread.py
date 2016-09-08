@@ -1,10 +1,11 @@
-import threading, time, hashlib
+import multiprocessing, logging
+import time
 import cPickle as pickle
 
-class SendThread(threading.Thread):
-
+class SendProcess(multiprocessing.Process):
 	def __init__(self, network):
-		threading.Thread.__init__(self)
+		multiprocessing.Process.__init__(self)
+		multiprocessing.log_to_stderr(logging.DEBUG)
 		self.daemon = True
 		self.network = network
 
@@ -14,18 +15,14 @@ class SendThread(threading.Thread):
 
 		while True:
 			try:
-				data = pickle.dumps(self.network.vehicle_params)
-				checksum = self.create_md5_checksum(data)
-
-				msg = (data, checksum)
-				pickled_msg = pickle.dumps(msg)
+				data = pickle.dumps(self.network.vehicle_params, pickle.HIGHEST_PROTOCOL)
 
 			except Exception, e:
 				data = " "
 				print "Pickling Error: ", e
 			
 			try:
-				self.network.sock_send.sendto(pickled_msg, self.network.address)
+				self.network.sock_send.sendto(data, self.network.address)
 
 			except Exception, e:
 				print "Failed to broadcast: ", e
@@ -33,9 +30,3 @@ class SendThread(threading.Thread):
 				break
 
 			time.sleep(self.network.POLL_RATE) #broadcast every POLL_RATE seconds
-
-	def create_md5_checksum(self, data):
-		#Create MD5 checksum for message verification
-		m = hashlib.md5()
-		m.update(data)
-		return m.digest()

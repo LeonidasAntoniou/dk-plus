@@ -8,28 +8,28 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import threading, Queue, time
+import multiprocessing, Queue, time, logging
 import geo_tools as geo
 from collections import namedtuple
 
 remote_action = namedtuple("remote_action", "ID action params")
 
 
-class ReceiveTaskThread(threading.Thread):
+class ReceiveTaskProcess(multiprocessing.Process):
 
 	def __init__(self, network, q):
-		threading.Thread.__init__(self)
+		multiprocessing.Process.__init__(self)
+		multiprocessing.log_to_stderr(logging.DEBUG)
 		self.daemon = True
 		self.network = network
 		self.msg_queue = q
-		self.count = 0
 
 	def run(self):
 		while True:
 
 			try:
 				(message, sender_addr, sender_ip) = self.msg_queue.get()
-				self.count = self.count + 1
+
 				
 				#print "Received drone info" 
 
@@ -42,7 +42,7 @@ class ReceiveTaskThread(threading.Thread):
 
 				#Ignore drones that are beyond safety zone
 				if message.distance_from_self > self.network.SAFETY_ZONE:
-					#print "Drone ", message.ID, " not dangerous"
+					print "Drone ", message.ID, " not dangerous"
 					pass
 
 				else:
@@ -67,6 +67,7 @@ class ReceiveTaskThread(threading.Thread):
 						if found == False:	#New entry
 							self.network.drones.append(message)
 
+					print "Message processed, ", message
 				self.msg_queue.task_done()
 			
 			except Queue.Empty:
