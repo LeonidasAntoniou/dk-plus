@@ -9,12 +9,14 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 from multiprocessing import Process, Pipe
-import multiprocessing, time, itertools, logging
+import multiprocessing, time, itertools, logging, select
 import geo_tools as geo
 from dronekit import VehicleMode, Command
 from operator import attrgetter
 from pymavlink import mavutil 
 from collections import namedtuple
+
+from drones_pipe_thread import PipeThread
 
 Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
@@ -28,15 +30,25 @@ class CollisionProcess(multiprocessing.Process):
 		self.algorithm = algorithm
 		self.in_session = False
 		self.context = None
-		self.pipe = network.collision_conn
 		self.drones = []
 
+		self.t_pipe = PipeThread(self.network)
+		self.pipe = self.t_pipe.collision_conn
+
 	def run(self):
+
+		self.t_pipe.start()
+
 		#Deploy your collision avoidance algorithm here
 		while True:	
 
 			#Get drones list from network.drones
-			self.drones = self.pipe.recv()
+			ready = select.select([self.pipe], [], [], 0.6)
+
+			if ready[0]:
+				print "Drone parameters received!"
+				d = self.pipe.recv()
+				self.drones = d
 
 			if self.algorithm == None:
 				self.no_protocol()
@@ -153,13 +165,13 @@ class CollisionProcess(multiprocessing.Process):
 		low.sort(key=attrgetter('battery_level'))
 
 		#Combine everything back to drones list
-		drones = [top, high, medium, low]
-		self.pipe.send(list(itertools.chain.from_iterable(drones)))
+		temp_drones = [top, high, medium, low]
+		self.drones = list(itertools.chain.from_iterable(temp_drones))
 
 		"""
 		#Print priorities
 		print "Printing Priorities:"
-		for drone in self.network.drones:
+		for drone in self.drones:
 			print "ID:", drone.ID, " Priority: ", drone.priority
 		"""
 
@@ -248,14 +260,12 @@ class CollisionProcess(multiprocessing.Process):
 
 	def update_drone_list(self):
 
-		temp = []
-
 		#Empty previous list components
 		self.near[:] = []
 		self.critical[:] = []
 
 		#1.Remove entries that have not been updated for the last MAX_STAY seconds
-		temp = [item for item in self.drones if \
+		self.drones = [item for item in self.drones if \
 			(item.last_recv == None)\
 			or (time.time() - item.last_recv <= self.network.MAX_STAY)]
 
@@ -289,9 +299,6 @@ class CollisionProcess(multiprocessing.Process):
 				(item.ID != own.ID) \
 				&(geo.get_distance_metres (own.global_lat, own.global_lon, item.global_lat, item.global_lon) <= self.network.CRITICAL_ZONE) \
 				& (abs(own.global_alt - item.global_alt) <= self.network.CRITICAL_ZONE)]
-
-		#Update the network.drones value
-		self.pipe.send(temp)
 
 	def print_drones_in_vicinity(self):
 		#Print drone IDs that are in close and critical range

@@ -1,15 +1,19 @@
-from multiprocess import Pipe
-import threading
+from multiprocessing import Pipe
+import threading, select, time
 
 class PipeThread(threading.Thread):
 	def __init__(self, network):
 		threading.Thread.__init__(self)
 		self.daemon = True
 		self.network = network
-		self.drone_conn, self.collision_conn = Pipe()
+		self.collision_conn, self.drone_conn = Pipe(duplex=False)
 
 	def run(self):
+
+		feed_interval = self.network.POLL_RATE
+
 		while True:
 
-			#send every POLL_RATE the drone parameters
+			#send every feed_interval the drone parameters
 			self.drone_conn.send(self.network.drones)
+			time.sleep(feed_interval)

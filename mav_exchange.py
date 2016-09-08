@@ -41,7 +41,7 @@ print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
 #Create the interface with UDP broadcast sockets
-address = ("192.168.2.255", 54545)
+address = ("192.168.1.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle)
 
 #Add collision avoidance algorithm

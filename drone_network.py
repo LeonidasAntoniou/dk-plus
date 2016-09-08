@@ -32,7 +32,6 @@ mail: leonidas.antoniou@gmail.com
 
 import socket, select, Queue, select, time, threading
 import cPickle as pickle
-from multiprocessing import Pipe
 
 #Custom modules
 import geo_tools as geo
@@ -42,7 +41,6 @@ from params import Params
 from send_thread import SendThread
 from receive_thread import ReceiveThread
 from receive_task_thread import ReceiveTaskThread
-from drones_pipe_thread import PipeThread
 
 
 class Networking:
@@ -78,10 +76,9 @@ class Networking:
 		self.sock_receive = None
 
 		#Create transceiver and worker threads
-		self.t_send = SendProcess(self)
-		self.t_receive = ReceiveProcess(self, self.msg_queue)
-		self.t_task = ReceiveTaskProcess(self, self.msg_queue)
-		self.t_pipe = PipeThread(self)
+		self.t_send = SendThread(self)
+		self.t_receive = ReceiveThread(self, self.msg_queue)
+		self.t_task = ReceiveTaskThread(self, self.msg_queue)
 		
 	def run(self):
 		"""
@@ -106,7 +103,6 @@ class Networking:
 		self.t_receive.start()
 		self.t_send.start()
 		self.t_task.start()
-		self.t_pipe.start()
 
 	def stop(self):
 		"""
