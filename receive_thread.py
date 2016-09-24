@@ -10,7 +10,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import threading, select, hashlib, time, socket, logging
+import threading, select, hashlib
 import cPickle as pickle
 
 class ReceiveThread(threading.Thread):
@@ -21,13 +21,9 @@ class ReceiveThread(threading.Thread):
 		self.network = network
 		self.msg_queue = q
 		self.count = 0
-		self.t_timing = []
-		self.t_checksum = []
-		self.t_iterations = 1
 
 	def run(self):
 		while True:
-			t_start = time.time()
 
 			try:
 				ready = select.select([self.network.sock_receive], [], [], 2.0) #wait until a message is received - timeout 2s
@@ -61,13 +57,8 @@ class ReceiveThread(threading.Thread):
 				logging.debug("Error in receive_thread: %s", e)
 				#Failsafe
 				break
-
-			self.t_timing.append(time.time() - t_start)
-			self.t_iterations += 1
-
+			
 	def verify_md5_checksum(self, raw_msg):
-
-		t_start = time.time()
 
 		if type(raw_msg) is tuple:
 
@@ -81,34 +72,10 @@ class ReceiveThread(threading.Thread):
 
 			if received_data_hashed == received_checksum:
 				#print 'Message verified!'
-				self.t_checksum.append(time.time() - t_start)
-				self.t_iterations += 1
 				return True
 
 			else:
-				self.t_checksum.append(time.time() - t_start)
-				self.t_iterations += 1
 				return False
 
 		else:
-			self.t_checksum.append(time.time() - t_start)
-			self.t_iterations += 1
 			return None
-
-	def get_timing(self):
-		try:
-			average_timing = sum(self.t_timing)/self.t_iterations
-			average_checksum = sum(self.t_checksum)/self.t_iterations
-
-			max_timing = max(self.t_timing)
-			max_checksum = max(self.t_checksum)
-
-			logging.info("\nPrinting average execution times of receive_thread")
-			logging.info("Thread: %s\nChecksum: %s", average_timing, average_checksum)
-
-			logging.info("\nPrinting max execution times of receive_thread")
-			logging.info("Thread: %s\nChecksum: %s", max_timing, max_checksum)
-
-		except:
-			logging.debug("Not enough data to calculate execution times")
-

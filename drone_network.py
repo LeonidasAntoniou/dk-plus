@@ -115,11 +115,7 @@ class Networking:
 		self.sock_receive.close()	#Release the resource
 		self.sock_send.close()		#Release the resource
 
-		#Report timing results
-		self.t_receive.get_timing()
-		self.t_send.get_timing()
-		self.t_task.get_timing()
-		
+
 	def create_udp_broadcast(self, address):
 		"""
 			If drone_network class is initialized with the UDP_Broadcast protocol

@@ -18,7 +18,6 @@ from collections import namedtuple
 
 Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
-
 class CollisionThread(threading.Thread):
 	def __init__(self, network, algorithm=None):
 		threading.Thread.__init__(self)
@@ -33,13 +32,6 @@ class CollisionThread(threading.Thread):
 		self.update_proc = Process(target=self.update_drone_list)
 		self.priority_proc = Process(target=self.give_priorities)
 
-		#Timing variables
-		self.t_prioritization = []
-		self.t_update = []
-		self.t_take_control = []
-		self.t_give_control = []
-		self.t_iterations = 1
-
 	def run(self):
 		#Deploy your collision avoidance algorithm here
 		while True:			
@@ -52,8 +44,10 @@ class CollisionThread(threading.Thread):
 			else:
 				pass
 
-			self.t_iterations += 1;
 			time.sleep(0.5)				
+
+
+
 
 
 	"""A Collision Avoidance API"""
@@ -109,8 +103,6 @@ class CollisionThread(threading.Thread):
 		---------Among same mission importances, highest priority is given to the ones with less capabilities
 		------------If they have the same status, mission importance, capabilities fine-tune with battery level
 		"""
-
-		t_start = time.time()
 
 		#Temporary priority lists
 		top = []
@@ -178,13 +170,8 @@ class CollisionThread(threading.Thread):
 			print "ID:", drone.ID, " Priority: ", drone.priority
 		"""
 
-		#Update the timing 
-		self.t_prioritization.append(time.time() - t_start)
-
 	def take_control(self):
 		"""Changes speed to zero by changing mode and overriding the RC3 channel"""
-
-		t_start = time.time()
 
 		if self.network.vehicle.mode.name == 'POSHOLD':
 			#Already in POSHOLD mode
@@ -202,13 +189,9 @@ class CollisionThread(threading.Thread):
 		self.network.vehicle.channels.overrides['3'] = 1500	#throttle
 		logging.info("Control taken!")
 
-		self.t_take_control.append(time.time() - t_start)
-
 	def give_control(self):
 		"""Gives control by restoring to pre-avoidance state"""
 		
-		t_start = time.time()
-
 		if self.context != None:
 			self.restore_context()
 
@@ -218,7 +201,6 @@ class CollisionThread(threading.Thread):
 		#End session
 		self.in_session = False
 		logging.info("Control given!")
-		self.t_give_control.append(time.time() - t_start)
 
 	def save_context(self):
 		"""Currently keeping information about mode and mission"""
@@ -272,8 +254,6 @@ class CollisionThread(threading.Thread):
 
 	def update_drone_list(self):
 
-		t_start = time.time()
-
 		#Empty previous list components
 		self.near[:] = []
 		self.critical[:] = []
@@ -314,8 +294,6 @@ class CollisionThread(threading.Thread):
 				&(geo.get_distance_metres (own.global_lat, own.global_lon, item.global_lat, item.global_lon) <= self.network.CRITICAL_ZONE) \
 				& (abs(own.global_alt - item.global_alt) <= self.network.CRITICAL_ZONE)]
 
-		self.t_update.append(time.time() - t_start)
-
 	def print_drones_in_vicinity(self):
 		#Print drone IDs that are in close and critical range
 		#Inform if no such drones are found
@@ -350,34 +328,4 @@ class CollisionThread(threading.Thread):
 
 		logging.info("Flying drone's priority number is: %s", priority_num)
 		return priority_num
-
-	def get_timing(self):
-
-		try:
-			average_prioritization = sum(self.t_prioritization)/self.t_iterations
-			average_update = sum(self.t_update)/self.t_iterations
-			average_take_control = sum(self.t_take_control)/self.t_iterations
-			average_give_control = sum(self.t_give_control)/self.t_iterations
-
-			max_prioritization = max(self.t_prioritization)
-			max_update = max(self.t_update)
-			max_take_control = max(self.t_take_control)
-			max_give_control = max(self.t_give_control)
-
-			logging.info("\nPrinting average execution times of collision_avoidance methods")
-			logging.info("Prioritization: %s", average_prioritization)
-			logging.info("Update: %s", average_update)
-			logging.info("Take_Control: %s", average_take_control)
-			logging.info("Give_Control: %s", average_give_control)
-
-			logging.info("\nPrinting max execution times of collision_avoidance methods")
-			logging.info("Prioritization: %s", max_prioritization)
-			logging.info("Update: %s", max_update)
-			logging.info("Take_Control: %s", max_take_control)
-			logging.info("Give_Control: %s", max_give_control)
-			logging.info("Out of %s iterations", self.t_iterations)
-
-		except:
-			logging.debug("Not enough data to calculate execution times")
-
 
