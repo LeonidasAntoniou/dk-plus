@@ -9,7 +9,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 from multiprocessing import Process
-import threading, time, itertools
+import threading, time, itertools, logging
 import geo_tools as geo
 from dronekit import VehicleMode, Command
 from operator import attrgetter
@@ -89,7 +89,6 @@ class CollisionThread(threading.Thread):
 		#Perform actions
 		self.in_session = True
 		if priority_num == 1:
-			print "Before give_control()"
 			self.give_control()
 
 		else:
@@ -129,15 +128,15 @@ class CollisionThread(threading.Thread):
 				top.append(drone)
 
 			#Top importance drones in flying state or ready to fly				
-			elif drone.mission_importance == 2 and drone.system_status not in grounded_state or\
-				drone.mission_importance == 2 and drone.system_status not in grounded_state:
+			elif (drone.mission_importance == 2 and drone.system_status not in grounded_state or
+				drone.mission_importance == 2 and drone.system_status not in grounded_state):
 				high.append(drone)
 
 			#Drones not in level-2 importance
 			#Drones in flying state or armed with remote capabilities 
 			#Drones flying or armed in one of the automatic flying modes
-			elif (drone.mode in auto_modes and drone.system_status not in grounded_state ) or \
-				(drone.mode in manual_modes and has_capabilities and drone.system_status not in grounded_state):
+			elif ((drone.mode in auto_modes and drone.system_status not in grounded_state ) or 
+				(drone.mode in manual_modes and has_capabilities and drone.system_status not in grounded_state)):
 				medium.append(drone)
 
 			#Grounded drones with low importance
@@ -188,7 +187,7 @@ class CollisionThread(threading.Thread):
 
 		#Give RC command so that we can bypass RC failsafe, 1500 means stay steady
 		self.network.vehicle.channels.overrides['3'] = 1500	#throttle
-		print "Control taken!"
+		logging.info("Control taken!")
 
 	def give_control(self):
 		"""Gives control by restoring to pre-avoidance state"""
@@ -201,7 +200,7 @@ class CollisionThread(threading.Thread):
 
 		#End session
 		self.in_session = False
-		print "Control given!"
+		logging.info("Control given!")
 
 	def save_context(self):
 		"""Currently keeping information about mode and mission"""
@@ -238,7 +237,6 @@ class CollisionThread(threading.Thread):
 
 		#Add pre-avoidance context:
 		#Waypoints
-		print "List length: ", len(x)
 		for i in range(0, len(x)):
 			cmds.add(Command(0, 0, 0, mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT, mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 
 				0, 0, 0, 0, 0, 0, x[i], y[i], z[i]))
@@ -308,11 +306,11 @@ class CollisionThread(threading.Thread):
 			own_lon = self.network.vehicle_params.global_lon
 
 			for drone in self.near:
-				print "Drone approaching! ID: ", drone.ID
-				print "Distance: ", geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon)
+				logging.info("Drone approaching! ID: %s", drone.ID)
+				logging.info("Distance: %s", geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
 
 			for drone in self.critical:
-				print "Drone too close!!!! ID: ", drone.ID
+				logging.info("Drone too close!!!! ID: %s", drone.ID)
 
 	def current_mission(self):
 		#Retrieves current mission of vehicle
@@ -328,6 +326,6 @@ class CollisionThread(threading.Thread):
 				priority_num = drone.priority
 				break
 
-		print "Flying drone's priority number is: ", priority_num
+		logging.info("Flying drone's priority number is: %s", priority_num)
 		return priority_num
 

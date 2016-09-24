@@ -29,6 +29,7 @@ class ReceiveThread(threading.Thread):
 				ready = select.select([self.network.sock_receive], [], [], 2.0) #wait until a message is received - timeout 2s
 
 				if ready[0]:
+					
 					d = self.network.sock_receive.recvfrom(4096)
 					raw_msg = d[0]
 					sender_addr = d[1]
@@ -47,13 +48,13 @@ class ReceiveThread(threading.Thread):
 								self.msg_queue.put((data, sender_addr, sender_ip))
 								self.count = self.count + 1
 						else:
-							print "Received wrong data, ignoring"
+							logging.warning("Received wrong data, ignoring")
 						
 					except pickle.UnpicklingError:
 						pass
 					
-			except Exception, e:
-				print "Error in receive_thread: ", e
+			except (select.error, socket.error),  e:
+				logging.debug("Error in receive_thread: %s", e)
 				#Failsafe
 				break
 			

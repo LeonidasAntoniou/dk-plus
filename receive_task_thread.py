@@ -70,7 +70,7 @@ class ReceiveTaskThread(threading.Thread):
 				self.msg_queue.task_done()
 			
 			except Queue.Empty:
-				print "All messages processed"
+				logging.debug("All messages processed")
 	
 
 

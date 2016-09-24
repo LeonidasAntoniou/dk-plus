@@ -5,7 +5,7 @@ Used to test the system if it is able to send/receive packets
 import time, math, sys, socket, threading, select, uuid
 from collections import namedtuple
 import cPickle as pickle
-from params_1_2 import Params
+from params import Params
 
 
 MAX_STAY = 5 #seconds until entry is removed from structure

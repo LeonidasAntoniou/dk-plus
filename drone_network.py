@@ -30,7 +30,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import socket, select, Queue, select, time, threading
+import socket, select, Queue, select, time, threading, logging
 import cPickle as pickle
 from collections import namedtuple
 
@@ -92,14 +92,14 @@ class Networking:
 		#Start networking protocol
 		if self.protocol == "UDP_BROADCAST":
 			if self.create_udp_broadcast(self.address):
-				print "Network interface started succesfully"
+				logging.info("Network interface started succesfully")
 			else:
-				print "Network interface not started, exit..."
+				logging.error("Network interface not started, exit...") 
 				#status -> critical
 				#run failsafe
 		else:
 			#You can use whatever protocol you want here
-			print "Unsupported protocol"
+			logging.warning("Unsupported protocol")
 			#raise signal
 		
 		#Start threads
@@ -135,8 +135,8 @@ class Networking:
 			self.sock_receive.bind(self.address)
 			exit_status = 1
 
-		except Exception, e:
-			print "Error in socket operation: ", e
+		except socket.error, e:
+			logging.debug("Error in socket operation: %s", e) 
 			exit_status = 0
 
 		finally:

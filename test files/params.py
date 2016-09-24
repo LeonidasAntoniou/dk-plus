@@ -8,7 +8,7 @@ Any functions that can refer to the parameters can be written here.
 Added support for "dummy" initialization for experimental purposes
 """
 from dronekit import connect, Command, VehicleMode, LocationGlobalRelative, LocationGlobal, socket
-import uuid, random, time, logging
+import uuid, random, time
 
 
 class Params:
@@ -88,14 +88,14 @@ class Params:
 		"""
 
         if network == None:
-            logging.warning("No listeners added due to unknown network")
+            print "No listeners added due to unknown network"
             return
 
         #State of System (Initializing, Emergency, etc.)
         @vehicle.on_attribute('system_status')
         def decorated_system_status_callback(self, attr_name, value):
             network.vehicle_params.system_status = value.state
-            logging.info('System status changed to: %s', network.vehicle_params.system_status)
+            print 'System status changed to: ', network.vehicle_params.system_status
 
         #Battery information
         @vehicle.on_attribute('battery')
@@ -104,7 +104,7 @@ class Params:
                 pass
             else:
                 network.vehicle_params.battery_level = value.level
-                #logging.info('Battery level: %s', network.vehicle_params.battery_level)
+                #print 'Battery level: ', network.vehicle_params.battery_level
 
             #Velocity information (m/s)
             #return velocity in all three axis
@@ -114,7 +114,7 @@ class Params:
                 pass
             else:
                 network.vehicle_params.velocity = value
-                #logging.info('Velocity changed to: %s m/s', network.vehicle_params.velocity)
+                #print 'Velocity changed to:\n', network.vehicle_params.velocity, ' m/s'
 
         """	
 			Airspeed and groundspeed are exactly the same in the simulation but 
@@ -129,7 +129,7 @@ class Params:
                 pass
             else:
                 network.vehicle_params.airspeed = round(value, 2)
-                #logging.info('Airspeed changed to: %s m/s', network.vehicle_params.airspeed)
+                #print 'Airspeed changed to: ', network.vehicle_params.airspeed, ' m/s'
 
         @vehicle.on_attribute('groundspeed')
         def decorated_groundspeed_callback(self, attr_name, value):
@@ -137,14 +137,14 @@ class Params:
                 pass
             else:
                 network.vehicle_params.groundspeed = round(value, 2)
-                #logging.info('Groundspeed changed to: %s m/s', network.vehicle_params.groundspeed)
+                #print 'Groundspeed changed to: ', network.vehicle_params.groundspeed, ' m/s'
 
             #State of EKF
             #return: True/False
         @vehicle.on_attribute('vehicle.ekf_ok')
         def decorated_ekf_ok_callback(self, attr_name, value):
             network.vehicle_params.ekf_ok = value
-            logging.info('EKF availability changed to: %s', network.vehicle_params.ekf_ok)
+            print 'EKF availability changed to: ', network.vehicle_params.ekf_ok
 
         #GPS-related info 
         #return: .eph (HDOP) .epv (VDOP) .fix_type .satellites_visible
@@ -154,31 +154,29 @@ class Params:
             network.vehicle_params.gps_sat = value.satellites_visible
             network.vehicle_params.gps_eph = value.eph
             network.vehicle_params.gps_epv = value.epv
-            logging.info('GPSInfo changed to:\nFix: %s\nSatellites: %s\nEPH: %s\nEPV: %s', 
-                network.vehicle_params.gps_fix, 
-                network.vehicle_params.gps_sat, 
-                network.vehicle_params.gps_eph, 
-                network.vehicle_params.gps_epv)
+            print 'GPSInfo changed to:\nFix:', network.vehicle_params.gps_fix, \
+              '\nSatellites:', network.vehicle_params.gps_sat, '\nEPH:', network.vehicle_params.gps_eph, \
+              '\nEPV: ', network.vehicle_params.gps_epv
 
         #Set altitude offboard
         #return: True/False
         @vehicle.on_attribute('set_altitude_target_global_int')
         def decorated_set_global_altitude_callback(self, attr_name, value):
             network.vehicle_params.set_global_alt = value
-            logging.info('Ability to set global altitude changed to: %s', network.vehicle_params.set_global_alt)
+            print 'Ability to set global altitude changed to: ', network.vehicle_params.set_global_alt
 
         #Set attitude offboard
         #return: True/False
         @vehicle.on_attribute('set_attitude_target')
         def decorated_set_attitude_callback(self, attr_name, value):
             network.vehicle_params.set_attitude = value
-            logging.info('Ability to set attitude changed to: %s ', network.vehicle_params.set_attitude)
+            print 'Ability to set attitude changed to: ', network.vehicle_params.set_attitude
 
         #Flying mode
         @vehicle.on_attribute('mode')
         def decorated_mode_callback(self, attr_name, value):
             network.vehicle_params.mode = value.name
-            logging.info('Mode changed to: %s', network.vehicle_params.mode)
+            print 'Mode changed to: ', network.vehicle_params.mode
 
         """	
 			A precision of 7 decimal digits in lat/lon degrees is satisfactory.
@@ -200,10 +198,8 @@ class Params:
                 network.vehicle_params.global_alt = round(value.alt, 2)
                 network.vehicle_params.global_lat = round(value.lat, 7)
                 network.vehicle_params.global_lon = round(value.lon, 7)
-                #logging.info('Location changed to:\nAlt: %s\nLat: %s\nLon: %s', 
-                 #   network.vehicle_params.global_alt, 
-                  #  network.vehicle_params.global_lat,
-                   # network.vehicle_params.global_lon)
+                #print 'Location changed to:\nAlt:', network.vehicle_params.global_alt, \
+                #		'\nLat:', network.vehicle_params.global_lat, '\nLon:', network.vehicle_params.global_lon
 
         """	
 			Drone 360-degree heading, 0 is North. 
@@ -218,7 +214,7 @@ class Params:
                 pass
             else:
                 network.vehicle_params.heading = value
-                #logging.info('Heading changed to: %s', network.vehicle_params.heading)
+                #print 'Heading changed to: ', network.vehicle_params.heading
 
             #Updates the next waypoint in case of mission
         @vehicle.on_message('MISSION_CURRENT')
@@ -228,19 +224,19 @@ class Params:
                 if network.vehicle_params.next_wp == message.seq:
                     return
                 else:
-                    logging.info('Next waypoint changed')
+                    print 'Next waypoint changed'
                     network.vehicle_params.next_wp = message.seq
 
                     cmd = vehicle.commands
                     if cmd.count == 0:
-                        logging.info('No waypoints found')
+                        print 'No waypoints found'
 
                     else:
-                        logging.info('Waypoint %s out of %s:', cmd.next, cmd.count)
+                        print 'Waypoint', cmd.next, ' out of ', cmd.count, ':'
                         pos = cmd.next - 1
 
-                        logging.info('Frame, Lat, Lon, Alt: %s, %s, %s, %s', cmd[pos].frame, cmd[
-                            pos].x, cmd[pos].y, cmd[pos].z)
+                        print 'Frame, Lat, Lon, Alt:', cmd[pos].frame, cmd[
+                            pos].x, cmd[pos].y, cmd[pos].z
                         network.vehicle_params.next_wp_lat = cmd[pos].x
                         network.vehicle_params.next_wp_lon = cmd[pos].y
                         network.vehicle_params.next_wp_alt = cmd[pos].z
@@ -296,6 +292,6 @@ class Params:
         #Need to add all kinds of security here
         self._mission_importance = 0
         if level == 1 | level == 2:
-            logging.info("You need to ask permission from authoritative personel")
+            print "You need to ask permission from authoritative personel"
             #if request_successful: self._mission_importance = level
             #else: print "You don't have the rights."

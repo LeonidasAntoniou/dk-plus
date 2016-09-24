@@ -1,4 +1,4 @@
-import time
+import time, logging
 from dronekit import connect, VehicleMode, Command
 from pymavlink import mavutil
 
@@ -13,6 +13,8 @@ from collision_avoidance import CollisionThread
 ---------------------------------------- Simulation---------------------------------------------------
 ------------------------------------------------------------------------------------------------------
 """
+logging.basicConfig(level=logging.INFO)
+
 #Set up option parsing to get connection string
 import argparse
 parser = argparse.ArgumentParser(
@@ -27,7 +29,7 @@ sitl = None
 
 #Start SITL if no connection string specified
 if not args.connect:
-    print "Starting copter simulator (SITL)"
+    logging.info("Starting copter simulator (SITL)")
     from dronekit_sitl import SITL
     sitl = SITL()
     sitl.download('copter', '3.3', verbose=True)
@@ -37,7 +39,7 @@ if not args.connect:
     connection_string = 'tcp:127.0.0.1:5760'
 
 # Connect to the Vehicle
-print 'Connecting to vehicle on: %s' % connection_string
+logging.info('Connecting to vehicle on: %s', connection_string)
 vehicle = connect(connection_string, wait_ready=True)
 
 #Create the interface with UDP broadcast sockets
@@ -57,32 +59,32 @@ def arm_and_takeoff(aTargetAltitude):
     Arms vehicle and fly to aTargetAltitude.
     """
 
-    print "Basic pre-arm checks"
+    logging.info("Basic pre-arm checks")
     # Don't try to arm until autopilot is ready
     while not vehicle.is_armable:
-        print " Waiting for vehicle to initialise..."
+        logging.info(" Waiting for vehicle to initialise...")
         time.sleep(1)
 
-    print "Arming motors"
+    logging.info("Arming motors") 
     # Copter should arm in GUIDED mode
     vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True
 
     # Confirm vehicle armed before attempting to take off
     while not vehicle.armed:
-        print " Waiting for arming..."
+        logging.info(" Waiting for arming...")
         time.sleep(1)
 
-    print "Taking off!"
+    logging.info("Taking off!")
     vehicle.simple_takeoff(aTargetAltitude)  # Take off to target altitude
 
     # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command 
     #  after Vehicle.simple_takeoff will execute immediately).
     while True:
-        print " Altitude: ", vehicle.location.global_relative_frame.alt
+        logging.info(" Altitude: %s", vehicle.location.global_relative_frame.alt)
         #Break and return from function just below target altitude.
         if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
-            print "Reached target altitude"
+            logging.info("Reached target altitude")
             break
         time.sleep(1)
 
@@ -136,10 +138,10 @@ def adds_square_mission(aLocation, aSize):
 
     cmds = vehicle.commands
 
-    print " Clear any existing commands"
+    logging.info("Clear any existing commands")
     cmds.clear()
 
-    print " Define/add new commands."
+    logging.info("Define/add new commands")
     # Add new commands. The meaning/order of the parameters is documented in the Command class.
 
     #Add MAV_CMD_NAV_TAKEOFF command. This is ignored if the vehicle is already in the air.
@@ -179,23 +181,23 @@ def adds_square_mission(aLocation, aSize):
                 mavutil.mavlink.MAV_CMD_NAV_WAYPOINT, 0, 0, 0, 0, 0, 0,
                 point4.lat, point4.lon, 14))
 
-    print " Upload new commands to vehicle"
+    logging.info("Upload new commands to vehicle")
     cmds.upload()
 
 
-print "Initializing interface"
+logging.info("Initializing interface")
 network.run()
 
-print "Starting collision avoidance scheme"
+logging.info("Starting collision avoidance scheme")
 t_collision.start()
 
-print 'Create a new mission (for current location)'
+logging.info('Create a new mission (for current location)')
 adds_square_mission(vehicle.location.global_frame, 50)
 
 # From Copter 3.3 you will be able to take off using a mission item. Plane must take off using a mission item (currently).
 arm_and_takeoff(10)
 
-print "Starting mission"
+logging.info("Starting mission")
 # Reset mission set to first (0) waypoint
 vehicle.commands.next = 0
 
@@ -211,14 +213,15 @@ while True:
     try:
         nextwaypoint = vehicle.commands.next
         if vehicle.commands.count != 0:
-            print 'Distance to waypoint (%s): %s' % (
-                nextwaypoint, geo.distance_to_current_waypoint(vehicle))
+            logging.info('Distance to waypoint (%s): %s', 
+                nextwaypoint, 
+                geo.distance_to_current_waypoint(vehicle))
 
             if nextwaypoint == 3:  #Skip to next waypoint
-                print 'Skipping to Waypoint 5 when reach waypoint 3'
+                logging.info('Skipping to Waypoint 5 when reach waypoint 3')
                 vehicle.commands.next = 5
             if nextwaypoint == 5:  #Dummy waypoint - as soon as we reach waypoint 4 this is true and we exit.
-                print "Exit 'standard' mission when start heading to final waypoint (5)"
+                logging.info("Exit 'standard' mission when start heading to final waypoint (5)")
                 #vehicle.mode = VehicleMode('RTL')
                 break
 
@@ -226,16 +229,12 @@ while True:
     except KeyboardInterrupt:
         break
 
-print 'Statistics:'
-print 'Messages received:', network.t_receive.count
-print 'Messages processed:', network.t_task.count
-
 #Close broadcast thread and socket
-print "Close sockets"
+logging.info("Close sockets")
 network.stop()
 
 #Close vehicle object before exiting script
-print "Close vehicle object"
+logging.info("Close vehicle object")
 vehicle.close()
 
 # Shut down simulator if it was started.
