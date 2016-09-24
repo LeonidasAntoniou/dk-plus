@@ -8,7 +8,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import threading, Queue, time
+import threading, Queue, time, socket, logging
 import geo_tools as geo
 from collections import namedtuple
 
@@ -23,9 +23,12 @@ class ReceiveTaskThread(threading.Thread):
 		self.network = network
 		self.msg_queue = q
 		self.count = 0
+		self.t_iterations = 1
+		self.t_timing = []
 
 	def run(self):
 		while True:
+			t_start = time.time()
 
 			try:
 				(message, sender_addr, sender_ip) = self.msg_queue.get()
@@ -72,7 +75,20 @@ class ReceiveTaskThread(threading.Thread):
 			except Queue.Empty:
 				logging.debug("All messages processed")
 	
+			self.t_timing.append(time.time() - t_start)
+			self.t_iterations += 1
 
+	def get_timing(self):
+		try:
+			average_timing = sum(self.t_timing)/self.t_iterations
+			max_timing = max(self.t_timing)
+
+			logging.info("Printing average and max execution times of receive_task_thread")
+			logging.info("Average: %s", average_timing)
+			logging.info("Max: %s", max_timing)
+
+		except:
+			logging.debug("Not enough data to calculate execution times")
 
 	
 

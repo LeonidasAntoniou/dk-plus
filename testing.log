@@ -1,0 +1,112 @@
+INFO:root:Starting copter simulator (SITL)
+INFO:root:Connecting to vehicle on: tcp:127.0.0.1:5760
+INFO:root:Initializing interface
+INFO:root:Network interface started succesfully
+INFO:root:Starting collision avoidance scheme
+INFO:root:Create a new mission (for current location)
+INFO:root:Clear any existing commands
+INFO:root:Define/add new commands
+INFO:root:Upload new commands to vehicle
+INFO:root:Basic pre-arm checks
+INFO:root: Waiting for vehicle to initialise...
+INFO:root:Next waypoint changed
+INFO:root:Waypoint 0 out of 5:
+INFO:root:Frame, Lat, Lon, Alt: 3, 0, 0, 10
+INFO:root: Waiting for vehicle to initialise...
+INFO:root: Waiting for vehicle to initialise...
+INFO:root: Waiting for vehicle to initialise...
+INFO:root:Arming motors
+INFO:root: Waiting for arming...
+INFO:root: Waiting for arming...
+INFO:root: Waiting for arming...
+INFO:root: Waiting for arming...
+INFO:root: Waiting for arming...
+INFO:root:Mode changed to: GUIDED
+INFO:root:Taking off!
+INFO:root: Altitude: 0.0
+INFO:root:System status changed to: ACTIVE
+INFO:root: Altitude: 0.0
+INFO:root: Altitude: 0.32
+INFO:root: Altitude: 1.71
+INFO:root: Altitude: 3.6
+INFO:root: Altitude: 5.68
+INFO:root: Altitude: 7.76
+INFO:root: Altitude: 9.18
+INFO:root: Altitude: 9.69
+INFO:root:Reached target altitude
+INFO:root:Starting mission
+INFO:root:Distance to waypoint (0): None
+INFO:root:Next waypoint changed
+INFO:root:Waypoint 1 out of 5:
+INFO:root:Frame, Lat, Lon, Alt: 3, -35.3628118424, 149.164679124, 11
+INFO:root:Mode changed to: AUTO
+INFO:root:Distance to waypoint (1): 78.9708409959
+INFO:root:Distance to waypoint (1): 78.3191487232
+INFO:root:Distance to waypoint (1): 76.9383399702
+INFO:root:Distance to waypoint (1): 74.1358770457
+INFO:root:Distance to waypoint (1): 71.0498990389
+INFO:root:Distance to waypoint (1): 67.5049403666
+INFO:root:Distance to waypoint (1): 63.5205521278
+INFO:root:Distance to waypoint (1): 58.0292801909
+INFO:root:Distance to waypoint (1): 53.3267598058
+INFO:root:Distance to waypoint (1): 48.4332050522
+INFO:root:Distance to waypoint (1): 42.1729126644
+INFO:root:Distance to waypoint (1): 37.0601072634
+INFO:root:Distance to waypoint (1): 31.8761187698
+INFO:root:Distance to waypoint (1): 26.6352792801
+INFO:root:Distance to waypoint (1): 21.3791488055
+INFO:root:Distance to waypoint (1): 16.0923869754
+INFO:root:Next waypoint changed
+INFO:root:Waypoint 2 out of 5:
+INFO:root:Frame, Lat, Lon, Alt: 3, -35.3628118424, 149.165780676, 12
+INFO:root:Distance to waypoint (2): 114.724523983
+INFO:root:Distance to waypoint (2): 117.959630912
+INFO:root:Distance to waypoint (2): 120.694310642
+INFO:root:Distance to waypoint (2): 123.194730717
+INFO:root:Distance to waypoint (2): 123.974425229
+INFO:root:Distance to waypoint (2): 123.841588498
+INFO:root:Distance to waypoint (2): 122.962612325
+INFO:root:Distance to waypoint (2): 120.869604116
+INFO:root:Distance to waypoint (2): 118.887923752
+INFO:root:Distance to waypoint (2): 114.490407038
+INFO:root:Distance to waypoint (2): 110.371176525
+INFO:root:Distance to waypoint (2): 105.829142543
+INFO:root:Distance to waypoint (2): 99.6173052898
+INFO:root:Distance to waypoint (2): 95.6765186021
+INFO:root:Distance to waypoint (2): 90.2774911954
+INFO:root:Distance to waypoint (2): 83.397946996
+INFO:root:Distance to waypoint (2): 77.7874640346
+INFO:root:Distance to waypoint (2): 72.0879440862
+INFO:root:Distance to waypoint (2): 64.919011826
+INFO:root:Distance to waypoint (2): 60.6109547638
+INFO:root:Distance to waypoint (2): 54.8334619915
+INFO:root:Distance to waypoint (2): 47.5531378563
+INFO:root:Distance to waypoint (2): 41.6866107321
+INFO:root:Distance to waypoint (2): 35.8200625747
+INFO:root:Distance to waypoint (2): 29.9312505875
+INFO:root:Distance to waypoint (2): 24.0424386378
+INFO:root:Distance to waypoint (2): 16.7065072904
+INFO:root:Next waypoint changed
+INFO:root:Waypoint 3 out of 5:
+INFO:root:Frame, Lat, Lon, Alt: 3, -35.3637101576, 149.165780676, 13
+INFO:root:Distance to waypoint (3): 100.489472407
+INFO:root:Skipping to Waypoint 5 when reach waypoint 3
+INFO:root:Next waypoint changed
+INFO:root:Waypoint 5 out of 5:
+INFO:root:Frame, Lat, Lon, Alt: 3, -35.3637101576, 149.164679124, 14
+INFO:root:Distance to waypoint (5): 153.233610009
+INFO:root:Exit 'standard' mission when start heading to final waypoint (5)
+INFO:root:Close sockets
+INFO:root:
+Printing average execution times of receive_thread
+INFO:root:Thread: 0.247705122228
+Checksum: 1.68391367192e-05
+INFO:root:
+Printing max execution times of receive_thread
+INFO:root:Thread: 0.502699136734
+Checksum: 0.000159978866577
+INFO:root:
+Printing execution times of send_thread
+INFO:root:Average: 0.00075486138111
+Max: 0.00126194953918
+INFO:root:Close vehicle object
