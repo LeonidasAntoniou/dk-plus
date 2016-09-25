@@ -70,7 +70,7 @@ class Params:
             self.airspeed = vehicle.airspeed  #m/s
             self.system_status = vehicle.system_status.state
 
-        self.add_listeners(network, vehicle)
+            self.add_listeners(network, vehicle)
 
     def add_listeners(self, network, vehicle):
         """
