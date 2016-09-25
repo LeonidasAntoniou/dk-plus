@@ -32,6 +32,7 @@ class ReceiveTaskThread(threading.Thread):
 
 			try:
 				(message, sender_addr, sender_ip) = self.msg_queue.get()
+				self.network.add_delay()
 				self.count = self.count + 1
 				
 				#print "Received drone info" 

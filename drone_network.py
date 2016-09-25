@@ -288,3 +288,9 @@ class Networking:
 
 			for i in range(0, 2):
 				self.drones.append(entries[i])
+
+	def add_delay(self):
+		import random
+		t_min = 0.1
+		t_max = 1.0
+		time.sleep(random.uniform(t_min, t_max))

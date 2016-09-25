@@ -43,6 +43,7 @@ class CollisionThread(threading.Thread):
 	def run(self):
 		#Deploy your collision avoidance algorithm here
 		while True:			
+			self.network.add_delay()
 			if self.algorithm == None:
 				self.no_protocol()
 

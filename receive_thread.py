@@ -31,7 +31,7 @@ class ReceiveThread(threading.Thread):
 
 			try:
 				ready = select.select([self.network.sock_receive], [], [], 2.0) #wait until a message is received - timeout 2s
-
+				self.network.add_delay()
 				if ready[0]:
 					
 					d = self.network.sock_receive.recvfrom(4096)
@@ -111,4 +111,3 @@ class ReceiveThread(threading.Thread):
 
 		except:
 			logging.debug("Not enough data to calculate execution times")
-
