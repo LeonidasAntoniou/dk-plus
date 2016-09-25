@@ -1,0 +1,64 @@
+INFO:root:Date and time: 2016-09-25 11:58:10
+INFO:root:Opening beacon, counting...
+INFO:root:
+Calculating roundtrip timing after 200 iterations
+INFO:root:Average roundtrip: 1.47324085236 ms
+INFO:root:Max roundtrip: 2.14290618896 ms
+INFO:root:Closing beacon
+INFO:root:Date and time: 2016-09-25 12:05:29
+INFO:root:Opening beacon, counting...
+INFO:root:
+Calculating roundtrip timing after 36708 iterations with 5 frequency
+INFO:root:Average roundtrip: 92.6108112332 ms
+INFO:root:Max roundtrip: 1768.04089546 ms
+INFO:root:Closing beacon
+INFO:root:Date and time: 2016-09-25 12:07:36
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:08:24
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:10:35
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:10:43
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:11:12
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:12:14
+INFO:root:Opening beacon, counting...
+INFO:root:
+Calculating roundtrip timing after 38558 iterations with 5 frequency
+INFO:root:Average roundtrip: 91.8317560809 ms
+INFO:root:Max roundtrip: 244.086027145 ms
+INFO:root:Closing beacon
+INFO:root:Date and time: 2016-09-25 12:14:13
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:14:24
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:15:43
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:16:02
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:16:38
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:16:51
+INFO:root:Opening beacon, counting...
+INFO:root:
+Calculating roundtrip timing after 199 iterations with 5 frequency
+INFO:root:Average roundtrip: 1.61971398933 ms
+INFO:root:Max roundtrip: 2.16794013977 ms
+INFO:root:Closing beacon
+INFO:root:Date and time: 2016-09-25 12:18:33
+INFO:root:Opening beacon, counting...
+INFO:root:Date and time: 2016-09-25 12:18:58
+INFO:root:Opening beacon, counting...
+INFO:root:
+Calculating roundtrip timing after 395 iterations with 10 frequency
+INFO:root:Average roundtrip: 1.60330458532 ms
+INFO:root:Max roundtrip: 2.04110145569 ms
+INFO:root:Closing beacon
+INFO:root:Date and time: 2016-09-25 12:20:06
+INFO:root:Opening beacon, counting...
+INFO:root:
+Calculating roundtrip timing after 3580 iterations with 100 frequency
+INFO:root:Average roundtrip: 1.25980929955 ms
+INFO:root:Max roundtrip: 3.31211090088 ms
+INFO:root:Closing beacon
