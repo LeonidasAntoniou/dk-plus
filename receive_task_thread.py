@@ -81,12 +81,12 @@ class ReceiveTaskThread(threading.Thread):
 
 	def get_timing(self):
 		try:
-			average_timing = sum(self.t_timing)/self.t_iterations
-			max_timing = max(self.t_timing)
+			average_timing = 1000*sum(self.t_timing)/self.t_iterations
+			max_timing = 1000*max(self.t_timing)
 
 			logging.info("Printing average and max execution times of receive_task_thread")
-			logging.info("Average: %s", average_timing)
-			logging.info("Max: %s", max_timing)
+			logging.info("Average: %s ms", average_timing)
+			logging.info("Max: %s ms", max_timing)
 
 		except:
 			logging.debug("Not enough data to calculate execution times")

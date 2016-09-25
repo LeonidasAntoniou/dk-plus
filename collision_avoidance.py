@@ -355,27 +355,27 @@ class CollisionThread(threading.Thread):
 	def get_timing(self):
 
 		try:
-			average_prioritization = sum(self.t_prioritization)/self.t_iterations
-			average_update = sum(self.t_update)/self.t_iterations
-			average_take_control = sum(self.t_take_control)/self.t_iterations
-			average_give_control = sum(self.t_give_control)/self.t_iterations
+			average_prioritization = 1000*sum(self.t_prioritization)/self.t_iterations
+			average_update = 1000*sum(self.t_update)/self.t_iterations
+			average_take_control = 1000*sum(self.t_take_control)/self.t_iterations
+			average_give_control = 1000*sum(self.t_give_control)/self.t_iterations
 
-			max_prioritization = max(self.t_prioritization)
-			max_update = max(self.t_update)
-			max_take_control = max(self.t_take_control)
-			max_give_control = max(self.t_give_control)
+			max_prioritization = 1000*max(self.t_prioritization)
+			max_update = 1000*max(self.t_update)
+			max_take_control = 1000*max(self.t_take_control)
+			max_give_control = 1000*max(self.t_give_control)
 
 			logging.info("\nPrinting average execution times of collision_avoidance methods")
-			logging.info("Prioritization: %s", average_prioritization)
-			logging.info("Update: %s", average_update)
-			logging.info("Take_Control: %s", average_take_control)
-			logging.info("Give_Control: %s", average_give_control)
+			logging.info("Prioritization: %s ms", average_prioritization)
+			logging.info("Update: %s ms", average_update)
+			logging.info("Take_Control: %s ms", average_take_control)
+			logging.info("Give_Control: %s ms", average_give_control)
 
 			logging.info("\nPrinting max execution times of collision_avoidance methods")
-			logging.info("Prioritization: %s", max_prioritization)
-			logging.info("Update: %s", max_update)
-			logging.info("Take_Control: %s", max_take_control)
-			logging.info("Give_Control: %s", max_give_control)
+			logging.info("Prioritization: %s ms", max_prioritization)
+			logging.info("Update: %s ms", max_update)
+			logging.info("Take_Control: %s ms", max_take_control)
+			logging.info("Give_Control: %s ms", max_give_control)
 			logging.info("Out of %s iterations", self.t_iterations)
 
 		except:

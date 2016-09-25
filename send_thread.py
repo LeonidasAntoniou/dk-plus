@@ -50,11 +50,11 @@ class SendThread(threading.Thread):
 
 	def get_timing(self):
 		try:
-			average_timing = sum(self.t_timing)/self.t_iterations
-			max_timing = max(self.t_timing)
+			average_timing = 1000*sum(self.t_timing)/self.t_iterations
+			max_timing = 1000*max(self.t_timing)
 
 			logging.info("\nPrinting execution times of send_thread")
-			logging.info("Average: %s\nMax: %s", average_timing, max_timing)
+			logging.info("Average: %s ms\nMax: %s ms", average_timing, max_timing)
 
 		except:
 			logging.debug("Not enough data to calculate execution times")

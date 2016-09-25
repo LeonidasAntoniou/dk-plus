@@ -97,17 +97,17 @@ class ReceiveThread(threading.Thread):
 
 	def get_timing(self):
 		try:
-			average_timing = sum(self.t_timing)/self.t_iterations
-			average_checksum = sum(self.t_checksum)/self.t_iterations
+			average_timing = 1000*sum(self.t_timing)/self.t_iterations
+			average_checksum = 1000*sum(self.t_checksum)/self.t_iterations
 
-			max_timing = max(self.t_timing)
-			max_checksum = max(self.t_checksum)
+			max_timing = 1000*max(self.t_timing)
+			max_checksum = 1000*max(self.t_checksum)
 
 			logging.info("\nPrinting average execution times of receive_thread")
-			logging.info("Thread: %s\nChecksum: %s", average_timing, average_checksum)
+			logging.info("Thread: %s\nChecksum: %s ms", average_timing, average_checksum)
 
 			logging.info("\nPrinting max execution times of receive_thread")
-			logging.info("Thread: %s\nChecksum: %s", max_timing, max_checksum)
+			logging.info("Thread: %s\nChecksum: %s ms", max_timing, max_checksum)
 
 		except:
 			logging.debug("Not enough data to calculate execution times")
