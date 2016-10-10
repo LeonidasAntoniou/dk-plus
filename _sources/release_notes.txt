@@ -9,7 +9,7 @@ Version 0.2.4 (2016-08-21)
 --------------------------
 Added
 +++++
-- MD5 checksum verification capabilities
+- Checksum verification upon message receipt
 
 Fixed
 +++++++

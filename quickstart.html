@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Setup &mdash; DK+ 2.2.1 documentation</title>
+  <title>Setup &mdash; DK+ 0.2.4 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
         <link rel="author" title="About these documents"
               href="about.html"/>
-    <link rel="top" title="DK+ 2.2.1 documentation" href="index.html"/>
+    <link rel="top" title="DK+ 0.2.4 documentation" href="index.html"/>
         <link rel="next" title="Guide" href="guide.html"/>
         <link rel="prev" title="Release Notes" href="release_notes.html"/> 
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                2.2
+                0.2.4
               </div>
             
           
@@ -156,7 +156,7 @@
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">This API was developed for <strong>Dronekit-Python 2.x</strong> so it is not guaranteed that future versions of Dronekit will be backwards compatible with <strong>DK+</strong>.</p>
+<p class="last">This API was developed for <strong>Dronekit-Python 2.x</strong> so it is not guaranteed that future versions of Dronekit will be backwards compatible with <strong>DK+</strong>. The code has been tested in dronekit&#8217;s software in the loop (dronekit-SITL), with the ArduCopter autopilot firmware version 3.3 <strong>AC3.3</strong>.</p>
 </div>
 <div class="section" id="python-2-x">
 <h3>Python 2.x<a class="headerlink" href="#python-2-x" title="Permalink to this headline">¶</a></h3>
@@ -175,16 +175,16 @@
 <p>Since your computer will be communicating with other hardware, you have to make sure that your system accept incoming/outgoing messages of your protocol.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">If you receive packets but the program is not receiving it without any raised exception, then probably the packets are blocked by your firewall.</p>
+<p class="last">If you receive packets but the program is not receiving it without any raised exception, then check if the packets are blocked by your firewall.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Currently, the only communication protocol that is supported is UDP. Though <strong>0MQ</strong> has not been implemeted in this project, you can get more information about protocols and networking in this very handy <a class="reference external" href="http://zguide.zeromq.org">0MQ guide</a>.</p>
 </div>
-<p>If you run a Linux distribution then you may have to change <a class="reference external" href="https://help.ubuntu.com/community/IptablesHowTo">iptables</a> to accept a selection/all incoming and outgoing UDP packets.</p>
+<p>If you run a Linux distribution with the ufw firewall, you can add/remove rules through a graphical UI. For low-level rulesetting, you may have to change <a class="reference external" href="https://help.ubuntu.com/community/IptablesHowTo">iptables</a> to accept a selection/all incoming and outgoing UDP packets.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The following command adds two firewall exceptions, to accept incoming and outgoing UDP packets. Be extra careful and proceed at your own risk.</p>
+<p class="last">The following command adds two firewall exceptions, to accept ALL incoming and outgoing UDP packets. Be extra careful and proceed at your own risk.</p>
 </div>
 <p>Open the Linux Console and try:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">I</span> <span class="n">INPUT</span> <span class="o">-</span><span class="n">p</span> <span class="n">udp</span> <span class="o">-</span><span class="n">j</span> <span class="n">ACCEPT</span> <span class="o">&amp;&amp;</span> <span class="n">sudo</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">I</span> <span class="n">OUTPUT</span> <span class="o">-</span><span class="n">p</span> <span class="n">udp</span> <span class="o">-</span><span class="n">j</span> <span class="n">ACCEPT</span>
@@ -293,7 +293,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.2.1',
+            VERSION:'0.2.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

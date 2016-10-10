@@ -10,7 +10,7 @@ Requirements
 ============
 
 .. warning::
-	This API was developed for :strong:`Dronekit-Python 2.x` so it is not guaranteed that future versions of Dronekit will be backwards compatible with :strong:`DK+`. 
+	This API was developed for :strong:`Dronekit-Python 2.x` so it is not guaranteed that future versions of Dronekit will be backwards compatible with :strong:`DK+`. The code has been tested in dronekit's software in the loop (dronekit-SITL), with the ArduCopter autopilot firmware version 3.3 :strong:`AC3.3`. 
 
 Python 2.x
 ------------
@@ -33,15 +33,15 @@ Firewall Rules
 Since your computer will be communicating with other hardware, you have to make sure that your system accept incoming/outgoing messages of your protocol. 
 
 .. tip::
-	If you receive packets but the program is not receiving it without any raised exception, then probably the packets are blocked by your firewall.
+	If you receive packets but the program is not receiving it without any raised exception, then check if the packets are blocked by your firewall.
 
 .. note::
 	Currently, the only communication protocol that is supported is UDP. Though :strong:`0MQ` has not been implemeted in this project, you can get more information about protocols and networking in this very handy `0MQ guide <http://zguide.zeromq.org>`_.
 
-If you run a Linux distribution then you may have to change `iptables <https://help.ubuntu.com/community/IptablesHowTo>`_ to accept a selection/all incoming and outgoing UDP packets. 
+If you run a Linux distribution with the ufw firewall, you can add/remove rules through a graphical UI. For low-level rulesetting, you may have to change `iptables <https://help.ubuntu.com/community/IptablesHowTo>`_ to accept a selection/all incoming and outgoing UDP packets. 
 
 .. warning::
-	The following command adds two firewall exceptions, to accept incoming and outgoing UDP packets. Be extra careful and proceed at your own risk.
+	The following command adds two firewall exceptions, to accept ALL incoming and outgoing UDP packets. Be extra careful and proceed at your own risk.
 
 Open the Linux Console and try::
 
