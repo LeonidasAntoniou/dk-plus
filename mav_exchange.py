@@ -41,10 +41,12 @@ if not args.connect:
 # Connect to the Vehicle
 logging.info('Connecting to vehicle on: %s', connection_string)
 vehicle = connect(connection_string, wait_ready=True)
+vehicle.parameters['PHLD_BRAKE_RATE'] = 30
 
 #Create the interface with UDP broadcast sockets
-address = ("192.168.2.255", 54545)
+address = ("192.168.2.7", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle)
+
 
 #Add collision avoidance algorithm
 t_collision = CollisionThread(network, 'priorities')

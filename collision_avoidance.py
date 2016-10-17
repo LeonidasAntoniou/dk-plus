@@ -182,8 +182,12 @@ class CollisionThread(threading.Thread):
 
 			#Change mode and assert
 			self.network.vehicle.mode = VehicleMode("POSHOLD")
-			while self.network.vehicle.mode.name != "POSHOLD":
-				time.sleep(0.5)
+			#while self.network.vehicle.mode.name != "POSHOLD":
+				#time.sleep(0.2)
+
+			#self.network.vehicle.mode = VehicleMode("GUIDED")
+			#while self.network.vehicle.mode.name != "POSHOLD":
+			#	time.sleep(0.5)
 
 		#Give RC command so that we can bypass RC failsafe, 1500 means stay steady
 		self.network.vehicle.channels.overrides['3'] = 1500	#throttle
@@ -218,8 +222,8 @@ class CollisionThread(threading.Thread):
 		#Set to GUIDED mode to add any new commands
 		if self.network.vehicle.mode.name != 'GUIDED':
 			self.network.vehicle.mode = VehicleMode("GUIDED")
-			while self.network.vehicle.mode.name != "GUIDED": #Wait until mode is changed
-				time.sleep(0.5)
+			#while self.network.vehicle.mode.name != "GUIDED": #Wait until mode is changed
+				#time.sleep(0.5)
 
 		#Save x, y, z values of mission waypoints in lists since commands.clear() 
 		#seems to clear every instance of CommandSequence object
@@ -248,8 +252,8 @@ class CollisionThread(threading.Thread):
 
 		#Flight mode
 		self.network.vehicle.mode = VehicleMode(self.context.mode)
-		while self.network.vehicle.mode.name != self.context.mode:
-			time.sleep(0.5)
+		#while self.network.vehicle.mode.name != self.context.mode:
+			#time.sleep(0.5)
 
 
 	def update_drone_list(self):

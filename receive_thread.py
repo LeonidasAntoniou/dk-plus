@@ -10,7 +10,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import threading, select, hashlib
+import threading, select, hashlib, socket, logging
 import cPickle as pickle
 
 class ReceiveThread(threading.Thread):
@@ -26,7 +26,7 @@ class ReceiveThread(threading.Thread):
 		while True:
 
 			try:
-				ready = select.select([self.network.sock_receive], [], [], 2.0) #wait until a message is received - timeout 2s
+				ready = select.select([self.network.sock_receive], [], [], 1.0) #wait until a message is received - timeout 2s
 
 				if ready[0]:
 					
@@ -46,6 +46,7 @@ class ReceiveThread(threading.Thread):
 
 							else:
 								self.msg_queue.put((data, sender_addr, sender_ip))
+								logging.info("Received msg from: %s", sender_addr)
 								self.count = self.count + 1
 						else:
 							logging.warning("Received wrong data, ignoring")

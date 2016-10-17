@@ -1,4 +1,4 @@
-import threading, time, hashlib
+import threading, time, hashlib, socket
 import cPickle as pickle
 
 class SendThread(threading.Thread):
@@ -25,7 +25,7 @@ class SendThread(threading.Thread):
 				logging.debug("Pickling Error: %s",e)
 			
 			try:
-				self.network.sock_send.sendto(pickled_msg, self.network.address)
+				self.network.sock_send.sendto(pickled_msg, ("192.168.2.1", 54545))
 
 			except socket.error, e:
 				logging.debug("Failed to broadcast: %s", e)
