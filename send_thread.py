@@ -1,4 +1,4 @@
-import threading, time, hashlib, socket
+import threading, time, hashlib, socket, logging
 import cPickle as pickle
 
 class SendThread(threading.Thread):
