@@ -3,10 +3,11 @@ import cPickle as pickle
 
 class SendThread(threading.Thread):
 
-	def __init__(self, network):
+	def __init__(self, network, address):
 		threading.Thread.__init__(self)
 		self.daemon = True
 		self.network = network
+		self.address = address
 
 	def run(self):
 		#These functions will be running concurrently until the end of the main process 
@@ -25,7 +26,7 @@ class SendThread(threading.Thread):
 				logging.debug("Pickling Error: %s",e)
 			
 			try:
-				self.network.sock_send.sendto(pickled_msg, ("192.168.2.1", 54545))
+				self.network.sock_send.sendto(pickled_msg, self.address)
 
 			except socket.error, e:
 				logging.debug("Failed to broadcast: %s", e)

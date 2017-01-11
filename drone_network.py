@@ -76,7 +76,7 @@ class Networking:
 		self.sock_receive = None
 
 		#Create transceiver and worker threads
-		self.t_send = SendThread(self)
+		self.t_send = SendThread(self, self.address)
 		self.t_receive = ReceiveThread(self, self.msg_queue)
 		self.t_task = ReceiveTaskThread(self, self.msg_queue)
 
