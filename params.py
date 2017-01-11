@@ -75,15 +75,15 @@ class Params:
     def add_listeners(self, network, vehicle):
         """
 			The function to observe updated values. These values must be contained in the params class
-			and a networking scheme (through drone_network) must be active. 
+			and a networking scheme (through drone_network) must be active.
 
-			Object vehicle can be accesed through network.vehicle but it is an input for 
+			Object vehicle can be accesed through network.vehicle but it is an input for
 			the correct syntax of python's decorator functions.
 
-			Any observers here are implemented based on the tutorial found in: 
+			Any observers here are implemented based on the tutorial found in:
 			http://python.dronekit.io/automodule.html#dronekit.Locations.on_attribute
 
-			Some of the values pass through thresholding so as to limit writes. 
+			Some of the values pass through thresholding so as to limit writes.
 			Thresholding is done based on experience and needs
 		"""
 
@@ -116,8 +116,8 @@ class Params:
                 network.vehicle_params.velocity = value
                 #logging.info('Velocity changed to: %s m/s', network.vehicle_params.velocity)
 
-        """	
-			Airspeed and groundspeed are exactly the same in the simulation but 
+        """
+			Airspeed and groundspeed are exactly the same in the simulation but
 			this is not applicable in real-life scenarios.
 			Tolerance is added to cm scale
 			Return: speed (m/s)
@@ -146,7 +146,7 @@ class Params:
             network.vehicle_params.ekf_ok = value
             logging.info('EKF availability changed to: %s', network.vehicle_params.ekf_ok)
 
-        #GPS-related info 
+        #GPS-related info
         #return: .eph (HDOP) .epv (VDOP) .fix_type .satellites_visible
         @vehicle.on_attribute('vehicle.gps_0')
         def decorated_gps_callback(self, attr_name, value):
@@ -154,10 +154,10 @@ class Params:
             network.vehicle_params.gps_sat = value.satellites_visible
             network.vehicle_params.gps_eph = value.eph
             network.vehicle_params.gps_epv = value.epv
-            logging.info('GPSInfo changed to:\nFix: %s\nSatellites: %s\nEPH: %s\nEPV: %s', 
-                network.vehicle_params.gps_fix, 
-                network.vehicle_params.gps_sat, 
-                network.vehicle_params.gps_eph, 
+            logging.info('GPSInfo changed to:\nFix: %s\nSatellites: %s\nEPH: %s\nEPV: %s',
+                network.vehicle_params.gps_fix,
+                network.vehicle_params.gps_sat,
+                network.vehicle_params.gps_eph,
                 network.vehicle_params.gps_epv)
 
         #Set altitude offboard
@@ -180,7 +180,7 @@ class Params:
             network.vehicle_params.mode = value.name
             logging.info('Mode changed to: %s', network.vehicle_params.mode)
 
-        """	
+        """
 			A precision of 7 decimal digits in lat/lon degrees is satisfactory.
 			Tolerance of 7 decimal digits in degrees equals 11 milimetres
 			http://gis.stackexchange.com/questions/8650/how-to-measure-the-accuracy-of-latitude-and-longitude
@@ -200,8 +200,8 @@ class Params:
                 network.vehicle_params.global_alt = round(value.alt, 2)
                 network.vehicle_params.global_lat = round(value.lat, 7)
                 network.vehicle_params.global_lon = round(value.lon, 7)
-                #logging.info('Location changed to:\nAlt: %s\nLat: %s\nLon: %s', 
-                 #   network.vehicle_params.global_alt, 
+                #logging.info('Location changed to:\nAlt: %s\nLat: %s\nLon: %s',
+                 #   network.vehicle_params.global_alt,
                   #  network.vehicle_params.global_lat,
                    # network.vehicle_params.global_lon)
 
