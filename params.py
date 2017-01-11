@@ -43,7 +43,7 @@ class Params:
             self.system_status = "OK"
 
         else:
-            self.ID = uuid.uuid4().int  #Random UUID
+            self.ID = vehicle.parameters['SYSID_THISMAV'] # Need to specify different ID parameters on APM/PIX advanced
             self.last_recv = None
             self.version = vehicle.version.release_version()
             self.ekf_ok = vehicle.ekf_ok
