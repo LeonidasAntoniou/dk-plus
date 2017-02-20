@@ -13,70 +13,71 @@ mail: leonidas.antoniou@gmail.com
 import threading, select, hashlib, socket, logging
 import cPickle as pickle
 
+
 class ReceiveThread(threading.Thread):
+    def __init__(self, network, q):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.network = network
+        self.msg_queue = q
+        self.count = 0
 
-	def __init__(self, network, q):
-		threading.Thread.__init__(self)
-		self.daemon = True
-		self.network = network
-		self.msg_queue = q
-		self.count = 0
+    def run(self):
+        while True:
 
-	def run(self):
-		while True:
+            try:
+                ready = select.select([self.network.sock_receive], [], [],
+                                      1.0)  # wait until a message is received - timeout 2s
 
-			try:
-				ready = select.select([self.network.sock_receive], [], [], 1.0) #wait until a message is received - timeout 2s
+                if ready[0]:
 
-				if ready[0]:
-					
-					d = self.network.sock_receive.recvfrom(4096)
-					raw_msg = d[0]
-					sender_addr = d[1]
-					sender_ip = (d[1])[0]
+                    d = self.network.sock_receive.recvfrom(4096)
+                    raw_msg = d[0]
+                    sender_addr = d[1]
+                    sender_ip = (d[1])[0]
 
-					#Keep verified messages, ignore the rest
-					try:
-						msg = pickle.loads(raw_msg)
-						if self.verify_md5_checksum(msg):
-							data = pickle.loads(msg[0])
-							
-							if data.ID == self.network.vehicle_params.ID: #Ignore messages from self. ID is given based on uuid at initialization time
-								pass
+                    # Keep verified messages, ignore the rest
+                    try:
+                        msg = pickle.loads(raw_msg)
+                        if self.verify_md5_checksum(msg):
+                            data = pickle.loads(msg[0])
 
-							else:
-								self.msg_queue.put((data, sender_addr, sender_ip))
-								logging.info("Received msg from: %s", sender_addr)
-								self.count = self.count + 1
-						else:
-							logging.warning("Received wrong data, ignoring")
-						
-					except pickle.UnpicklingError:
-						pass
-					
-			except (select.error, socket.error),  e:
-				logging.debug("Error in receive_thread: %s", e)
-				#Failsafe
-				break
-			
-	def verify_md5_checksum(self, raw_msg):
+                            if data.ID == self.network.vehicle_params.ID:  # Ignore messages from self. ID is given based on uuid at initialization time
+                                pass
 
-		if type(raw_msg) is tuple:
+                            else:
+                                self.msg_queue.put((data, sender_addr, sender_ip))
+                                logging.info("Received msg from: %s", sender_addr)
+                                self.count = self.count + 1
+                        else:
+                            logging.warning("Received wrong data, ignoring")
 
-			#Get MD5 of received message
-			m = hashlib.md5()
-			m.update(raw_msg[0])
-			received_data_hashed = m.digest()
+                    except pickle.UnpicklingError:
+                        pass
 
-			#Get received checksum
-			received_checksum = raw_msg[1]
+            except (select.error, socket.error), e:
+                logging.debug("Error in receive_thread: %s", e)
+                # Failsafe
+                break
 
-			if received_data_hashed == received_checksum:
-				#print 'Message verified!'
-				return True
+    def verify_md5_checksum(self, raw_msg):
 
-			else:
-				return False
+        if type(raw_msg) is tuple:
 
-		else:
-			return None
+            # Get MD5 of received message
+            m = hashlib.md5()
+            m.update(raw_msg[0])
+            received_data_hashed = m.digest()
+
+            # Get received checksum
+            received_checksum = raw_msg[1]
+
+            if received_data_hashed == received_checksum:
+                # print 'Message verified!'
+                return True
+
+            else:
+                return False
+
+        else:
+            return None
