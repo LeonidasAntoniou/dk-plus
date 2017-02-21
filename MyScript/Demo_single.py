@@ -4,7 +4,7 @@
 from dronekit import connect,VehicleMode,LocationGlobalRelative
 from takeoff import *
 
-connection_string = '127.0.0.1:5763'
+connection_string = 'tcp:127.0.0.1:5763'
 
 # Connect to the Vehicle
 print 'Connecting to vehicle1 on: %s' % connection_string
