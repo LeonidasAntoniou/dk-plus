@@ -51,6 +51,7 @@ class ReceiveThread(threading.Thread):
 
                                 if self.debug:
                                     print "Received msg from: %s", sender_addr, "Message:", data
+                                    print "Sender SYSID_THISMAV:", data.SYSID_THISMAV
 
                                 self.count += 1
                         else:

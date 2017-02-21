@@ -44,6 +44,7 @@ class Params:
 
         else:
             self.ID = uuid.uuid4().int  # Random UUID
+            self.SYSID_THISMAV=vehicle.parameters['SYSID_THISMAV']
             self.last_recv = None
             self.version = vehicle.version.release_version()
             self.ekf_ok = vehicle.ekf_ok
