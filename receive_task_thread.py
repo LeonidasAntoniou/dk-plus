@@ -8,7 +8,7 @@ Author: Leonidas Antoniou
 mail: leonidas.antoniou@gmail.com
 """
 
-import threading, Queue, time
+import threading, Queue, time, logging
 import geo_tools as geo
 from collections import namedtuple
 
@@ -28,7 +28,7 @@ class ReceiveTaskThread(threading.Thread):
 
             try:
                 (message, sender_addr, sender_ip) = self.msg_queue.get()
-                self.count = self.count + 1
+                self.count += 1
 
                 # print "Received drone info"
 

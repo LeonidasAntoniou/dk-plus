@@ -120,7 +120,7 @@ class CollisionThread(threading.Thread):
             # Manual flying drones without capabilities
             # Drones in Emergency/Critical state
             if (
-                        drone.mode in manual_modes and not has_capabilities and drone.system_status not in grounded_state) or has_mayday:
+                                drone.mode in manual_modes and not has_capabilities and drone.system_status not in grounded_state) or has_mayday:
                 top.append(drone)
 
             # Top importance drones in flying state or ready to fly
@@ -182,7 +182,7 @@ class CollisionThread(threading.Thread):
 
         # self.network.vehicle.mode = VehicleMode("GUIDED")
         # while self.network.vehicle.mode.name != "POSHOLD":
-        #	time.sleep(0.5)
+        #   time.sleep(0.5)
 
         # Give RC command so that we can bypass RC failsafe, 1500 means stay steady
         self.network.vehicle.channels.overrides['3'] = 1500  # throttle
@@ -250,7 +250,6 @@ class CollisionThread(threading.Thread):
 
     # while self.network.vehicle.mode.name != self.context.mode:
     # time.sleep(0.5)
-
 
     def update_drone_list(self):
 

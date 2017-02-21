@@ -15,16 +15,15 @@ import cPickle as pickle
 
 
 class ReceiveThread(threading.Thread):
-    def __init__(self, network, q):
+    def __init__(self, network, msg_queue):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
-        self.msg_queue = q
+        self.msg_queue = msg_queue
         self.count = 0
 
     def run(self):
         while True:
-
             try:
                 ready = select.select([self.network.sock_receive], [], [],
                                       1.0)  # wait until a message is received - timeout 2s
@@ -48,7 +47,7 @@ class ReceiveThread(threading.Thread):
                             else:
                                 self.msg_queue.put((data, sender_addr, sender_ip))
                                 logging.info("Received msg from: %s", sender_addr)
-                                self.count = self.count + 1
+                                self.count += 1
                         else:
                             logging.warning("Received wrong data, ignoring")
 
@@ -63,7 +62,6 @@ class ReceiveThread(threading.Thread):
     def verify_md5_checksum(self, raw_msg):
 
         if type(raw_msg) is tuple:
-
             # Get MD5 of received message
             m = hashlib.md5()
             m.update(raw_msg[0])
