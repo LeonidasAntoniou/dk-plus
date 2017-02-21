@@ -15,12 +15,13 @@ import cPickle as pickle
 
 
 class ReceiveThread(threading.Thread):
-    def __init__(self, network, msg_queue):
+    def __init__(self, network, msg_queue, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
         self.msg_queue = msg_queue
         self.count = 0
+        self.debug = debug
 
     def run(self):
         while True:
@@ -47,6 +48,10 @@ class ReceiveThread(threading.Thread):
                             else:
                                 self.msg_queue.put((data, sender_addr, sender_ip))
                                 logging.info("Received msg from: %s", sender_addr)
+
+                                if self.debug:
+                                    print "Received msg from: %s", sender_addr, "Message:", data
+
                                 self.count += 1
                         else:
                             logging.warning("Received wrong data, ignoring")

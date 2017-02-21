@@ -3,11 +3,12 @@ import cPickle as pickle
 
 
 class SendThread(threading.Thread):
-    def __init__(self, network, address):
+    def __init__(self, network, address, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
         self.address = address
+        self.debug = debug
 
     def run(self):
         # These functions will be running concurrently until the end of the main process
@@ -23,6 +24,7 @@ class SendThread(threading.Thread):
 
             except pickle.UnpicklingError, e:
                 data = " "
+                pickled_msg = pickle.dumps(data)
                 logging.debug("Pickling Error: %s", e)
 
             try:

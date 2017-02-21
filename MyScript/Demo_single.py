@@ -5,6 +5,9 @@ import logging
 from dronekit import connect,VehicleMode,LocationGlobalRelative
 from takeoff import *
 
+import sys
+sys.path.append("..")
+
 from drone_network import Networking
 from collision_avoidance import CollisionThread
 

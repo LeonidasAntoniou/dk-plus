@@ -16,12 +16,13 @@ remote_action = namedtuple("remote_action", "ID action params")
 
 
 class ReceiveTaskThread(threading.Thread):
-    def __init__(self, network, msg_queue):
+    def __init__(self, network, msg_queue, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
         self.msg_queue = msg_queue
         self.count = 0
+        self.debug = debug
 
     def run(self):
         while True:

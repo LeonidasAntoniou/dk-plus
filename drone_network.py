@@ -50,7 +50,7 @@ class Networking:
     CRITICAL_ZONE = 10  # metres
     POLL_RATE = 0.5  # how often to broadcast/receive messages
 
-    def __init__(self, address, protocol, vehicle):
+    def __init__(self, address, protocol, vehicle, debug=False):
         self.address = address
         self.vehicle = vehicle
         self.protocol = protocol
@@ -76,9 +76,9 @@ class Networking:
         self.sock_receive = None
 
         # Create transceiver and worker threads
-        self.t_send = SendThread(self, self.address)
-        self.t_receive = ReceiveThread(self, self.msg_queue)
-        self.t_task = ReceiveTaskThread(self, self.msg_queue)
+        self.t_send = SendThread(self, self.address,debug)
+        self.t_receive = ReceiveThread(self, self.msg_queue,debug)
+        self.t_task = ReceiveTaskThread(self, self.msg_queue,debug)
 
         self.receive_count = self.t_receive.count
         self.task_count = self.t_task.count
