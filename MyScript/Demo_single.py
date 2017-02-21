@@ -15,3 +15,10 @@ vehicle = connect(connection_string, wait_ready=True)
 print "\nGet all vehicle attribute values:"
 print " Autopilot Firmware version: %s" % vehicle.version
 print "System ID：%s" % vehicle.parameters['SYSID_THISMAV']
+
+time.sleep(10)
+# Close vehicle object before exiting script
+print "\nClose vehicle object"
+vehicle.close()
+
+print "Completed"
