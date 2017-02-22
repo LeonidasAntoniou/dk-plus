@@ -37,7 +37,12 @@ network.run()
 logging.info("Starting collision avoidance scheme")
 t_collision.start()
 
-time.sleep(10)
+time.sleep(15)
+
+# Close broadcast thread and socket
+logging.info("Close sockets")
+network.stop()
+
 # Close vehicle object before exiting script
 print "\nClose vehicle object"
 vehicle.close()
