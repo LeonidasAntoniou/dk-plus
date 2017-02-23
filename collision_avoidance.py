@@ -163,7 +163,7 @@ class CollisionThread(threading.Thread):
             # Print priorities
             print "Printing Priorities:"
             for drone in self.network.drones:
-                print "ID:", drone.ID, " Priority: ", drone.priority
+                print "ID:", drone.ID, "SYSID_THISMAV:", drone.SYSID_THISMAV, " Priority: ", drone.priority
 
     def take_control(self):
         """Changes speed to zero by changing mode and overriding the RC3 channel"""
