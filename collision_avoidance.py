@@ -19,7 +19,7 @@ Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 
 class CollisionThread(threading.Thread):
-    def __init__(self, network, algorithm=None):
+    def __init__(self, network, algorithm=None, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
@@ -28,6 +28,7 @@ class CollisionThread(threading.Thread):
         self.algorithm = algorithm
         self.in_session = False
         self.context = None
+        self.debug = debug
 
         self.update_proc = Process(target=self.update_drone_list)
         self.priority_proc = Process(target=self.give_priorities)
@@ -158,12 +159,11 @@ class CollisionThread(threading.Thread):
         drones = [top, high, medium, low]
         self.network.drones = list(itertools.chain.from_iterable(drones))
 
-        """
-        #Print priorities
-        print "Printing Priorities:"
-        for drone in self.network.drones:
-            print "ID:", drone.ID, " Priority: ", drone.priority
-        """
+        if self.debug:
+            # Print priorities
+            print "Printing Priorities:"
+            for drone in self.network.drones:
+                print "ID:", drone.ID, " Priority: ", drone.priority
 
     def take_control(self):
         """Changes speed to zero by changing mode and overriding the RC3 channel"""
