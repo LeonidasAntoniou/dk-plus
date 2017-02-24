@@ -39,15 +39,16 @@ if not args.connect:
                  '--home=-35.363261,149.165230,584,353']
     sitl.launch(sitl_args, await_ready=True, restart=True)
     connection_string = 'tcp:127.0.0.1:5760'
-
+    # connection_string = 'tcp:192.168.6.46:5763'
 # Connect to the Vehicle
 logging.info('Connecting to vehicle on: %s', connection_string)
 vehicle = connect(connection_string, wait_ready=True)
 vehicle.parameters['PHLD_BRAKE_RATE'] = 30
 
 # Create the interface with UDP broadcast sockets
-address = ("192.168.2.7", 54545)
+address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle)
+network.vehicle_params.print_all()
 
 # Add collision avoidance algorithm
 t_collision = CollisionThread(network, 'priorities')
