@@ -47,8 +47,8 @@ class ReceiveThread(threading.Thread):
 
                             else:
                                 self.msg_queue.put((data, sender_addr, sender_ip))
-                                logging.info("Received msg from: %s", sender_addr)
-                                logging.info("SYSID_THISMAV: %s", data.SYSID_THISMAV)
+                                logging.info("Received msg from: %s ; SYSID_THISMAV: %s"
+                                             , sender_addr, data.SYSID_THISMAV)
 
                                 self.count += 1
                         else:
