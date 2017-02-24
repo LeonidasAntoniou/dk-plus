@@ -117,7 +117,7 @@ The code also sets the yaw (MAV_CMD_CONDITION_YAW) using the `set_yaw()` method 
 so that the front of the vehicle points in the direction of travel
 """
 
-arm_and_takeoff(5)
+arm_and_takeoff(vehicle,10)
 
 # Set up velocity vector to map to each direction.
 # vx > 0 => fly North
