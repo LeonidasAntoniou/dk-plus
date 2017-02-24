@@ -20,7 +20,7 @@ print 'Connecting to vehicle1 on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
 # Create the interface with UDP broadcast sockets
-debug = True
+debug = False
 address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
