@@ -25,7 +25,7 @@ address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-t_collision = CollisionThread(network, 'priorities', debug)
+t_collision = CollisionThread(network)
 
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"
