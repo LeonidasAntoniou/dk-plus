@@ -17,7 +17,7 @@ sys.path.append("..")
 from drone_network import Networking
 from collision_avoidance import CollisionThread
 
-connection_string = '/dev/ttyUSB0,57600'
+connection_string = '/dev/ttyUSB0'
 logging.basicConfig(level=logging.INFO)
 
 # Connect to the Vehicle
