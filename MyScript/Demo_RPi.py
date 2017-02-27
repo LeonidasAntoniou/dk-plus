@@ -17,7 +17,25 @@ sys.path.append("..")
 from drone_network import Networking
 from collision_avoidance import CollisionThread
 
-connection_string = '/dev/ttyUSB0,57600'
+# connection_string = '/dev/ttyUSB0,57600'
+# Set up option parsing to get connection string
+import argparse
+
+parser = argparse.ArgumentParser(
+    description='Print out vehicle state information. Connects to SITL on local PC by default.')
+parser.add_argument('--connect',
+                    help="vehicle connection target string. If not specified, SITL automatically started and used.")
+args = parser.parse_args()
+
+connection_string = args.connect
+sitl = None
+
+# Start SITL if no connection string specified
+if not connection_string:
+    import dronekit_sitl
+
+    sitl = dronekit_sitl.start_default()
+    connection_string = sitl.connection_string()
 logging.basicConfig(level=logging.INFO)
 
 # Connect to the Vehicle
