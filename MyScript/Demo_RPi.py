@@ -42,3 +42,6 @@ network.run()
 
 logging.info("Starting collision avoidance scheme")
 t_collision.start()
+
+print "Press any key to exit script"
+exit = raw_input()
