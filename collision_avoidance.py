@@ -35,6 +35,11 @@ class CollisionThread(threading.Thread):
 
     def run(self):
         # Deploy your collision avoidance algorithm here
+        if self.debug:
+            logging.info("Debug Mode activated")
+        else:
+            pass
+
         while True:
             if self.debug:
                 self.debugmode()
@@ -53,8 +58,6 @@ class CollisionThread(threading.Thread):
     """Debug mode. Logging message if necessary"""
 
     def debugmode(self):
-        logging.info("Debug Mode activated")
-
         self.update_drone_list()
 
         own_lat = self.network.vehicle_params.global_lat
