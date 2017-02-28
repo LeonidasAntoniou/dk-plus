@@ -17,7 +17,16 @@ sys.path.append("..")
 from drone_network import Networking
 from collision_avoidance import CollisionThread
 
-connection_string = '/dev/ttyUSB0,57600'
+# Set up option parsing to get connection string
+import argparse
+
+parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
+parser.add_argument('--connect',
+                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
+args = parser.parse_args()
+
+connection_string = args.connect
+
 logging.basicConfig(level=logging.INFO)
 
 # Connect to the Vehicle
