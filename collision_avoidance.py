@@ -36,7 +36,10 @@ class CollisionThread(threading.Thread):
     def run(self):
         # Deploy your collision avoidance algorithm here
         while True:
-            if self.algorithm == None:
+            if self.debug:
+                self.debugmode()
+
+            elif self.algorithm == None:
                 self.no_protocol()
 
             elif self.algorithm == 'priorities':
@@ -46,6 +49,28 @@ class CollisionThread(threading.Thread):
                 pass
 
             time.sleep(0.5)
+
+    """Debug mode. Logging message if necessary"""
+
+    def debugmode(self):
+        logging.info("Debug Mode activated")
+
+        self.update_drone_list()
+
+        own_lat = self.network.vehicle_params.global_lat
+        own_lon = self.network.vehicle_params.global_lon
+
+        for drone in self.network.drones:
+
+            if drone.ID == self.network.vehicle_params.ID:
+                continue
+            else:
+                logging.info("SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
+                logging.info("Distance: %s",
+                             geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                logging.info("Velocity: %s", drone.velocity)
+                logging.info("Groundspeed: %s", drone.groundspeed)
+                logging.info("Airspeed: %s", drone.airspeed)
 
     """A Collision Avoidance API"""
 

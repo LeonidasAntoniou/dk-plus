@@ -80,35 +80,36 @@ def condition_yaw(heading, relative=False):
 
 
 # Set up option parsing to get connection string
-import argparse
+# import argparse
+#
+# parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
+# parser.add_argument('--connect',
+#                     help="Vehicle connection target string. If not specified, SITL automatically started and used.")
+# args = parser.parse_args()
+#
+# connection_string = args.connect
+# sitl = None
+#
+# # Start SITL if no connection string specified
+# if not connection_string:
+#     import dronekit_sitl
+#
+#     sitl = dronekit_sitl.start_default()
+#     connection_string = sitl.connection_string()
+# logging.basicConfig(level=logging.INFO)
 
-parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
-parser.add_argument('--connect',
-                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
-args = parser.parse_args()
-
-connection_string = args.connect
-sitl = None
-
-# Start SITL if no connection string specified
-if not connection_string:
-    import dronekit_sitl
-
-    sitl = dronekit_sitl.start_default()
-    connection_string = sitl.connection_string()
-logging.basicConfig(level=logging.INFO)
-
+connection_string = 'tcp:192.168.6.46:5763'
 # Connect to the Vehicle
 print 'Connecting to vehicle1 on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
 # Create the interface with UDP broadcast sockets
-debug = False
+debug = True
 address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-t_collision = CollisionThread(network)
+t_collision = CollisionThread(network, debug=debug)
 
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"
@@ -160,35 +161,41 @@ print("Yaw 180 absolute (South)")
 condition_yaw(180)
 
 print("Velocity South & up")
-send_ned_velocity(SOUTH, 0, UP, DURATION)
-send_ned_velocity(0, 0, 0, 1)
+send_ned_velocity(-10, 0, 0, 10)
 
-print("Yaw 270 absolute (West)")
-condition_yaw(270)
-
-print("Velocity West & down")
-send_ned_velocity(0, WEST, DOWN, DURATION)
-send_ned_velocity(0, 0, 0, 1)
-
-print("Yaw 0 absolute (North)")
-condition_yaw(0)
-
-print("Velocity North")
-send_ned_velocity(NORTH, 0, 0, DURATION)
-send_ned_velocity(0, 0, 0, 1)
-
-print("Yaw 90 absolute (East)")
-condition_yaw(90)
-
-print("Velocity East")
-send_ned_velocity(0, EAST, 0, DURATION)
-send_ned_velocity(0, 0, 0, 1)
+# print("Velocity South & up")
+# send_ned_velocity(SOUTH, 0, UP, DURATION)
+# send_ned_velocity(0, 0, 0, 1)
+#
+# print("Yaw 270 absolute (West)")
+# condition_yaw(270)
+#
+# print("Velocity West & down")
+# send_ned_velocity(0, WEST, DOWN, DURATION)
+# send_ned_velocity(0, 0, 0, 1)
+#
+# print("Yaw 0 absolute (North)")
+# condition_yaw(0)
+#
+# print("Velocity North")
+# send_ned_velocity(NORTH, 0, 0, DURATION)
+# send_ned_velocity(0, 0, 0, 1)
+#
+# print("Yaw 90 absolute (East)")
+# condition_yaw(90)
+#
+# print("Velocity East")
+# send_ned_velocity(0, EAST, 0, DURATION)
+# send_ned_velocity(0, 0, 0, 1)
 
 """
 The example is completing. Return to home location.
 """
 print("Setting RTL mode...")
 vehicle.mode = VehicleMode("RTL")
+
+while vehicle.mode.name != "RTL":
+    time.sleep(1)
 
 # Close vehicle object before exiting script
 print "Close vehicle object"
