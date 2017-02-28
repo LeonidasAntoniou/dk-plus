@@ -34,12 +34,12 @@ print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
 # Create the interface with UDP broadcast sockets
-debug = False
+debug = True
 address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-t_collision = CollisionThread(network)
+t_collision = CollisionThread(network, debug=True)
 
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"
