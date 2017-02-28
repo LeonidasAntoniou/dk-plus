@@ -71,6 +71,7 @@ class CollisionThread(threading.Thread):
                 logging.info("SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
                 logging.info("Distance: %s",
                              geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                logging.info("Heading: %s", drone.heading)
                 logging.info("Velocity: %s", drone.velocity)
                 logging.info("Groundspeed: %s", drone.groundspeed)
                 logging.info("Airspeed: %s", drone.airspeed)
