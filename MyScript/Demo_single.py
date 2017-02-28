@@ -2,10 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import logging
-from dronekit import connect, VehicleMode, LocationGlobalRelative
+from dronekit import connect
 from pymavlink import mavutil  # Needed for command message definitions
-
-import time
 from takeoff import *
 
 import sys
@@ -81,7 +79,23 @@ def condition_yaw(heading, relative=False):
     vehicle.send_mavlink(msg)
 
 
-connection_string = 'tcp:127.0.0.1:5763'
+# Set up option parsing to get connection string
+import argparse
+
+parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
+parser.add_argument('--connect',
+                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
+args = parser.parse_args()
+
+connection_string = args.connect
+sitl = None
+
+# Start SITL if no connection string specified
+if not connection_string:
+    import dronekit_sitl
+
+    sitl = dronekit_sitl.start_default()
+    connection_string = sitl.connection_string()
 logging.basicConfig(level=logging.INFO)
 
 # Connect to the Vehicle
@@ -117,7 +131,7 @@ The code also sets the yaw (MAV_CMD_CONDITION_YAW) using the `set_yaw()` method 
 so that the front of the vehicle points in the direction of travel
 """
 
-arm_and_takeoff(vehicle,10)
+arm_and_takeoff(vehicle, 10)
 
 # Set up velocity vector to map to each direction.
 # vx > 0 => fly North
