@@ -13,6 +13,8 @@ sys.path.append("..")
 from drone_network import Networking
 from collision_avoidance import CollisionThread
 
+logging.basicConfig(level=logging.INFO)
+
 
 def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
     """
