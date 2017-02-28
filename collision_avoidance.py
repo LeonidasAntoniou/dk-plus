@@ -307,12 +307,16 @@ class CollisionThread(threading.Thread):
             own_lon = self.network.vehicle_params.global_lon
 
             for drone in self.near:
-                logging.info("Drone approaching! ID: %s", drone.ID)
+                logging.info("Drone approaching! ID: %s ; SYSID_THISMAV: %s !", drone.ID, drone.SYSID_THISMAV)
                 logging.info("Distance: %s",
                              geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                logging.info("Velocity: %s", drone.velocity)
 
             for drone in self.critical:
-                logging.info("Drone too close!!!! ID: %s", drone.ID)
+                logging.info("Drone too close!!!! ID: %s ; SYSID_THISMAV: %s !", drone.ID, drone.SYSID_THISMAV)
+                logging.info("Distance: %s",
+                             geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                logging.info("Velocity: %s", drone.velocity)
 
     def current_mission(self):
         # Retrieves current mission of vehicle
