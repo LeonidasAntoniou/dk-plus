@@ -46,7 +46,8 @@ from receive_task_thread import ReceiveTaskThread
 
 class Networking:
     MAX_STAY = 5  # seconds until entry is removed from structure
-    MAX_ZONE = 40  # metres
+    MAX_ZONE = 500  # metres Consider as the maximum communication range
+    NEAR_ZONE = 50
     CRITICAL_ZONE = 10  # metres
     POLL_RATE = 0.5  # how often to broadcast/receive messages
 

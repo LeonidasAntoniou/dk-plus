@@ -321,10 +321,8 @@ class CollisionThread(threading.Thread):
             self.near = [item for item in drone_list if \
                          (item.ID != own.ID)
                          & (geo.get_distance_metres(own.global_lat, own.global_lon, item.global_lat,
-                                                    item.global_lon) <= self.network.MAX_ZONE) \
-                         & (geo.get_distance_metres(own.global_lat, own.global_lon, item.global_lat,
-                                                    item.global_lon) > self.network.CRITICAL_ZONE) \
-                         & (abs(own.global_alt - item.global_alt) <= self.network.MAX_ZONE)]
+                                                    item.global_lon) <= self.network.NEAR_ZONE) \
+                         & (abs(own.global_alt - item.global_alt) <= self.network.NEAR_ZONE)]
 
             # From the near drones, add any within a CRITICAL-metre range
             self.critical = [item for item in drone_list if \
