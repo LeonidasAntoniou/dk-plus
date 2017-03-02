@@ -58,6 +58,9 @@ class CollisionThread(threading.Thread):
             elif self.algorithm == 'priorities':
                 self.priorities_protocol()
 
+            elif self.algorithm == 'formation':
+                self.formation_protocol()
+
             else:
                 pass
 
@@ -86,6 +89,12 @@ class CollisionThread(threading.Thread):
                 logging.info("Airspeed: %s", drone.airspeed)
 
     """A Collision Avoidance API"""
+
+    def formation_protocol(self):
+
+        self.update_drone_list()
+
+        self.print_drones_in_formation()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -294,6 +303,7 @@ class CollisionThread(threading.Thread):
         # Empty previous list components
         self.near[:] = []
         self.critical[:] = []
+        self.teammate[:] = []
 
         # 1.Remove entries that have not been updated for the last MAX_STAY seconds
         self.network.drones = [item for item in self.network.drones if \
@@ -316,6 +326,9 @@ class CollisionThread(threading.Thread):
         else:
             # This value is slightly not concurrent
             own = self.network.vehicle_params
+
+            # From the formation drones.
+            self.teammate = [item for item in drone_list if (item.ID != own.ID)]
 
             # From the detected drones, add any within a SAFETY-to-CRITICAL-metre range
             self.near = [item for item in drone_list if \
@@ -370,3 +383,17 @@ class CollisionThread(threading.Thread):
 
         logging.info("Flying drone's priority number is: %s", priority_num)
         return priority_num
+
+    def print_drones_in_formation(self):
+        if len(self.teammate) == 0:
+            pass
+        else:
+            own_lat = self.network.vehicle_params.global_lat
+            own_lon = self.network.vehicle_params.global_lon
+
+            for drone in self.teammate:
+                logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
+                logging.info("Distance: %s",
+                             geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                logging.info("Velocity: %s", drone.velocity)
+                logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
