@@ -204,8 +204,4 @@ vehicle.close()
 logging.info("Close sockets")
 network.stop()
 
-# Close vehicle object before exiting script
-print "\nClose vehicle object"
-vehicle.close()
-
 print "Completed"

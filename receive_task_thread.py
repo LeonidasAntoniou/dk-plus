@@ -41,7 +41,7 @@ class ReceiveTaskThread(threading.Thread):
                 message.distance_from_self = geo.get_distance_metres(lat1, lon1, lat2, lon2)
 
                 # Ignore drones that are beyond safety zone
-                if message.distance_from_self > self.network.SAFETY_ZONE:
+                if message.distance_from_self > self.network.MAX_ZONE:
                     # print "Drone ", message.ID, " not dangerous"
                     pass
 

@@ -46,7 +46,7 @@ from receive_task_thread import ReceiveTaskThread
 
 class Networking:
     MAX_STAY = 5  # seconds until entry is removed from structure
-    SAFETY_ZONE = 40  # metres
+    MAX_ZONE = 40  # metres
     CRITICAL_ZONE = 10  # metres
     POLL_RATE = 0.5  # how often to broadcast/receive messages
 
@@ -76,9 +76,9 @@ class Networking:
         self.sock_receive = None
 
         # Create transceiver and worker threads
-        self.t_send = SendThread(self, self.address,debug)
-        self.t_receive = ReceiveThread(self, self.msg_queue,debug)
-        self.t_task = ReceiveTaskThread(self, self.msg_queue,debug)
+        self.t_send = SendThread(self, self.address, debug)
+        self.t_receive = ReceiveThread(self, self.msg_queue, debug)
+        self.t_task = ReceiveTaskThread(self, self.msg_queue, debug)
 
         self.receive_count = self.t_receive.count
         self.task_count = self.t_task.count

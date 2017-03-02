@@ -25,6 +25,7 @@ class CollisionThread(threading.Thread):
         self.network = network
         self.near = []
         self.critical = []
+        self.teammate = []  # Used for formation algorithm
         self.algorithm = algorithm
         self.in_session = False
         self.context = None
@@ -37,6 +38,13 @@ class CollisionThread(threading.Thread):
         # Deploy your collision avoidance algorithm here
         if self.debug:
             logging.info("Debug Mode activated")
+
+        elif self.algorithm == 'priorities':
+            logging.info("Algorithm priorities activated")
+
+        elif self.algorithm == 'formation':
+            logging.info("Algorithm formation activated")
+
         else:
             pass
 
@@ -58,6 +66,7 @@ class CollisionThread(threading.Thread):
     """Debug mode. Logging message if necessary"""
 
     def debugmode(self):
+
         self.update_drone_list()
 
         own_lat = self.network.vehicle_params.global_lat
@@ -312,10 +321,10 @@ class CollisionThread(threading.Thread):
             self.near = [item for item in drone_list if \
                          (item.ID != own.ID)
                          & (geo.get_distance_metres(own.global_lat, own.global_lon, item.global_lat,
-                                                    item.global_lon) <= self.network.SAFETY_ZONE) \
+                                                    item.global_lon) <= self.network.MAX_ZONE) \
                          & (geo.get_distance_metres(own.global_lat, own.global_lon, item.global_lat,
                                                     item.global_lon) > self.network.CRITICAL_ZONE) \
-                         & (abs(own.global_alt - item.global_alt) <= self.network.SAFETY_ZONE)]
+                         & (abs(own.global_alt - item.global_alt) <= self.network.MAX_ZONE)]
 
             # From the near drones, add any within a CRITICAL-metre range
             self.critical = [item for item in drone_list if \

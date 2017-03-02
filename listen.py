@@ -5,7 +5,7 @@ from params import Params
 
 MAX_DRONES = 15
 MAX_STAY = 4  # seconds
-SAFETY_ZONE = 40  # meters
+MAX_ZONE = 40  # meters
 CRITICAL_ZONE = 10  # meters
 HEADING_TOLERANCE = 5  # degrees
 # Set the socket parameters
@@ -72,11 +72,11 @@ def collision():
         # From the detected drones, add the ones  within a 40-metre range
         near = [item for item in params if (get_distance_metres( \
             {"lat": self_params.lat, "lon": self_params.lon}, \
-            {"lat": item.global_lat, "lon": item.global_lon}) <= SAFETY_ZONE) \
+            {"lat": item.global_lat, "lon": item.global_lon}) <= MAX_ZONE) \
                 & (get_distance_metres( \
             {"lat": self_params.lat, "lon": self_params.lon}, \
             {"lat": item.global_lat, "lon": item.global_lon}) > CRITICAL_ZONE) \
-                & (abs(self_params.alt - item.global_alt) <= SAFETY_ZONE)]
+                & (abs(self_params.alt - item.global_alt) <= MAX_ZONE)]
 
         # From the detected drones, add the ones within a 10-metre range
         critical = [item for item in near if (get_distance_metres( \

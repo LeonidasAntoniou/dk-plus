@@ -5,7 +5,7 @@ from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGloba
 from pymavlink import mavutil
 import cPickle as pickle
 
-SAFETY_ZONE = 40  # metres
+MAX_ZONE = 40  # metres
 CRITICAL_ZONE = 10  # metres
 
 Geo = namedtuple("Geo", "lat lon")  # For argument passing in get_distance_metres
@@ -43,8 +43,8 @@ def collision():
             # From the detected drones, add any within a 40-metre range
             near = [item for item in params if (get_distance_metres( \
                 self_params.global_lat, self_params.global_lon, \
-                item.global_lat, item.global_lon) <= SAFETY_ZONE) \
-                    & (abs(self_params.global_alt - item.global_alt) <= SAFETY_ZONE)]
+                item.global_lat, item.global_lon) <= MAX_ZONE) \
+                    & (abs(self_params.global_alt - item.global_alt) <= MAX_ZONE)]
 
             # From the near drones, add any within a 10-metre range
             critical = [item for item in near if (get_distance_metres( \
@@ -53,12 +53,12 @@ def collision():
                         & (abs(self_params.global_alt - item.global_alt) <= CRITICAL_ZONE)]
 
             """A premature check for the possibility of collision"""
-            ## * * * Not that simple! * * * Check dot/scalar products
+            # # * * * Not that simple! * * * Check dot/scalar products
             # Collision is most probable if the opponent's heading has at most -180 degrees difference with the drone's heading
             # Some tolerance is taken into account due to autopilot/weather conditions
             # Collision is impossible to happen if opponent's heading is between drone's heading and drone's heading + 180 degrees
             # collide = [item for item in near if (item.heading >= abs(abs((self_params.heading - HEADING_TOLERANCE) - 180) - 360) & \
-            #									   item.heading <= (self_params.heading + HEADING_TOLERANCE))]
+            # 									   item.heading <= (self_params.heading + HEADING_TOLERANCE))]
 
             for i in range(0, len(near)):
                 print "Drone approaching! ID: ", (near[i]).ID
@@ -67,14 +67,14 @@ def collision():
 
             for i in range(0, len(critical)):
                 print "Drone too close!!!! ID: ", (critical[i]).ID
-            # all halt
+                # all halt
 
-            # for i in range(0, len(collide)):
-            # print "Drone probable to collide!!! ID: ", (collide[i]).ID
-            # print "Opponent drone: Lat %s, Lon %s, Alt %s, Heading %s" % ((collide[i]).global_lat,(collide[i]).global_lon, \
-            # (collide[i]).global_alt, (collide[i]).heading)
-            # print "Our drone: Lat %s, Lon %s, Alt %s, Heading %s" % (self_params.lat,self_params.lon, \
-            # self_params.alt, self_params.heading)
+                # for i in range(0, len(collide)):
+                # print "Drone probable to collide!!! ID: ", (collide[i]).ID
+                # print "Opponent drone: Lat %s, Lon %s, Alt %s, Heading %s" % ((collide[i]).global_lat,(collide[i]).global_lon, \
+                # (collide[i]).global_alt, (collide[i]).heading)
+                # print "Our drone: Lat %s, Lon %s, Alt %s, Heading %s" % (self_params.lat,self_params.lon, \
+                # self_params.alt, self_params.heading)
 
         time.sleep(1)
 
