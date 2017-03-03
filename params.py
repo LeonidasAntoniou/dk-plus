@@ -54,7 +54,6 @@ class Params:
             self.gps_epv = vehicle.gps_0.epv
             self.set_global_alt = vehicle.capabilities.set_altitude_target_global_int
             self.set_attitude = vehicle.capabilities.set_attitude_target
-            self.armed = vehicle.armed
             self.mode = vehicle.mode.name
             self.global_alt = vehicle.location.global_relative_frame.alt
             self.global_lat = vehicle.location.global_relative_frame.lat
@@ -71,6 +70,7 @@ class Params:
             self.groundspeed = vehicle.groundspeed  # m/s
             self.airspeed = vehicle.airspeed  # m/s
             self.system_status = vehicle.system_status.state
+            self.armed = vehicle.armed
 
         self.add_listeners(network, vehicle)
 
@@ -98,6 +98,12 @@ class Params:
         def decorated_system_status_callback(self, attr_name, value):
             network.vehicle_params.system_status = value.state
             logging.info('System status changed to: %s', network.vehicle_params.system_status)
+
+        # State of ARMING
+        @vehicle.on_attribute('armed')
+        def decorated_armed_callback(self, attr_name, value):
+            network.vehicle_params.armed = value
+            logging.info('ARMING status changed to: %s', network.vehicle_params.armed)
 
         # Battery information
         @vehicle.on_attribute('battery')
