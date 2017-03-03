@@ -413,4 +413,5 @@ class CollisionThread(threading.Thread):
             for drone in self.teammate:
                 if drone.armed and drone.global_alt != 0:
                     arm_and_takeoff(self.network.vehicle)
+                    logging.info("Drone %s taken off,Taking off",drone.SYSID_THISMAV)
                     break
