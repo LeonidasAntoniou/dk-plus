@@ -7,7 +7,7 @@ import time
 
 def arm_and_takeoff(vehicle, target_alt=10):
     """
-    Arms vehicle and fly to aTargetAltitude.
+    Arms vehicle and fly to target_altitude.
     """
 
     print "Basic pre-arm checks"
