@@ -154,8 +154,8 @@ WEST = -2
 UP = -0.5
 DOWN = 0.5
 
-DURATION = 50
-STOP_DURATION = 20
+DURATION = 20
+STOP_DURATION = 10
 
 # Square path using velocity
 print("SQUARE path using SET_POSITION_TARGET_LOCAL_NED and velocity parameters")
@@ -197,6 +197,9 @@ vehicle.mode = VehicleMode("RTL")
 while vehicle.mode.name != "RTL":
     time.sleep(1)
 
+# Wait until landed and disarmed
+while vehicle.armed:
+    time.sleep(1)
 # Close vehicle object before exiting script
 print "Close vehicle object"
 vehicle.close()

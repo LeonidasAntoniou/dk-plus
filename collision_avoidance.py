@@ -370,7 +370,8 @@ class CollisionThread(threading.Thread):
                     logging.info("Distance: %s",
                                  geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
                     logging.info("Velocity: %s", drone.velocity)
-            if self.algorithm == 'formation':
+
+            elif self.algorithm == 'formation':
                 for drone in self.teammate:
                     logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
                     logging.info("Distance: %s",
@@ -403,17 +404,18 @@ class CollisionThread(threading.Thread):
         # Return and do nothing if it is landing
         if self.network.vehicle_params.mode == "RTL" or self.network.vehicle_params.mode == "LAND":
             return
+
         # Pass if it has already taken off
         if self.network.vehicle_params.armed and self.network.vehicle_params.global_alt != 0:
             for drone in self.teammate:
                 if drone.mode == "RTL" or drone.mode == "LAND":
+                    logging.info("Drone: %s landing, Landing off", drone.SYSID_THISMAV)
                     self.network.vehicle.mode = VehicleMode(drone.mode)
-                    logging.info("Drone: %s landing,Taking off", drone.SYSID_THISMAV)
                     break
         # or it is on the land and the other's not landing
         else:
             for drone in self.teammate:
                 if drone.armed and drone.global_alt != 0 and drone.mode == 'GUIDED':
+                    logging.info("Drone: %s taken off. Taking off !! ", drone.SYSID_THISMAV)
                     arm_and_takeoff(self.network.vehicle)
-                    logging.info("Drone: %s taken off,Taking off", drone.SYSID_THISMAV)
                     break
