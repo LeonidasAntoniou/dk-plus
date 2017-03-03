@@ -31,7 +31,7 @@ if not connection_string:
 logging.basicConfig(level=logging.INFO)
 
 # Connect to the Vehicle
-print 'Connecting to vehicle1 on: %s' % connection_string
+print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
 # Create the interface with UDP broadcast sockets
@@ -40,7 +40,7 @@ address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-t_collision = CollisionThread(network, algorithm='formation',debug=debug)
+t_collision = CollisionThread(network, algorithm='formation', debug=debug)
 
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"

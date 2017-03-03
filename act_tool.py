@@ -5,7 +5,7 @@ from dronekit import VehicleMode
 import time
 
 
-def arm_and_takeoff(vehicle, aTargetAltitude):
+def arm_and_takeoff(vehicle, target_alt=10):
     """
     Arms vehicle and fly to aTargetAltitude.
     """
@@ -27,14 +27,14 @@ def arm_and_takeoff(vehicle, aTargetAltitude):
         time.sleep(1)
 
     print "Taking off!"
-    vehicle.simple_takeoff(aTargetAltitude)  # Take off to target altitude
+    vehicle.simple_takeoff(target_alt)  # Take off to target altitude
 
     # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command
     #  after Vehicle.simple_takeoff will execute immediately).
     while True:
         print " Altitude: ", vehicle.location.global_relative_frame.alt
         # Break and return from function just below target altitude.
-        if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
+        if vehicle.location.global_relative_frame.alt >= target_alt * 0.95:
             print "Reached target altitude"
             break
         time.sleep(1)

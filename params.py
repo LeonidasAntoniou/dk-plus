@@ -44,7 +44,7 @@ class Params:
 
         else:
             self.ID = uuid.uuid4().int  # Random UUID
-            self.SYSID_THISMAV=vehicle.parameters['SYSID_THISMAV']
+            self.SYSID_THISMAV = vehicle.parameters['SYSID_THISMAV']
             self.last_recv = None
             self.version = vehicle.version.release_version()
             self.ekf_ok = vehicle.ekf_ok
@@ -54,6 +54,7 @@ class Params:
             self.gps_epv = vehicle.gps_0.epv
             self.set_global_alt = vehicle.capabilities.set_altitude_target_global_int
             self.set_attitude = vehicle.capabilities.set_attitude_target
+            self.armed = vehicle.armed
             self.mode = vehicle.mode.name
             self.global_alt = vehicle.location.global_relative_frame.alt
             self.global_lat = vehicle.location.global_relative_frame.lat

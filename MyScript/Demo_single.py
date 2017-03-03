@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import logging
-from dronekit import connect
+import logging,time
+from dronekit import connect,VehicleMode
 from pymavlink import mavutil  # Needed for command message definitions
-from takeoff import *
 
 import sys
 
@@ -12,6 +11,7 @@ sys.path.append("..")
 
 from drone_network import Networking
 from collision_avoidance import CollisionThread
+from act_tool import arm_and_takeoff
 
 logging.basicConfig(level=logging.INFO)
 
@@ -102,7 +102,7 @@ def condition_yaw(heading, relative=False):
 
 connection_string = 'tcp:192.168.6.46:5763'
 # Connect to the Vehicle
-print 'Connecting to vehicle1 on: %s' % connection_string
+print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
 # Create the interface with UDP broadcast sockets

@@ -14,6 +14,7 @@ from dronekit import VehicleMode, Command
 from operator import attrgetter
 from pymavlink import mavutil
 from collections import namedtuple
+from act_tool import arm_and_takeoff
 
 Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
@@ -95,6 +96,8 @@ class CollisionThread(threading.Thread):
         self.update_drone_list()
 
         self.print_drones_in_formation()
+
+        self.check_if_takeoff()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -397,3 +400,17 @@ class CollisionThread(threading.Thread):
                              geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
                 logging.info("Velocity: %s", drone.velocity)
                 logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
+
+    def check_if_takeoff(self):
+        """
+        Check whether the teammate has already taken off
+        :return:
+        """
+        # Pass if it has already taken off
+        if self.network.vehicle_params.armed and self.network.vehicle_params.global_alt != 0:
+            pass
+        else:
+            for drone in self.teammate:
+                if drone.armed and drone.global_alt != 0:
+                    arm_and_takeoff(self.network.vehicle)
+                    break
