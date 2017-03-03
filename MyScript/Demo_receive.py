@@ -30,6 +30,7 @@ if not connection_string:
     connection_string = sitl.connection_string()
 logging.basicConfig(level=logging.INFO)
 
+# connection_string = 'tcp:192.168.6.46:5763'
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)

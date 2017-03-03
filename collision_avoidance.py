@@ -95,7 +95,7 @@ class CollisionThread(threading.Thread):
 
         self.update_drone_list()
 
-        self.print_drones_in_formation()
+        self.print_drones_in_vicinity()
 
         self.check_if_takeoff()
 
@@ -350,7 +350,7 @@ class CollisionThread(threading.Thread):
     def print_drones_in_vicinity(self):
         # Print drone IDs that are in close and critical range
         # Inform if no such drones are found
-        if len(self.near) == 0 and len(self.critical) == 0:
+        if len(self.near) == 0 and len(self.critical) == 0 and len(self.teammate) == 0:
             # print "No dangerous drones found"
             pass
 
@@ -358,17 +358,25 @@ class CollisionThread(threading.Thread):
             own_lat = self.network.vehicle_params.global_lat
             own_lon = self.network.vehicle_params.global_lon
 
-            for drone in self.near:
-                logging.info("Drone approaching! ID: %s ; SYSID_THISMAV: %s !", drone.ID, drone.SYSID_THISMAV)
-                logging.info("Distance: %s",
-                             geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
-                logging.info("Velocity: %s", drone.velocity)
+            if self.algorithm == 'priorities':
+                for drone in self.near:
+                    logging.info("Drone approaching! ID: %s ; SYSID_THISMAV: %s !", drone.ID, drone.SYSID_THISMAV)
+                    logging.info("Distance: %s",
+                                 geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                    logging.info("Velocity: %s", drone.velocity)
 
-            for drone in self.critical:
-                logging.info("Drone too close!!!! ID: %s ; SYSID_THISMAV: %s !", drone.ID, drone.SYSID_THISMAV)
-                logging.info("Distance: %s",
-                             geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
-                logging.info("Velocity: %s", drone.velocity)
+                for drone in self.critical:
+                    logging.info("Drone too close!!!! ID: %s ; SYSID_THISMAV: %s !", drone.ID, drone.SYSID_THISMAV)
+                    logging.info("Distance: %s",
+                                 geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                    logging.info("Velocity: %s", drone.velocity)
+            if self.algorithm == 'formation':
+                for drone in self.teammate:
+                    logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
+                    logging.info("Distance: %s",
+                                 geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                    logging.info("Velocity: %s", drone.velocity)
+                    logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
 
     def current_mission(self):
         # Retrieves current mission of vehicle
@@ -387,31 +395,25 @@ class CollisionThread(threading.Thread):
         logging.info("Flying drone's priority number is: %s", priority_num)
         return priority_num
 
-    def print_drones_in_formation(self):
-        if len(self.teammate) == 0:
-            pass
-        else:
-            own_lat = self.network.vehicle_params.global_lat
-            own_lon = self.network.vehicle_params.global_lon
-
-            for drone in self.teammate:
-                logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
-                logging.info("Distance: %s",
-                             geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
-                logging.info("Velocity: %s", drone.velocity)
-                logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
-
     def check_if_takeoff(self):
         """
-        Check whether the teammate has already taken off
+        Check whether the teammate has already taken off or it is landing
         :return:
         """
+        # Return and do nothing if it is landing
+        if self.network.vehicle_params.mode == "RTL" or self.network.vehicle_params.mode == "LAND":
+            return
         # Pass if it has already taken off
         if self.network.vehicle_params.armed and self.network.vehicle_params.global_alt != 0:
-            pass
+            for drone in self.teammate:
+                if drone.mode == "RTL" or drone.mode == "LAND":
+                    self.network.vehicle.mode = VehicleMode(drone.mode)
+                    logging.info("Drone: %s landing,Taking off", drone.SYSID_THISMAV)
+                    break
+        # or it is on the land and the other's not landing
         else:
             for drone in self.teammate:
-                if drone.armed and drone.global_alt != 0:
+                if drone.armed and drone.global_alt != 0 and drone.mode == 'GUIDED':
                     arm_and_takeoff(self.network.vehicle)
                     logging.info("Drone: %s taken off,Taking off", drone.SYSID_THISMAV)
                     break
