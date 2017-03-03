@@ -20,7 +20,7 @@ Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 
 class CollisionThread(threading.Thread):
-    def __init__(self, network, algorithm=None, debug=False):
+    def __init__(self, network, algorithm=None, interval=0.1, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
@@ -31,6 +31,7 @@ class CollisionThread(threading.Thread):
         self.in_session = False
         self.context = None
         self.debug = debug
+        self.interval = interval
 
         self.update_proc = Process(target=self.update_drone_list)
         self.priority_proc = Process(target=self.give_priorities)
@@ -67,10 +68,10 @@ class CollisionThread(threading.Thread):
 
             time.sleep(0.5)
 
-    """Debug mode. Logging message if necessary"""
-
     def debugmode(self):
-
+        """
+        Debug mode. Logging message if necessary
+        """
         self.update_drone_list()
 
         own_lat = self.network.vehicle_params.global_lat
@@ -97,7 +98,12 @@ class CollisionThread(threading.Thread):
 
         self.print_drones_in_vicinity()
 
-        self.check_if_takeoff()
+        self.check_takeoff_land()
+
+        if self.network.vehicle_params.SYSID_THISMAV != 1:
+            vx, vy, vz = self.get_team_velocity()
+
+            self.send_ned_velocity(vx, vy, vz)
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -298,9 +304,6 @@ class CollisionThread(threading.Thread):
         # Flight mode
         self.network.vehicle.mode = VehicleMode(self.context.mode)
 
-    # while self.network.vehicle.mode.name != self.context.mode:
-    # time.sleep(0.5)
-
     def update_drone_list(self):
 
         # Empty previous list components
@@ -396,7 +399,42 @@ class CollisionThread(threading.Thread):
         logging.info("Flying drone's priority number is: %s", priority_num)
         return priority_num
 
-    def check_if_takeoff(self):
+    def send_ned_velocity(self, velocity_x, velocity_y, velocity_z, duration):
+        """
+        Move vehicle in direction based on specified velocity vectors and
+        for the specified duration.
+
+        This uses the SET_POSITION_TARGET_LOCAL_NED command with a type mask enabling only
+        velocity components
+        (http://dev.ardupilot.com/wiki/copter-commands-in-guided-mode/#set_position_target_local_ned).
+
+        Note that from AC3.3 the message should be re-sent every second (after about 3 seconds
+        with no message the velocity will drop back to zero). In AC3.2.1 and earlier the specified
+        velocity persists until it is canceled. The code below should work on either version
+        (sending the message multiple times does not cause problems).
+
+        See the above link for information on the type_mask (0=enable, 1=ignore).
+        At time of writing, acceleration and yaw bits are ignored.
+        """
+        msg = self.network.vehicle.message_factory.set_position_target_local_ned_encode(
+            0,  # time_boot_ms (not used)
+            0, 0,  # target system, target component
+            mavutil.mavlink.MAV_FRAME_LOCAL_NED,  # frame
+            0b0000111111000111,  # type_mask (only speeds enabled)
+            0, 0, 0,  # x, y, z positions (not used)
+            velocity_x, velocity_y, velocity_z,  # x, y, z velocity in m/s
+            0, 0, 0,  # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
+            0, 0)  # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
+
+        if duration is None:
+            duration = round(1.0 / self.interval)
+
+        # send command to vehicle on 1 Hz cycle
+        for x in range(0, duration):
+            self.network.vehicle.send_mavlink(msg)
+            time.sleep(self.interval)
+
+    def check_takeoff_land(self):
         """
         Check whether the teammate has already taken off or it is landing
         :return:
@@ -419,3 +457,15 @@ class CollisionThread(threading.Thread):
                     logging.info("Drone: %s taken off. Taking off !! ", drone.SYSID_THISMAV)
                     arm_and_takeoff(self.network.vehicle)
                     break
+
+    def get_team_velocity(self):
+        """
+        Temporary follow the SYSID_THISMAV 1 in speed.
+        :return:
+        """
+        for drone in self.teammate:
+            if drone.SYSID_THISMAV == 1:
+                velocity_x = drone.velocity[0]
+                velocity_y = drone.velocity[1]
+                velocity_z = drone.velocity[2]
+                return velocity_x, velocity_y, velocity_z
