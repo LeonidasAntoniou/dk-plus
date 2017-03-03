@@ -100,10 +100,10 @@ class CollisionThread(threading.Thread):
 
         self.check_takeoff_land()
 
-        if self.network.vehicle_params.SYSID_THISMAV != 1:
-            vx, vy, vz = self.get_team_velocity()
-
-            self.send_ned_velocity(vx, vy, vz)
+        # if self.network.vehicle_params.SYSID_THISMAV != 1:
+        #     vx, vy, vz = self.get_team_velocity()
+        #
+        #     self.send_ned_velocity(vx, vy, vz, duration=0.1)
 
     def no_protocol(self):
         # What to do if no protocol is specified
