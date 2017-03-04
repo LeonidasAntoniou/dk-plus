@@ -100,10 +100,7 @@ class CollisionThread(threading.Thread):
 
         self.check_takeoff_land()
 
-        # if self.network.vehicle_params.SYSID_THISMAV != 1:
-        #     vx, vy, vz = self.get_team_velocity()
-        #
-        #     self.send_ned_velocity(vx, vy, vz, duration=0.1)
+        self.get_team_velocity()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -446,7 +443,8 @@ class CollisionThread(threading.Thread):
         # Pass if it has already taken off
         if self.network.vehicle_params.armed and self.network.vehicle_params.global_alt != 0:
             for drone in self.teammate:
-                if drone.mode == "RTL" or drone.mode == "LAND":
+                if (drone.mode == "RTL" or drone.mode == "LAND") and drone.global_alt != 0:
+                    # On the way to home location or landing
                     logging.info("Drone: %s landing, Landing off", drone.SYSID_THISMAV)
                     self.network.vehicle.mode = VehicleMode(drone.mode)
                     break
@@ -463,9 +461,10 @@ class CollisionThread(threading.Thread):
         Temporary follow the SYSID_THISMAV 1 in speed.
         :return:
         """
-        for drone in self.teammate:
-            if drone.SYSID_THISMAV == 1:
-                velocity_x = drone.velocity[0]
-                velocity_y = drone.velocity[1]
-                velocity_z = drone.velocity[2]
-                return velocity_x, velocity_y, velocity_z
+        if self.network.vehicle_params.SYSID_THISMAV != 1:
+            for drone in self.teammate:
+                if drone.SYSID_THISMAV == 1:
+                    velocity_x = drone.velocity[0]
+                    velocity_y = drone.velocity[1]
+                    velocity_z = drone.velocity[2]
+                    self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=0.1)
