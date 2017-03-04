@@ -437,7 +437,8 @@ class CollisionThread(threading.Thread):
         :return:
         """
         # Return and do nothing if it is landing
-        if self.network.vehicle_params.mode == "RTL" or self.network.vehicle_params.mode == "LAND":
+        if (self.network.vehicle_params.mode == "RTL" or self.network.vehicle_params.mode == "LAND") \
+                and self.network.vehicle_params.global_alt != 0:
             return
 
         # Pass if it has already taken off
