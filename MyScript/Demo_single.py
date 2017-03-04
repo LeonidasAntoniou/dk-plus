@@ -154,8 +154,8 @@ WEST = -2
 UP = -0.5
 DOWN = 0.5
 
-DURATION = 20
-STOP_DURATION = 10
+DURATION = 40
+STOP_DURATION = 20
 
 # Square path using velocity
 print("SQUARE path using SET_POSITION_TARGET_LOCAL_NED and velocity parameters")
