@@ -476,3 +476,14 @@ class CollisionThread(threading.Thread):
                     velocity_y = drone.velocity[1]
                     velocity_z = drone.velocity[2]
                     self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=1)
+
+    def test_APF_formation(self):
+        """
+        Relate to Demo_formation.py to test the APF method only for one UAV
+        :return:
+        """
+        if self.network.vehicle_params.SYSID_THISMAV == 1:
+            velocity_x = self.formation.SendVelocity()[0]
+            velocity_y = self.formation.SendVelocity()[1]
+            velocity_z = self.formation.SendVelocity()[2]
+            self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=1)

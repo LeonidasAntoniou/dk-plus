@@ -12,7 +12,10 @@ import logging
 class Formation:
     def __init__(self, network):
         self.network = network
-        self.dampForce_K = -1
+        self.MaxLeadForce = 10
+        self.MaxForce = 10
+        self.dampForce_K = -1.0
+        self.leadForce_K = 0.2
         self.targetLocation = None
 
     def set_target_Loc(self, dNorth=-150, dEast=20):
@@ -55,15 +58,27 @@ class Formation:
         return dampForce
 
     def LeadForce(self):
-        pass
-        return 0
+        ownPos = np.array([self.network.vehicle_params.global_lat,
+                           self.network.vehicle_params.global_lon,
+                           self.network.vehicle_params.global_alt])
+        tarPos = np.array([self.targetLocation.lat,
+                           self.targetLocation.lon,
+                           self.targetLocation.alt])
+        force = self.leadForce_K * (tarPos - ownPos)
+        if np.linalg.norm(force) > self.MaxLeadForce:
+            force = force * self.MaxLeadForce / np.linalg.norm(force)
+        return force
 
     def FormationForce(self):
         pass
         return 0
 
     def TotalForce(self):
-        return self.FormationForce() + self.LeadForce() + self.DampForce()
+        force = self.FormationForce() + self.LeadForce() + self.DampForce()
+        if np.linalg.norm(force) > self.MaxForce:
+            force = force * self.MaxForce / np.linalg.norm(force)
+        return force
 
     def SendVelocity(self):
-        pass
+        velocity = self.TotalForce() * self.network.POLL_RATE
+        return list(velocity)
