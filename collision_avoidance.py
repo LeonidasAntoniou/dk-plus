@@ -353,6 +353,7 @@ class CollisionThread(threading.Thread):
     def print_drones_in_vicinity(self):
         # Print drone IDs that are in close and critical range
         # Inform if no such drones are found
+        logging.info("Distance to target: %s", self.formation.get_distance2target())
         if len(self.near) == 0 and len(self.critical) == 0 and len(self.teammate) == 0:
             # print "No dangerous drones found"
             pass
@@ -375,7 +376,6 @@ class CollisionThread(threading.Thread):
                     logging.info("Velocity: %s", drone.velocity)
 
             elif self.algorithm == 'formation':
-                logging.info("Distance to target: %s", self.formation.get_distance2target())
                 for drone in self.teammate:
                     logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
                     logging.info("Time stamp last received: %s", drone.last_recv)
