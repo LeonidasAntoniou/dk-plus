@@ -36,6 +36,7 @@ class CollisionThread(threading.Thread):
 
         self.formation = Formation(self.network)
 
+
         self.update_proc = Process(target=self.update_drone_list)
         self.priority_proc = Process(target=self.give_priorities)
 
@@ -381,6 +382,7 @@ class CollisionThread(threading.Thread):
                     logging.info("Time stamp last received: %s", drone.last_recv)
                     logging.info("Distance: %s",
                                  geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
+                    logging.info("Distance to target: %s",self.formation.get_distance2target())
                     logging.info("Velocity: %s", drone.velocity)
                     logging.info("Cental Velocity: %s", self.formation.get_cenVel(self.teammate))
                     logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)

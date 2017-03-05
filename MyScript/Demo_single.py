@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import logging,time
-from dronekit import connect,VehicleMode
+import logging, time
+from dronekit import connect, VehicleMode
 from pymavlink import mavutil  # Needed for command message definitions
 
 import sys
@@ -112,6 +112,7 @@ network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
 t_collision = CollisionThread(network, algorithm='formation', debug=debug)
+t_collision.formation.set_target_Loc()
 
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"
@@ -156,7 +157,6 @@ DOWN = 0.5
 
 DURATION = 20
 
-
 # Square path using velocity
 print("SQUARE path using SET_POSITION_TARGET_LOCAL_NED and velocity parameters")
 
@@ -167,7 +167,6 @@ print("Velocity South & up")
 send_ned_velocity(SOUTH, 0, UP, DURATION)
 send_ned_velocity(SOUTH, 0, 0, DURATION)
 send_ned_velocity(0, 0, 0, DURATION)
-
 
 # print("Yaw 270 absolute (West)")
 # condition_yaw(270)
