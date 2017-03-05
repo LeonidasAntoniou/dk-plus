@@ -376,7 +376,9 @@ class CollisionThread(threading.Thread):
 
             elif self.algorithm == 'formation':
                 for drone in self.teammate:
+
                     logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
+                    logging.info("Time stamp last received: %s", drone.last_recv)
                     logging.info("Distance: %s",
                                  geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
                     logging.info("Velocity: %s", drone.velocity)

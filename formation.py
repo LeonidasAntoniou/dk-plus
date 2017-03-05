@@ -19,9 +19,9 @@ class Formation:
             lat += drone.global_lat
             lon += drone.global_lon
             alt += drone.global_alt
-        c_lat = lat / float(len(teammate)+1.0)
-        c_lon = lon / float(len(teammate)+1.0)
-        c_alt = alt / float(len(teammate)+1.0)
+        c_lat = lat / float(len(teammate)+1)
+        c_lon = lon / float(len(teammate)+1)
+        c_alt = alt / float(len(teammate)+1)
 
         return c_lat, c_lon, c_alt
 
@@ -29,6 +29,6 @@ class Formation:
         velocity = self.network.vehicle_params.velocity
         for drone in teammate:
             velocity = [drone.velocity[i]+velocity[i] for i in range(len(velocity))]
-        cenVel = [x / float(len(teammate)) for x in velocity]
+        cenVel = [x / float(len(teammate)+1) for x in velocity]
 
         return cenVel
