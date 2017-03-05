@@ -29,6 +29,6 @@ class Formation:
         velocity = self.network.vehicle_params.velocity
         for drone in teammate:
             velocity += drone.velocity
-        velocity / float(len(teammate))
+        cenVel = [x / float(len(teammate)) for x in velocity]
 
-        return velocity
+        return cenVel
