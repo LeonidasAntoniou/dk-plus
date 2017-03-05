@@ -15,6 +15,7 @@ from operator import attrgetter
 from pymavlink import mavutil
 from collections import namedtuple
 from act_tool import arm_and_takeoff
+from formation import Formation
 
 Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
@@ -32,6 +33,8 @@ class CollisionThread(threading.Thread):
         self.context = None
         self.debug = debug
         self.interval = interval
+
+        self.formation = Formation(self.network)
 
         self.update_proc = Process(target=self.update_drone_list)
         self.priority_proc = Process(target=self.give_priorities)
@@ -377,7 +380,9 @@ class CollisionThread(threading.Thread):
                     logging.info("Distance: %s",
                                  geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
                     logging.info("Velocity: %s", drone.velocity)
+                    logging.info("Cental Velocity: %s", self.formation.get_cenVel(self.teammate))
                     logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
+                    logging.info("Cental Positon: %s", self.formation.get_cenPos(self.teammate))
 
     def current_mission(self):
         # Retrieves current mission of vehicle
