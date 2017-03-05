@@ -15,7 +15,7 @@ class Formation:
         self.dampForce_K = -1
         self.targetLocation = None
 
-    def set_target_Loc(self, dNorth=-200, dEast=20):
+    def set_target_Loc(self, dNorth=-150, dEast=20):
         self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
                                                   self.network.vehicle_params.global_lon,
                                                   self.network.vehicle_params.global_alt, dNorth, dEast)
