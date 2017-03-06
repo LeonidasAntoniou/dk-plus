@@ -21,7 +21,7 @@ Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 
 class CollisionThread(threading.Thread):
-    def __init__(self, network, algorithm=None, interval=0.1, debug=False):
+    def __init__(self, network, algorithm=None, interval=0.1, duration=0.5, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
@@ -32,7 +32,8 @@ class CollisionThread(threading.Thread):
         self.in_session = False
         self.context = None
         self.debug = debug
-        self.interval = interval
+        self.interval = interval  # send velocity interval
+        self.duration = duration  # send velocity duration
 
         self.formation = Formation(self.network)
 
@@ -103,7 +104,9 @@ class CollisionThread(threading.Thread):
 
         self.check_takeoff_land()
 
-        self.get_team_velocity()
+        # self.get_team_velocity()
+
+        self.test_APF_formation()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -403,7 +406,7 @@ class CollisionThread(threading.Thread):
         logging.info("Flying drone's priority number is: %s", priority_num)
         return priority_num
 
-    def send_ned_velocity(self, velocity_x, velocity_y, velocity_z, duration):
+    def send_ned_velocity(self, velocity_x, velocity_y, velocity_z):
         """
         Move vehicle in direction based on specified velocity vectors and
         for the specified duration.
@@ -420,6 +423,9 @@ class CollisionThread(threading.Thread):
         See the above link for information on the type_mask (0=enable, 1=ignore).
         At time of writing, acceleration and yaw bits are ignored.
         """
+
+        logging.info("Velocity send: %s", [velocity_x, velocity_y, velocity_z])
+
         msg = self.network.vehicle.message_factory.set_position_target_local_ned_encode(
             0,  # time_boot_ms (not used)
             0, 0,  # target system, target component
@@ -430,11 +436,10 @@ class CollisionThread(threading.Thread):
             0, 0, 0,  # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
             0, 0)  # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
 
-        if duration is None:
-            duration = round(1.0 / self.interval)
+        duration_range = int(self.duration / self.interval)
 
         # send command to vehicle on 1 Hz cycle
-        for x in range(0, duration):
+        for x in range(0, duration_range):
             self.network.vehicle.send_mavlink(msg)
             time.sleep(self.interval)
 
@@ -483,7 +488,6 @@ class CollisionThread(threading.Thread):
         :return:
         """
         if self.network.vehicle_params.SYSID_THISMAV == 1:
-            velocity_x = self.formation.SendVelocity()[0]
-            velocity_y = self.formation.SendVelocity()[1]
-            velocity_z = self.formation.SendVelocity()[2]
-            self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=1)
+            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity()
+
+            self.send_ned_velocity(velocity_x, velocity_y, velocity_z)

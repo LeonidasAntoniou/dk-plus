@@ -21,7 +21,7 @@ from drone_network import Networking
 from collision_avoidance import CollisionThread
 from act_tool import arm_and_takeoff
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 # Set up option parsing to get connection string
 import argparse
@@ -40,9 +40,15 @@ if not connection_string:
 
     sitl = dronekit_sitl.start_default()
     connection_string = sitl.connection_string()
-logging.basicConfig(level=logging.INFO)
 
-# connection_string = 'tcp:192.168.6.46:5763'
+logging.basicConfig(level=logging.DEBUG,
+                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='./my.log',
+                filemode='w')
+
+connection_string = 'tcp:192.168.6.46:5763'
+
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
@@ -55,16 +61,21 @@ network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 # Add collision avoidance algorithm
 t_collision = CollisionThread(network, algorithm='formation', debug=debug)
 
-# Set the targetLocation for the team
-t_collision.formation.set_target_Loc(dNorth=-150, dEast=20)
-
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"
 print " Autopilot Firmware version: %s" % vehicle.version
 print "System ID：%s" % vehicle.parameters['SYSID_THISMAV']
+
+# Set the targetLocation for the team
+t_collision.formation.set_target_Loc(dNorth=-50, dEast=20)
+
+arm_and_takeoff(vehicle, 10)
 
 logging.info("Initializing interface")
 network.run()
 
 logging.info("Starting collision avoidance scheme")
 t_collision.start()
+
+print "Press any key to exit script"
+exit = raw_input()

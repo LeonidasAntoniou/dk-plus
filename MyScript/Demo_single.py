@@ -100,7 +100,7 @@ if not connection_string:
     connection_string = sitl.connection_string()
 logging.basicConfig(level=logging.INFO)
 
-# connection_string = 'tcp:192.168.6.46:5763'
+connection_string = 'tcp:192.168.6.46:5763'
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
@@ -111,9 +111,7 @@ address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-t_collision = CollisionThread(network, algorithm='formation', debug=debug)
-# Set the targetLocation for the team
-t_collision.formation.set_target_Loc(dNorth=-150, dEast=20)
+t_collision = CollisionThread(network, algorithm=None, debug=debug)
 
 # Get all vehicle attributes (state)
 print "\nGet all vehicle attribute values:"
@@ -165,7 +163,6 @@ print("Yaw 180 absolute (South)")
 condition_yaw(180)
 
 print("Velocity South & up")
-send_ned_velocity(SOUTH, 0, UP, DURATION)
 send_ned_velocity(SOUTH, 0, 0, DURATION)
 send_ned_velocity(0, 0, 0, DURATION)
 

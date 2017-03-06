@@ -15,10 +15,10 @@ class Formation:
         self.MaxLeadForce = 10
         self.MaxForce = 10
         self.dampForce_K = -1.0
-        self.leadForce_K = 0.2
+        self.leadForce_K = 1
         self.targetLocation = None
 
-    def set_target_Loc(self, dNorth=-150, dEast=20):
+    def set_target_Loc(self, dNorth=-100, dEast=20):
         self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
                                                   self.network.vehicle_params.global_lon,
                                                   self.network.vehicle_params.global_alt, dNorth, dEast)
@@ -55,18 +55,31 @@ class Formation:
 
     def DampForce(self):
         dampForce = self.dampForce_K * np.array(self.network.vehicle_params.velocity)
+
+        # For now, no force on the altitude
+        dampForce[-1] = 0
+        logging.debug("Damp Force: %s", dampForce)
         return dampForce
 
     def LeadForce(self):
         ownPos = np.array([self.network.vehicle_params.global_lat,
-                           self.network.vehicle_params.global_lon,
-                           self.network.vehicle_params.global_alt])
+                           self.network.vehicle_params.global_lon])
         tarPos = np.array([self.targetLocation.lat,
-                           self.targetLocation.lon,
-                           self.targetLocation.alt])
-        force = self.leadForce_K * (tarPos - ownPos)
+                           self.targetLocation.lon])
+
+        ownAlt = np.array([self.network.vehicle_params.global_alt])
+        tarAlt = np.array([self.targetLocation.lat])
+
+        force = self.leadForce_K * (tarPos - ownPos) / np.linalg.norm(tarPos - ownPos)
+
         if np.linalg.norm(force) > self.MaxLeadForce:
             force = force * self.MaxLeadForce / np.linalg.norm(force)
+
+        # For now, no force on the altitude
+        force = np.append(force, 0)
+        logging.debug("ownPos: %s", ownPos)
+        logging.debug("tarPos: %s", tarPos)
+        logging.debug("Lead force: %s", force)
         return force
 
     def FormationForce(self):
@@ -77,8 +90,14 @@ class Formation:
         force = self.FormationForce() + self.LeadForce() + self.DampForce()
         if np.linalg.norm(force) > self.MaxForce:
             force = force * self.MaxForce / np.linalg.norm(force)
+        logging.debug("Total force: %s ", force)
         return force
 
     def SendVelocity(self):
-        velocity = self.TotalForce() * self.network.POLL_RATE
+        add_vel = self.TotalForce() * self.network.POLL_RATE
+        velocity = np.array(self.network.vehicle_params.velocity) + add_vel
+
+        logging.debug("Velociy: %s",self.network.vehicle_params.velocity)
+        logging.debug("Add velocity: %s ", add_vel)
+
         return list(velocity)
