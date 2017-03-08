@@ -144,7 +144,7 @@ class Formation:
         # For now, no force on the altitude
         force = np.append(force, 0)
 
-        logging.debug("central_Position: %s ; target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
+        logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
         logging.debug("Lead force: %s", force)
         return force
 
@@ -161,6 +161,8 @@ class Formation:
             FormationForce = self.FormationForce_K * (Formation_position - ownPos)
             # For now no force on Altitude
             FormationForce[-1] = 0
+
+            logging.debug("Formation force: %s ", FormationForce)
         return FormationForce
 
     def TotalForce(self, teammate, single):
