@@ -106,10 +106,8 @@ class CollisionThread(threading.Thread):
         self.check_takeoff_land()
 
         # self.follow_leader_velocity()
-        if self.single:
-            self.test_APF_formation()
-        if not self.single:
-            self.APF_formation()
+
+        self.APF_formation()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -485,18 +483,20 @@ class CollisionThread(threading.Thread):
                     velocity_z = drone.velocity[2]
                     self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=1)
 
-    def test_APF_formation(self):
-        """
-        Relate to Demo_formation.py to test the APF method only for one UAV
-        :return:
-        """
-        if self.network.vehicle_params.SYSID_THISMAV == 1:
-            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
-
-            self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+    # def test_APF_formation(self):
+    #     """
+    #     Relate to Demo_formation.py to test the APF method only for one UAV
+    #     :return:
+    #     """
+    #     if self.network.vehicle_params.SYSID_THISMAV == 1:
+    #         velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
+    #
+    #         self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
 
     def APF_formation(self):
-
-        velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
+        if not self.single:
+            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
+        else:
+            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(teammate=[])
 
         self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
