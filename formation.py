@@ -72,7 +72,7 @@ class Formation:
         c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
         abPos = Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)
 
-        return list(abPos[:, :3].ravel())
+        return list(np.array(abPos).ravel())
 
     def set_target_Loc(self, lat, lon, dNorth=-100, dEast=20):
         # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
