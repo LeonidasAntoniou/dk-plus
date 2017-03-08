@@ -69,7 +69,7 @@ class Formation:
              [0, math.cos(phi), -math.sin(phi)],
              [0, math.sin(phi), math.cos(phi)]])
 
-        c = self.FormationPosition[:, self.network.vehicle_params.SYSID_THISMAV - 1].reshape(3, 1)
+        c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
         abPos = Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)
 
         return list(abPos[:, :3].ravel())
@@ -151,7 +151,9 @@ class Formation:
                                self.network.vehicle_params.global_lon,
                                self.network.vehicle_params.global_alt])
 
-            FormationForce = self.FormationForce_K * (self.getPosition(teammate) - ownPos)
+            Formation_position=self.getPosition(teammate)
+
+            FormationForce = self.FormationForce_K * ( Formation_position- ownPos)
             # For now no force on Altitude
             FormationForce[-1] = 0
         return FormationForce

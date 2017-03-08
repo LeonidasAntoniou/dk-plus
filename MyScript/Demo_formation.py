@@ -48,7 +48,7 @@ logging.basicConfig(level=logging.DEBUG,
                     filename='my.log',
                     filemode='w')
 
-# connection_string = 'tcp:192.168.6.46:5763'
+connection_string = 'tcp:192.168.6.46:5763'
 
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
@@ -70,7 +70,7 @@ print "System ID：%s" % vehicle.parameters['SYSID_THISMAV']
 
 # Set the targetLocation for the team
 t_collision.formation.set_target_Loc(dNorth=-50, dEast=20)
-t_collision.formation.setFormation(np.array([[10, -10],
+t_collision.formation.setFormation(np.array([[10.0, -10.0],
                                              [0, 0],
                                              [0, 0]]))
 
