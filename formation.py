@@ -16,7 +16,7 @@ class Formation:
         self.MaxForce = 10
         self.dampForce_K = -1.0
         self.leadForce_K = 1
-        self.FormationForce_K = 0.5
+        self.FormationForce_K = 0.5 * 10e5
         self.targetLocation = None
         self.FormationPosition = None
 
@@ -43,14 +43,28 @@ class Formation:
         # newlon = lon + (dLon * 180 / math.pi)
         # self.FormationPosition = np.matrix(set)
 
-    def getPosition(self, teammate):
-        x = self.get_cenPos(teammate)[0]
-        y = self.get_cenPos(teammate)[1]
-        z = self.get_cenPos(teammate)[2]
+    def set_target_Loc(self, lat, lon, dNorth=-100, dEast=20):
+        # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
+        #                                           self.network.vehicle_params.global_lon,
+        #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
 
-        Vx = self.get_cenVel(teammate)[0]
-        Vy = self.get_cenVel(teammate)[1]
-        Vz = self.get_cenVel(teammate)[2]
+        self.targetLocation = get_location_metres(lat,
+                                                  lon,
+                                                  self.network.vehicle_params.global_alt, dNorth, dEast)
+
+        logging.info("Target Location set: %s", self.targetLocation)
+
+    def get_target_Loc(self):
+        return self.targetLocation
+
+    def get_distance2target(self):
+        return get_distance_metres(self.network.vehicle_params.global_lat, self.network.vehicle_params.global_lon,
+                                   self.targetLocation.lat, self.targetLocation.lon)
+
+    def getPosition(self, teammate):
+        x, y, z = self.get_cenPos(teammate)
+
+        Vx, Vy, Vz = self.get_cenVel(teammate)
 
         if (Vx > 0 and Vy > 0) or (Vx < 0 and Vy > 0):
             theta = math.pi / 2 - math.atan(Vx / Vy)
@@ -75,24 +89,6 @@ class Formation:
         abPos = Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)
 
         return list(np.array(abPos).ravel())
-
-    def set_target_Loc(self, lat, lon, dNorth=-100, dEast=20):
-        # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
-        #                                           self.network.vehicle_params.global_lon,
-        #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
-
-        self.targetLocation = get_location_metres(lat,
-                                                  lon,
-                                                  self.network.vehicle_params.global_alt, dNorth, dEast)
-
-        logging.info("Target Location set: %s", self.targetLocation)
-
-    def get_target_Loc(self):
-        return self.targetLocation
-
-    def get_distance2target(self):
-        return get_distance_metres(self.network.vehicle_params.global_lat, self.network.vehicle_params.global_lon,
-                                   self.targetLocation.lat, self.targetLocation.lon)
 
     def get_cenPos(self, teammate):
         lat = self.network.vehicle_params.global_lat
