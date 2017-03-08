@@ -484,9 +484,7 @@ class CollisionThread(threading.Thread):
                     self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=1)
 
     def APF_formation(self):
-        if not self.single:
-            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
-        else:
-            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(teammate=[])
+
+        velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate, self.single)
 
         self.send_ned_velocity(velocity_x, velocity_y, velocity_z)

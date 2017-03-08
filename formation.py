@@ -121,9 +121,9 @@ class Formation:
         logging.debug("Damp Force: %s", dampForce)
         return dampForce
 
-    def LeadForce(self, teammate):
+    def LeadForce(self, teammate, single):
 
-        if len(teammate) == 0:
+        if len(teammate) == 0 or single:
             cenPos = np.array([self.network.vehicle_params.global_lat,
                                self.network.vehicle_params.global_lon])
             cenAlt = np.array([self.network.vehicle_params.global_alt])
@@ -144,12 +144,12 @@ class Formation:
         # For now, no force on the altitude
         force = np.append(force, 0)
 
-        logging.debug("central_Position: %s ; target_Position: %s ;", cenPos, tarPos)
+        logging.debug("central_Position: %s ; target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
         logging.debug("Lead force: %s", force)
         return force
 
-    def FormationForce(self, teammate):
-        if len(teammate) == 0:
+    def FormationForce(self, teammate, single):
+        if len(teammate) == 0 or single:
             FormationForce = 0
         else:
             ownPos = np.array([self.network.vehicle_params.global_lat,
@@ -163,15 +163,17 @@ class Formation:
             FormationForce[-1] = 0
         return FormationForce
 
-    def TotalForce(self, teammate):
-        force = self.FormationForce(teammate) + self.LeadForce(teammate) + self.DampForce()
+    def TotalForce(self, teammate, single):
+
+        force = self.FormationForce(teammate, single) + self.LeadForce(teammate, single) + self.DampForce()
+
         if np.linalg.norm(force) > self.MaxForce:
             force = force * self.MaxForce / np.linalg.norm(force)
         logging.debug("Total force: %s ", force)
         return force
 
-    def SendVelocity(self, teammate):
-        add_vel = self.TotalForce(teammate) * self.network.POLL_RATE
+    def SendVelocity(self, teammate, single):
+        add_vel = self.TotalForce(teammate, single) * self.network.POLL_RATE
         velocity = np.array(self.network.vehicle_params.velocity) + add_vel
 
         # For now Vz=0
