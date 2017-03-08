@@ -20,19 +20,20 @@ class Formation:
         self.targetLocation = None
         self.FormationPosition = None
 
-    def setPosition(self, set):
+    def setFormation(self, formation_set):
         # Because the range for the operation is quite small, we use the specific latitude
         # 116.3397540 means the latitude for SYS
         earth_radius = 6378137.0  # Radius of "spherical" earth
-        for i in range(0, set.shape[0]):
-            for j in range(0, set.shape[1]):
+        for i in range(0, formation_set.shape[0]):
+            for j in range(0, formation_set.shape[1]):
                 if i == 0:
                     # Lat
-                    set[i, j] = (set[i, j] / earth_radius) * 180 / math.pi
+                    formation_set[i, j] = (formation_set[i, j] / earth_radius) * 180 / math.pi
                 if i == 1:
                     # Lon
-                    set[i, j] = (set[i, j] / (earth_radius * math.cos(math.pi * 39.9793234) / 180)) * 180 / math.pi
-        self.FormationPosition = np.matrix(set)
+                    formation_set[i, j] = (formation_set[i, j] / (
+                        earth_radius * math.cos(math.pi * 39.9793234) / 180)) * 180 / math.pi
+        self.FormationPosition = np.matrix(formation_set)
         # # Coordinate offsets in radians
         # dLat = dNorth / earth_radius
         # dLon = dEast / (earth_radius * math.cos(math.pi * lat / 180))

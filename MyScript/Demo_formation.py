@@ -20,6 +20,7 @@ sys.path.append("..")
 from drone_network import Networking
 from collision_avoidance import CollisionThread
 from act_tool import arm_and_takeoff
+import numpy as np
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -59,7 +60,7 @@ address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-single = True
+single = False
 t_collision = CollisionThread(network, algorithm='formation', single=single, debug=debug)
 
 # Get all vehicle attributes (state)
@@ -69,6 +70,9 @@ print "System ID：%s" % vehicle.parameters['SYSID_THISMAV']
 
 # Set the targetLocation for the team
 t_collision.formation.set_target_Loc(dNorth=-50, dEast=20)
+t_collision.formation.setFormation(np.array([[10, -10],
+                                             [0, 0],
+                                             [0, 0]]))
 
 arm_and_takeoff(vehicle, 10)
 
