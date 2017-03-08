@@ -74,10 +74,15 @@ class Formation:
 
         return list(abPos[:, :3].ravel())
 
-    def set_target_Loc(self, dNorth=-100, dEast=20):
-        self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
-                                                  self.network.vehicle_params.global_lon,
+    def set_target_Loc(self, lat, lon, dNorth=-100, dEast=20):
+        # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
+        #                                           self.network.vehicle_params.global_lon,
+        #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
+
+        self.targetLocation = get_location_metres(lat,
+                                                  lon,
                                                   self.network.vehicle_params.global_alt, dNorth, dEast)
+
         logging.info("Target Location set: %s", self.targetLocation)
 
     def get_target_Loc(self):
@@ -151,9 +156,9 @@ class Formation:
                                self.network.vehicle_params.global_lon,
                                self.network.vehicle_params.global_alt])
 
-            Formation_position=self.getPosition(teammate)
+            Formation_position = self.getPosition(teammate)
 
-            FormationForce = self.FormationForce_K * ( Formation_position- ownPos)
+            FormationForce = self.FormationForce_K * (Formation_position - ownPos)
             # For now no force on Altitude
             FormationForce[-1] = 0
         return FormationForce
