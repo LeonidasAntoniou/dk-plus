@@ -21,7 +21,7 @@ Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 
 class CollisionThread(threading.Thread):
-    def __init__(self, network, algorithm=None, interval=0.1, duration=0.5, debug=False):
+    def __init__(self, network, algorithm=None, single=True, interval=0.1, duration=0.5, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
@@ -36,6 +36,7 @@ class CollisionThread(threading.Thread):
         self.duration = duration  # send velocity duration
 
         self.formation = Formation(self.network)
+        self.single = single  # For one UAV in formation
 
         self.update_proc = Process(target=self.update_drone_list)
         self.priority_proc = Process(target=self.give_priorities)
@@ -104,9 +105,11 @@ class CollisionThread(threading.Thread):
 
         self.check_takeoff_land()
 
-        # self.get_team_velocity()
-
-        self.test_APF_formation()
+        # self.follow_leader_velocity()
+        if self.single:
+            self.test_APF_formation()
+        if not self.single:
+            self.APF_formation()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -469,7 +472,7 @@ class CollisionThread(threading.Thread):
                     arm_and_takeoff(self.network.vehicle)
                     break
 
-    def get_team_velocity(self):
+    def follow_leader_velocity(self):
         """
         Temporary follow the SYSID_THISMAV 1 in speed.
         :return:
@@ -488,6 +491,12 @@ class CollisionThread(threading.Thread):
         :return:
         """
         if self.network.vehicle_params.SYSID_THISMAV == 1:
-            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity()
+            velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
 
             self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+
+    def APF_formation(self):
+
+        velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate)
+
+        self.send_ned_velocity(velocity_x, velocity_y, velocity_z)

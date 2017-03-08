@@ -16,7 +16,62 @@ class Formation:
         self.MaxForce = 10
         self.dampForce_K = -1.0
         self.leadForce_K = 1
+        self.FormationForce_K = 0.5
         self.targetLocation = None
+        self.FormationPosition = None
+
+    def setPosition(self, set):
+        # Because the range for the operation is quite small, we use the specific latitude
+        # 116.3397540 means the latitude for SYS
+        earth_radius = 6378137.0  # Radius of "spherical" earth
+        for i in range(0, set.shape[0]):
+            for j in range(0, set.shape[1]):
+                if i == 0:
+                    # Lat
+                    set[i, j] = (set[i, j] / earth_radius) * 180 / math.pi
+                if i == 1:
+                    # Lon
+                    set[i, j] = (set[i, j] / (earth_radius * math.cos(math.pi * 39.9793234) / 180)) * 180 / math.pi
+        self.FormationPosition = np.matrix(set)
+        # # Coordinate offsets in radians
+        # dLat = dNorth / earth_radius
+        # dLon = dEast / (earth_radius * math.cos(math.pi * lat / 180))
+        #
+        # # New position in decimal degrees
+        # newlat = lat + (dLat * 180 / math.pi)
+        # newlon = lon + (dLon * 180 / math.pi)
+        # self.FormationPosition = np.matrix(set)
+
+    def getPosition(self, teammate):
+        x = self.get_cenPos(teammate)[0]
+        y = self.get_cenPos(teammate)[1]
+        z = self.get_cenPos(teammate)[2]
+
+        Vx = self.get_cenVel(teammate)[0]
+        Vy = self.get_cenVel(teammate)[1]
+        Vz = self.get_cenVel(teammate)[2]
+
+        if (Vx > 0 and Vy > 0) or (Vx < 0 and Vy > 0):
+            theta = math.pi / 2 - math.atan(Vx / Vy)
+        else:
+            theta = - math.atan(Vx / Vy)
+
+        phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
+
+        Rotaz = np.matrix(
+            [[math.cos(theta), math.sin(theta), 0],
+             [-math.sin(theta), math.cos(theta), 0],
+             [0, 0, 1]])
+
+        Rotax = np.matrix(
+            [[1, 0, 0],
+             [0, math.cos(phi), -math.sin(phi)],
+             [0, math.sin(phi), math.cos(phi)]])
+
+        c = self.FormationPosition[:, self.network.vehicle_params.SYSID_THISMAV - 1].reshape(3, 1)
+        abPos = Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)
+
+        return list(abPos[:, :3].ravel())
 
     def set_target_Loc(self, dNorth=-100, dEast=20):
         self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
@@ -42,7 +97,6 @@ class Formation:
         c_lat = lat / float(len(teammate) + 1)
         c_lon = lon / float(len(teammate) + 1)
         c_alt = alt / float(len(teammate) + 1)
-
         return c_lat, c_lon, c_alt
 
     def get_cenVel(self, teammate):
@@ -61,43 +115,61 @@ class Formation:
         logging.debug("Damp Force: %s", dampForce)
         return dampForce
 
-    def LeadForce(self):
-        ownPos = np.array([self.network.vehicle_params.global_lat,
-                           self.network.vehicle_params.global_lon])
+    def LeadForce(self, teammate):
+
+        if len(teammate) == 0:
+            cenPos = np.array([self.network.vehicle_params.global_lat,
+                               self.network.vehicle_params.global_lon])
+            cenAlt = np.array([self.network.vehicle_params.global_alt])
+        else:
+            cenPos = self.get_cenPos(teammate)[0:2]
+            cenAlt = self.get_cenPos(teammate)[-1]
+
         tarPos = np.array([self.targetLocation.lat,
                            self.targetLocation.lon])
 
-        ownAlt = np.array([self.network.vehicle_params.global_alt])
         tarAlt = np.array([self.targetLocation.lat])
 
-        force = self.leadForce_K * (tarPos - ownPos) / np.linalg.norm(tarPos - ownPos)
+        force = self.leadForce_K * (tarPos - cenPos) / np.linalg.norm(tarPos - cenPos)
 
         if np.linalg.norm(force) > self.MaxLeadForce:
             force = force * self.MaxLeadForce / np.linalg.norm(force)
 
         # For now, no force on the altitude
         force = np.append(force, 0)
-        logging.debug("ownPos: %s", ownPos)
-        logging.debug("tarPos: %s", tarPos)
+
+        logging.debug("central_Position: %s ; target_Position: %s ;", cenPos, tarPos)
         logging.debug("Lead force: %s", force)
         return force
 
-    def FormationForce(self):
-        pass
-        return 0
+    def FormationForce(self, teammate):
+        if len(teammate) == 0:
+            FormationForce = 0
+        else:
+            ownPos = np.array([self.network.vehicle_params.global_lat,
+                               self.network.vehicle_params.global_lon,
+                               self.network.vehicle_params.global_alt])
 
-    def TotalForce(self):
-        force = self.FormationForce() + self.LeadForce() + self.DampForce()
+            FormationForce = self.FormationForce_K * (self.getPosition(teammate) - ownPos)
+            # For now no force on Altitude
+            FormationForce[-1] = 0
+        return FormationForce
+
+    def TotalForce(self, teammate):
+        force = self.FormationForce(teammate) + self.LeadForce(teammate) + self.DampForce()
         if np.linalg.norm(force) > self.MaxForce:
             force = force * self.MaxForce / np.linalg.norm(force)
         logging.debug("Total force: %s ", force)
         return force
 
-    def SendVelocity(self):
-        add_vel = self.TotalForce() * self.network.POLL_RATE
+    def SendVelocity(self, teammate):
+        add_vel = self.TotalForce(teammate) * self.network.POLL_RATE
         velocity = np.array(self.network.vehicle_params.velocity) + add_vel
 
-        logging.debug("Velociy: %s",self.network.vehicle_params.velocity)
+        # For now Vz=0
+        velocity[-1] = 0.0
+
+        logging.debug("Current Velociy: %s", self.network.vehicle_params.velocity)
         logging.debug("Add velocity: %s ", add_vel)
 
         return list(velocity)
