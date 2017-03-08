@@ -54,6 +54,8 @@ class Formation:
 
         if (Vx > 0 and Vy > 0) or (Vx < 0 and Vy > 0):
             theta = math.pi / 2 - math.atan(Vx / Vy)
+        elif Vy == 0:
+            theta = math.pi / 2
         else:
             theta = - math.atan(Vx / Vy)
 
