@@ -78,8 +78,8 @@ t_collision.formation.set_target_Loc(lat=39.979352, lon=116.345748, alt=10, dNor
 #                                              [20.0, 0, -20.0],
 #                                              [0, 0, 0]]))
 
-t_collision.formation.setFormation(np.array([[0, 0],
-                                             [-10.0, 10.0],
+t_collision.formation.setFormation(np.array([[-10.0, 10.0],
+                                             [0, 0],
                                              [0, 0]]))
 
 logging.info("Initializing interface")
