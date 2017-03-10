@@ -71,7 +71,7 @@ class CollisionThread(threading.Thread):
             else:
                 pass
 
-            time.sleep(0.5)
+            time.sleep(self.network.POLL_RATE)
 
     def debugmode(self):
         """

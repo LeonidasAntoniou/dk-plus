@@ -49,7 +49,7 @@ class Networking:
     MAX_ZONE = 500  # metres Consider as the maximum communication range
     NEAR_ZONE = 50  # metres
     CRITICAL_ZONE = 10  # metres
-    POLL_RATE = 0.5  # how often to broadcast/receive messages
+    POLL_RATE = 0.1  # how often to broadcast/receive messages
 
     def __init__(self, address, protocol, vehicle, debug=False):
         self.address = address
