@@ -2,7 +2,7 @@ from dronekit import LocationGlobal, LocationGlobalRelative
 import math
 
 
-def get_location_metres(lat, lon, alt, dNorth, dEast):
+def get_location_metres(lat, lon, alt, dNorth, dEast, dDown=None):
     """
     Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the 
     specified `original_location`. The returned Location has the same `alt` value
@@ -22,7 +22,10 @@ def get_location_metres(lat, lon, alt, dNorth, dEast):
     # New position in decimal degrees
     newlat = lat + (dLat * 180 / math.pi)
     newlon = lon + (dLon * 180 / math.pi)
-    return LocationGlobal(newlat, newlon, alt)
+    if Down is None:
+        return LocationGlobal(newlat, newlon, alt)
+    else:
+        return newlat, newlon, alt + dDown
 
 
 def get_distance_metres(lat1, lon1, lat2, lon2):
