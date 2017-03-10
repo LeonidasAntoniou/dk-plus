@@ -71,9 +71,9 @@ print "System ID：%s" % vehicle.parameters['SYSID_THISMAV']
 # Set the targetLocation for the team, Heading South
 # t_collision.formation.set_target_Loc(lat=39.979352, lon=116.339748, alt=10, dNorth=-90, dEast=0)
 # Heading East
-t_collision.formation.set_target_Loc(lat=39.979352, lon=116.345748, alt=10, dNorth=-90, dEast=0)
+t_collision.formation.set_target_Loc(lat=39.979352, lon=116.339748, alt=10, dNorth=0, dEast=100)
 # Haading West
-# t_collision.formation.set_target_Loc(lat=39.979352, lon=116.289748, alt=10, dNorth=-90, dEast=0)
+# t_collision.formation.set_target_Loc(lat=39.979352, lon=116.339748, alt=10, dNorth=-90, dEast=-100)
 # t_collision.formation.setFormation(np.array([[0, 0, 0],
 #                                              [20.0, 0, -20.0],
 #                                              [0, 0, 0]]))
