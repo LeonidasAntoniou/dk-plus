@@ -2,7 +2,7 @@ from dronekit import LocationGlobal, LocationGlobalRelative
 import math
 
 
-def get_location_metres(lat, lon, alt, dNorth, dEast, dDown=None):
+def get_location_metres(lat, lon, alt, dNorth, dEast):
     """
     Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the 
     specified `original_location`. The returned Location has the same `alt` value
@@ -22,10 +22,29 @@ def get_location_metres(lat, lon, alt, dNorth, dEast, dDown=None):
     # New position in decimal degrees
     newlat = lat + (dLat * 180 / math.pi)
     newlon = lon + (dLon * 180 / math.pi)
-    if Down is None:
-        return LocationGlobal(newlat, newlon, alt)
-    else:
-        return newlat, newlon, alt + dDown
+    return LocationGlobal(newlat, newlon, alt)
+
+
+def get_location_formation(lat, lon, alt, dNorth, dEast, dDown):
+    """
+    Return global coordinates relate to formation center
+    :param lat:
+    :param lon:
+    :param alt:
+    :param dNorth:
+    :param dEast:
+    :param dDown:
+    :return:
+    """
+    earth_radius = 6378137.0  # Radius of "spherical" earth
+    # Coordinate offsets in radians
+    dLat = dNorth / earth_radius
+    dLon = dEast / (earth_radius * math.cos(math.pi * lat / 180))
+
+    # New position in decimal degrees
+    newlat = lat + (dLat * 180 / math.pi)
+    newlon = lon + (dLon * 180 / math.pi)
+    return newlat, newlon, alt - dDown
 
 
 def get_distance_metres(lat1, lon1, lat2, lon2):

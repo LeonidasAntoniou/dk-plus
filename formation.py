@@ -17,7 +17,7 @@ class Formation:
         self.dampForce_K = -1.0
         self.leadForce_K = 1
         self.FormationForce_K = 10e2
-        self.HomeLocation = None
+        self.TeamHomeLocation = None
         self.targetLocation = None
         self.FormationPosition = None
 
@@ -48,10 +48,10 @@ class Formation:
         # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
         #                                           self.network.vehicle_params.global_lon,
         #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
-        self.HomeLocation = [lat, lon, 0]
+        self.TeamHomeLocation = [lat, lon, 0]
         self.targetLocation = get_location_metres(lat,
                                                   lon,
-                                                  alt, dNorth, dEast)
+                                                  alt + self.network.vehicle_params.global_alt, dNorth, dEast)
 
         logging.info("Target Location set: %s", self.targetLocation)
 
@@ -88,12 +88,11 @@ class Formation:
              [0, math.sin(phi), math.cos(phi)]])
 
         c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
-        abPos = list(np.array(Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)).ravel())
+        abPos = np.array(Rotaz * Rotax * c).ravel()
 
-        Pos = get_location_metres(self.HomeLocation[0],
-                                  self.HomeLocation[1],
-                                  self.HomeLocation[2], abPos[0], abPos[1], abPos[2])
-
+        Pos = np.array(get_location_formation(x,
+                                              y,
+                                              z, abPos[0], abPos[1], abPos[2]))
         return Pos
 
     def get_cenPos(self, teammate):
