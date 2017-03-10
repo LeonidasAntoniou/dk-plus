@@ -66,12 +66,13 @@ class Formation:
 
         Vx, Vy, Vz = self.get_cenVel(teammate)
 
-        if (Vx > 0 and Vy > 0) or (Vx < 0 and Vy > 0):
-            theta = math.pi / 2 - math.atan(Vx / Vy)
-        elif Vy == 0:
-            theta = math.pi / 2
+        if (Vx > 0 and Vy > 0) or (Vx > 0 and Vy < 0):
+            theta = math.pi / 2 - math.atan(Vy / Vx)
         else:
-            theta = - math.atan(Vx / Vy)
+            if Vy != 0:
+                theta = math.pi + math.atan(Vx / Vy)
+            else:
+                theta = math.pi + math.pi / 2
 
         phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
 
@@ -91,6 +92,11 @@ class Formation:
         return list(np.array(abPos).ravel())
 
     def get_cenPos(self, teammate):
+        """
+         Nearly proximate because we are running in a quite small range
+        :param teammate:
+        :return:
+        """
         lat = self.network.vehicle_params.global_lat
         lon = self.network.vehicle_params.global_lon
         alt = self.network.vehicle_params.global_alt
