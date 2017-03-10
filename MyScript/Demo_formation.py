@@ -60,7 +60,7 @@ address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-single = True
+single = False
 t_collision = CollisionThread(network, algorithm='formation', single=single, debug=debug)
 
 # Get all vehicle attributes (state)
