@@ -48,7 +48,7 @@ logging.basicConfig(level=logging.DEBUG,
                     filename='my.log',
                     filemode='w')
 
-connection_string = 'tcp:192.168.6.46:5763'
+# connection_string = 'tcp:192.168.6.46:5763'
 
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
