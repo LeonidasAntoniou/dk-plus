@@ -93,7 +93,7 @@ class Formation:
         Pos = np.array(get_location_formation(x,
                                               y,
                                               z, abPos[0], abPos[1], abPos[2]))
-
+        logging.debug("Position in formation: %s", Pos)
         return Pos + self.TeamHomeLocation
 
     def get_cenPos(self, teammate):
