@@ -70,13 +70,13 @@ print "System ID：%s" % vehicle.parameters['SYSID_THISMAV']
 
 # Set the targetLocation for the team
 t_collision.formation.set_target_Loc(lat=39.979352, lon=116.339748, alt=10, dNorth=-90, dEast=0)
-t_collision.formation.setFormation(np.array([[0, 0, 0],
-                                             [20.0, 0, -20.0],
-                                             [0, 0, 0]]))
-#
-# t_collision.formation.setFormation(np.array([[10.0, -10.0],
-#                                              [0, 0],
-#                                              [0, 0]]))
+# t_collision.formation.setFormation(np.array([[0, 0, 0],
+#                                              [20.0, 0, -20.0],
+#                                              [0, 0, 0]]))
+
+t_collision.formation.setFormation(np.array([[10.0, -10.0],
+                                             [0, 0],
+                                             [0, 0]]))
 
 logging.info("Initializing interface")
 network.run()
