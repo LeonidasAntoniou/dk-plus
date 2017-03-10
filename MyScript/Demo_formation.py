@@ -48,7 +48,7 @@ logging.basicConfig(level=logging.DEBUG,
                     filename='my.log',
                     filemode='w')
 
-# connection_string = 'tcp:192.168.6.46:5763'
+connection_string = 'tcp:192.168.6.46:5763'
 
 # Connect to the Vehicle
 print 'Connecting to vehicle on: %s' % connection_string
@@ -60,7 +60,7 @@ address = ("192.168.6.255", 54545)
 network = Networking(address, "UDP_BROADCAST", vehicle, debug)
 
 # Add collision avoidance algorithm
-single = False
+single = True
 t_collision = CollisionThread(network, algorithm='formation', single=single, debug=debug)
 
 # Get all vehicle attributes (state)

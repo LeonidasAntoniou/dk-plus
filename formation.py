@@ -48,10 +48,10 @@ class Formation:
         # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
         #                                           self.network.vehicle_params.global_lon,
         #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
-        self.TeamHomeLocation = [lat, lon, 0]
+        self.TeamHomeLocation = np.array([lat, lon, 0])
         self.targetLocation = get_location_metres(lat,
                                                   lon,
-                                                  alt + self.network.vehicle_params.global_alt, dNorth, dEast)
+                                                  alt, dNorth, dEast)
 
         logging.info("Target Location set: %s", self.targetLocation)
 
@@ -93,7 +93,8 @@ class Formation:
         Pos = np.array(get_location_formation(x,
                                               y,
                                               z, abPos[0], abPos[1], abPos[2]))
-        return Pos
+
+        return Pos + self.TeamHomeLocation
 
     def get_cenPos(self, teammate):
         """
