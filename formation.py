@@ -16,7 +16,7 @@ class Formation:
         self.MaxForce = 10
         self.dampForce_K = -1.0
         self.leadForce_K = 1
-        self.FormationForce_K = 10e2
+        self.FormationForce_K = 10e3
         self.TeamHomeLocation = None
         self.targetLocation = None
         self.FormationPosition = None
