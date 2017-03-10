@@ -92,7 +92,7 @@ class Formation:
 
         Pos = get_location_metres(self.HomeLocation[0],
                                   self.HomeLocation[1],
-                                  self.HomeLocation[2], abPos[0], abPos[1])
+                                  self.HomeLocation[2], abPos[0], abPos[1], abPos[2])
 
         return Pos
 
