@@ -90,11 +90,16 @@ class Formation:
         c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
         abPos = np.array(Rotaz * Rotax * c).ravel()
 
+        logging.debug("Local Formation Position : %s", abPos)
+
         Pos = np.array(get_location_formation(x,
                                               y,
                                               z, abPos[0], abPos[1], abPos[2]))
-        logging.debug("Position in formation: %s", Pos)
-        return Pos + self.TeamHomeLocation
+
+        Global_Pos = Pos + self.TeamHomeLocation
+
+        logging.debug("Global Formation Position : %s", Global_Pos)
+        return Global_Pos
 
     def get_cenPos(self, teammate):
         """
@@ -170,7 +175,7 @@ class Formation:
             FormationForce = self.FormationForce_K * (Formation_position - ownPos)
             # For now no force on Altitude
             FormationForce[-1] = 0
-
+            logging.debug("Own Position: %s", ownPos)
             logging.debug("Formation force: %s ", FormationForce)
         return FormationForce
 
