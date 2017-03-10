@@ -17,22 +17,23 @@ class Formation:
         self.dampForce_K = -1.0
         self.leadForce_K = 1
         self.FormationForce_K = 10e2
+        self.HomeLocation = None
         self.targetLocation = None
         self.FormationPosition = None
 
     def setFormation(self, formation_set):
         # Because the range for the operation is quite small, we use the specific latitude
         # 116.3397540 means the latitude for SYS
-        earth_radius = 6378137.0  # Radius of "spherical" earth
-        for i in range(0, formation_set.shape[0]):
-            for j in range(0, formation_set.shape[1]):
-                if i == 0:
-                    # Lat
-                    formation_set[i, j] = (formation_set[i, j] / earth_radius) * 180 / math.pi
-                if i == 1:
-                    # Lon
-                    formation_set[i, j] = (formation_set[i, j] / (
-                        earth_radius * math.cos(math.pi * 39.9793234) / 180)) * 180 / math.pi
+        # earth_radius = 6378137.0  # Radius of "spherical" earth
+        # for i in range(0, formation_set.shape[0]):
+        #     for j in range(0, formation_set.shape[1]):
+        #         if i == 0:
+        #             # Lat
+        #             formation_set[i, j] = (formation_set[i, j] / earth_radius) * 180 / math.pi
+        #         if i == 1:
+        #             # Lon
+        #             formation_set[i, j] = (formation_set[i, j] / (
+        #                 earth_radius * math.cos(math.pi * 39.9793234) / 180)) * 180 / math.pi
         self.FormationPosition = np.matrix(formation_set)
         # # Coordinate offsets in radians
         # dLat = dNorth / earth_radius
@@ -43,14 +44,14 @@ class Formation:
         # newlon = lon + (dLon * 180 / math.pi)
         # self.FormationPosition = np.matrix(set)
 
-    def set_target_Loc(self, lat, lon, dNorth=-100, dEast=20):
+    def set_target_Loc(self, lat, lon, alt=10, dNorth=-100, dEast=20):
         # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
         #                                           self.network.vehicle_params.global_lon,
         #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
-
+        self.HomeLocation = [lat, lon, 0]
         self.targetLocation = get_location_metres(lat,
                                                   lon,
-                                                  self.network.vehicle_params.global_alt, dNorth, dEast)
+                                                  alt, dNorth, dEast)
 
         logging.info("Target Location set: %s", self.targetLocation)
 
@@ -87,9 +88,13 @@ class Formation:
              [0, math.sin(phi), math.cos(phi)]])
 
         c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
-        abPos = Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)
+        abPos = list(np.array(Rotaz * Rotax * c + np.matrix([x, y, z]).reshape(3, 1)).ravel())
 
-        return list(np.array(abPos).ravel())
+        Pos = get_location_metres(self.HomeLocation[0],
+                                  self.HomeLocation[1],
+                                  self.HomeLocation[2], abPos[0], abPos[1])
+
+        return Pos
 
     def get_cenPos(self, teammate):
         """
