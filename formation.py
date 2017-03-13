@@ -14,8 +14,8 @@ class Formation:
         self.network = network
         self.MaxLeadForce = 10
         self.MaxForce = 10
-        self.dampForce_K = -1.0
-        self.leadForce_K = 1
+        self.dampForce_K = 1
+        self.leadForce_K = 10e4
         self.FormationForce_K = 10e3
         self.TeamHomeLocation = None
         self.targetLocation = None
@@ -124,7 +124,7 @@ class Formation:
                                self.network.vehicle_params.global_alt])
 
         else:
-            cenPos = self.get_cenPos(teammate)
+            cenPos = np.array(self.get_cenPos(teammate))
 
         tarPos = np.array([self.targetLocation.lat,
                            self.targetLocation.lon,
@@ -138,7 +138,7 @@ class Formation:
         if np.linalg.norm(leadforce) > self.MaxLeadForce:
             leadforce = leadforce * self.MaxLeadForce / np.linalg.norm(leadforce)
 
-        logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
+        logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate), tarPos)
         logging.debug("Lead force: %s", leadforce)
 
         return leadforce
@@ -162,6 +162,7 @@ class Formation:
         # return FormationForce
 
     def TotalForce(self, teammate, single):
+
         LeadForce = self.LeadForce(teammate, single)
         FormationForce = self.FormationForce(teammate, single)
         DampForce = self.DampForce()
