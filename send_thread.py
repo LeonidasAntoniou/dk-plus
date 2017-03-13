@@ -25,13 +25,13 @@ class SendThread(threading.Thread):
             except pickle.UnpicklingError, e:
                 data = " "
                 pickled_msg = pickle.dumps(data)
-                logging.debug("Pickling Error: %s", e)
+                # logging.debug("Pickling Error: %s", e)
 
             try:
                 self.network.sock_send.sendto(pickled_msg, self.address)
 
             except socket.error, e:
-                logging.debug("Failed to broadcast: %s", e)
+                # logging.debug("Failed to broadcast: %s", e)
                 # Failsafe
                 break
 
