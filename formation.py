@@ -149,12 +149,16 @@ class Formation:
             FormationForce = 0
         else:
             ownPos = np.array([self.network.vehicle_params.global_lat,
-                               self.network.vehicle_params.global_lon,
-                               self.network.vehicle_params.global_alt])
+                               self.network.vehicle_params.global_lon])
+
+            ownAlt = np.array([self.network.vehicle_params.global_alt])
 
             Formation_position = self.getPosition(teammate)
 
-            FormationForce = self.FormationForce_K * (Formation_position - ownPos)
+            FormationForce = self.FormationForce_K * (Formation_position[0:2] - ownPos)
+
+            # For now ,no force on altitude
+            np.append(FormationForce, 0)
 
             logging.debug("Own Position: %s", ownPos)
             logging.debug("Formation force: %s ", FormationForce)
