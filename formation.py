@@ -159,7 +159,11 @@ class Formation:
         # return FormationForce
 
     def TotalForce(self, teammate, single):
-        force = self.FormationForce(teammate, single) + self.LeadForce(teammate, single) + self.DampForce()
+        LeadForce = self.LeadForce(teammate, single)
+        FormationForce = self.FormationForce(teammate, single)
+        DampForce = self.DampForce()
+
+        force = LeadForce + FormationForce + DampForce
 
         if np.linalg.norm(force) > self.MaxForce:
             force = force * self.MaxForce / np.linalg.norm(force)
