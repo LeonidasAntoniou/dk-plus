@@ -120,24 +120,27 @@ class Formation:
     def LeadForce(self, teammate, single):
         if len(teammate) == 0 or single:
             cenPos = np.array([self.network.vehicle_params.global_lat,
-                               self.network.vehicle_params.global_lon])
-            cenAlt = np.array([self.network.vehicle_params.global_alt])
+                               self.network.vehicle_params.global_lon,
+                               self.network.vehicle_params.global_alt])
+
         else:
-            cenPos = self.get_cenPos(teammate)[0:2]
-            cenAlt = self.get_cenPos(teammate)[-1]
+            cenPos = self.get_cenPos(teammate)
 
         tarPos = np.array([self.targetLocation.lat,
-                           self.targetLocation.lon])
-
-        tarAlt = np.array([self.targetLocation.lat])
+                           self.targetLocation.lon,
+                           self.targetLocation.lat])
 
         leadforce = self.leadForce_K * (tarPos - cenPos) / np.linalg.norm(tarPos - cenPos)
+
+        # For now ,no force on the altitude
+        leadforce[-1] = 0
 
         if np.linalg.norm(leadforce) > self.MaxLeadForce:
             leadforce = leadforce * self.MaxLeadForce / np.linalg.norm(leadforce)
 
         logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
         logging.debug("Lead force: %s", leadforce)
+
         return leadforce
 
     def FormationForce(self, teammate, single):
