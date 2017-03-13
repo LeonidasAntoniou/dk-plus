@@ -137,7 +137,7 @@ class Formation:
             leadforce = leadforce * self.MaxLeadForce / np.linalg.norm(leadforce)
 
         # For now ,no force on altitude
-        np.append(leadforce, 0)
+        leadforce = np.append(leadforce, 0)
 
         logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate), tarPos)
         logging.debug("Lead force: %s", leadforce)
@@ -158,7 +158,7 @@ class Formation:
             FormationForce = self.FormationForce_K * (Formation_position[0:2] - ownPos)
 
             # For now ,no force on altitude
-            np.append(FormationForce, 0)
+            FormationForce = np.append(FormationForce, 0)
 
             logging.debug("Own Position: %s", ownPos)
             logging.debug("Formation force: %s ", FormationForce)
