@@ -42,15 +42,12 @@ class Formation:
 
         logging.info("Target Location set: %s", self.targetLocation)
 
-
     def get_target_Loc(self):
         return self.targetLocation
-
 
     def get_distance2target(self):
         return get_distance_metres(self.network.vehicle_params.global_lat, self.network.vehicle_params.global_lon,
                                    self.targetLocation.lat, self.targetLocation.lon)
-
 
     def getPosition(self, teammate):
         x, y, z = self.get_cenPos(teammate)
@@ -89,7 +86,6 @@ class Formation:
 
         return Pos
 
-
     def get_cenPos(self, teammate):
         """
          Nearly proximate because we are running in a quite small range
@@ -108,7 +104,6 @@ class Formation:
         c_alt = alt / float(len(teammate) + 1)
         return c_lat, c_lon, c_alt
 
-
     def get_cenVel(self, teammate):
         velocity = self.network.vehicle_params.velocity
         for drone in teammate:
@@ -117,12 +112,10 @@ class Formation:
 
         return cenVel
 
-
     def DampForce(self):
         dampForce = self.dampForce_K * np.array(self.network.vehicle_params.velocity)
         logging.debug("Damp Force: %s", dampForce)
         return dampForce
-
 
     def LeadForce(self, teammate, single):
         if len(teammate) == 0 or single:
@@ -147,7 +140,6 @@ class Formation:
         logging.debug("Lead force: %s", leadforce)
         return leadforce
 
-
     def FormationForce(self, teammate, single):
         if len(teammate) == 0 or single:
             FormationForce = 0
@@ -163,9 +155,8 @@ class Formation:
             logging.debug("Own Position: %s", ownPos)
             logging.debug("Formation force: %s ", FormationForce)
 
-        return 0
+        return 0 * FormationForce
         # return FormationForce
-
 
     def TotalForce(self, teammate, single):
         force = self.FormationForce(teammate, single) + self.LeadForce(teammate, single) + self.DampForce()
@@ -174,7 +165,6 @@ class Formation:
             force = force * self.MaxForce / np.linalg.norm(force)
         logging.debug("Total force: %s ", force)
         return force
-
 
     def SendVelocity(self, teammate, single):
         add_vel = self.TotalForce(teammate, single) * self.network.POLL_RATE
