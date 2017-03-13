@@ -22,32 +22,18 @@ class Formation:
         self.FormationPosition = None
 
     def setFormation(self, formation_set):
-        # Because the range for the operation is quite small, we use the specific latitude
-        # 116.3397540 means the latitude for SYS
-        # earth_radius = 6378137.0  # Radius of "spherical" earth
-        # for i in range(0, formation_set.shape[0]):
-        #     for j in range(0, formation_set.shape[1]):
-        #         if i == 0:
-        #             # Lat
-        #             formation_set[i, j] = (formation_set[i, j] / earth_radius) * 180 / math.pi
-        #         if i == 1:
-        #             # Lon
-        #             formation_set[i, j] = (formation_set[i, j] / (
-        #                 earth_radius * math.cos(math.pi * 39.9793234) / 180)) * 180 / math.pi
         self.FormationPosition = np.matrix(formation_set)
-        # # Coordinate offsets in radians
-        # dLat = dNorth / earth_radius
-        # dLon = dEast / (earth_radius * math.cos(math.pi * lat / 180))
-        #
-        # # New position in decimal degrees
-        # newlat = lat + (dLat * 180 / math.pi)
-        # newlon = lon + (dLon * 180 / math.pi)
-        # self.FormationPosition = np.matrix(set)
 
     def set_target_Loc(self, lat, lon, alt, dNorth, dEast):
-        # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
-        #                                           self.network.vehicle_params.global_lon,
-        #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
+        """
+        Target Location. Set before taking off
+        :param lat: original latitude
+        :param lon: original longitude
+        :param alt: Target altitude
+        :param dNorth:
+        :param dEast:
+        :return:
+        """
         self.TeamHomeLocation = np.array([lat, lon, 0])
 
         self.targetLocation = get_location_metres(lat,
@@ -56,145 +42,148 @@ class Formation:
 
         logging.info("Target Location set: %s", self.targetLocation)
 
-    def get_target_Loc(self):
-        return self.targetLocation
 
-    def get_distance2target(self):
-        return get_distance_metres(self.network.vehicle_params.global_lat, self.network.vehicle_params.global_lon,
-                                   self.targetLocation.lat, self.targetLocation.lon)
+def get_target_Loc(self):
+    return self.targetLocation
 
-    def getPosition(self, teammate):
-        x, y, z = self.get_cenPos(teammate)
 
-        Vx, Vy, Vz = self.get_cenVel(teammate)
+def get_distance2target(self):
+    return get_distance_metres(self.network.vehicle_params.global_lat, self.network.vehicle_params.global_lon,
+                               self.targetLocation.lat, self.targetLocation.lon)
 
-        if (Vx > 0 and Vy > 0) or (Vx > 0 and Vy < 0):
-            theta = math.pi / 2 - math.atan(Vy / Vx)
+
+def getPosition(self, teammate):
+    x, y, z = self.get_cenPos(teammate)
+
+    Vx, Vy, Vz = self.get_cenVel(teammate)
+
+    if (Vx > 0 and Vy > 0) or (Vx > 0 and Vy < 0):
+        theta = math.pi / 2 - math.atan(Vy / Vx)
+    else:
+        if Vy != 0:
+            theta = math.pi + math.atan(Vx / Vy)
         else:
-            if Vy != 0:
-                theta = math.pi + math.atan(Vx / Vy)
-            else:
-                theta = math.pi + math.pi / 2
+            theta = math.pi + math.pi / 2
 
-        phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
+    phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
 
-        Rotaz = np.matrix(
-            [[math.cos(theta), math.sin(theta), 0],
-             [-math.sin(theta), math.cos(theta), 0],
-             [0, 0, 1]])
+    Rotaz = np.matrix(
+        [[math.cos(theta), math.sin(theta), 0],
+         [-math.sin(theta), math.cos(theta), 0],
+         [0, 0, 1]])
 
-        Rotax = np.matrix(
-            [[1, 0, 0],
-             [0, math.cos(phi), -math.sin(phi)],
-             [0, math.sin(phi), math.cos(phi)]])
+    Rotax = np.matrix(
+        [[1, 0, 0],
+         [0, math.cos(phi), -math.sin(phi)],
+         [0, math.sin(phi), math.cos(phi)]])
 
-        c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
-        abPos = np.array(Rotaz * Rotax * c).ravel()
+    c = self.FormationPosition[:, int(self.network.vehicle_params.SYSID_THISMAV - 1)].reshape(3, 1)
+    abPos = np.array(Rotaz * Rotax * c).ravel()
 
-        logging.debug("Local Formation Position : %s", abPos)
+    logging.debug("Local Formation Position : %s", abPos)
 
-        Pos = np.array(get_location_formation(x,
-                                              y,
-                                              z, abPos[0], abPos[1], abPos[2]))
-        logging.debug("Global Formation Position : %s", Pos)
+    Pos = np.array(get_location_formation(x,
+                                          y,
+                                          z, abPos[0], abPos[1], abPos[2]))
+    logging.debug("Global Formation Position : %s", Pos)
 
-        return Pos
+    return Pos
 
-    def get_cenPos(self, teammate):
-        """
-         Nearly proximate because we are running in a quite small range
-        :param teammate:
-        :return:
-        """
-        lat = self.network.vehicle_params.global_lat
-        lon = self.network.vehicle_params.global_lon
-        alt = self.network.vehicle_params.global_alt
-        for drone in teammate:
-            lat += drone.global_lat
-            lon += drone.global_lon
-            alt += drone.global_alt
-        c_lat = lat / float(len(teammate) + 1)
-        c_lon = lon / float(len(teammate) + 1)
-        c_alt = alt / float(len(teammate) + 1)
-        return c_lat, c_lon, c_alt
 
-    def get_cenVel(self, teammate):
-        velocity = self.network.vehicle_params.velocity
-        for drone in teammate:
-            velocity = [drone.velocity[i] + velocity[i] for i in range(len(velocity))]
-        cenVel = [x / float(len(teammate) + 1) for x in velocity]
+def get_cenPos(self, teammate):
+    """
+     Nearly proximate because we are running in a quite small range
+    :param teammate:
+    :return:
+    """
+    lat = self.network.vehicle_params.global_lat
+    lon = self.network.vehicle_params.global_lon
+    alt = self.network.vehicle_params.global_alt
+    for drone in teammate:
+        lat += drone.global_lat
+        lon += drone.global_lon
+        alt += drone.global_alt
+    c_lat = lat / float(len(teammate) + 1)
+    c_lon = lon / float(len(teammate) + 1)
+    c_alt = alt / float(len(teammate) + 1)
+    return c_lat, c_lon, c_alt
 
-        return cenVel
 
-    def DampForce(self):
-        dampForce = self.dampForce_K * np.array(self.network.vehicle_params.velocity)
+def get_cenVel(self, teammate):
+    velocity = self.network.vehicle_params.velocity
+    for drone in teammate:
+        velocity = [drone.velocity[i] + velocity[i] for i in range(len(velocity))]
+    cenVel = [x / float(len(teammate) + 1) for x in velocity]
 
-        # For now, no force on the altitude
-        dampForce[-1] = 0
-        logging.debug("Damp Force: %s", dampForce)
-        return dampForce
+    return cenVel
 
-    def LeadForce(self, teammate, single):
 
-        if len(teammate) == 0 or single:
-            cenPos = np.array([self.network.vehicle_params.global_lat,
-                               self.network.vehicle_params.global_lon])
-            cenAlt = np.array([self.network.vehicle_params.global_alt])
-        else:
-            cenPos = self.get_cenPos(teammate)[0:2]
-            cenAlt = self.get_cenPos(teammate)[-1]
+def DampForce(self):
+    dampForce = self.dampForce_K * np.array(self.network.vehicle_params.velocity)
+    logging.debug("Damp Force: %s", dampForce)
+    return dampForce
 
-        tarPos = np.array([self.targetLocation.lat,
-                           self.targetLocation.lon])
 
-        tarAlt = np.array([self.targetLocation.lat])
+def LeadForce(self, teammate, single):
+    if len(teammate) == 0 or single:
+        cenPos = np.array([self.network.vehicle_params.global_lat,
+                           self.network.vehicle_params.global_lon])
+        cenAlt = np.array([self.network.vehicle_params.global_alt])
+    else:
+        cenPos = self.get_cenPos(teammate)[0:2]
+        cenAlt = self.get_cenPos(teammate)[-1]
 
-        force = self.leadForce_K * (tarPos - cenPos) / np.linalg.norm(tarPos - cenPos)
+    tarPos = np.array([self.targetLocation.lat,
+                       self.targetLocation.lon])
 
-        if np.linalg.norm(force) > self.MaxLeadForce:
-            force = force * self.MaxLeadForce / np.linalg.norm(force)
+    tarAlt = np.array([self.targetLocation.lat])
 
-        # For now, no force on the altitude
-        force = np.append(force, 0)
+    leadforce = self.leadForce_K * (tarPos - cenPos) / np.linalg.norm(tarPos - cenPos)
 
-        logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
-        logging.debug("Lead force: %s", force)
-        return force
+    if np.linalg.norm(leadforce) > self.MaxLeadForce:
+        leadforce = leadforce * self.MaxLeadForce / np.linalg.norm(leadforce)
 
-    def FormationForce(self, teammate, single):
-        if len(teammate) == 0 or single:
-            FormationForce = 0
-        else:
-            ownPos = np.array([self.network.vehicle_params.global_lat,
-                               self.network.vehicle_params.global_lon,
-                               self.network.vehicle_params.global_alt])
+    logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate)[0:2], tarPos)
+    logging.debug("Lead force: %s", leadforce)
+    return leadforce
 
-            Formation_position = self.getPosition(teammate)
 
-            FormationForce = self.FormationForce_K * (Formation_position - ownPos)
-            # For now no force on Altitude
-            FormationForce[-1] = 0
-            logging.debug("Own Position: %s", ownPos)
-            logging.debug("Formation force: %s ", FormationForce)
-        return FormationForce
+def FormationForce(self, teammate, single):
+    if len(teammate) == 0 or single:
+        FormationForce = 0
+    else:
+        ownPos = np.array([self.network.vehicle_params.global_lat,
+                           self.network.vehicle_params.global_lon,
+                           self.network.vehicle_params.global_alt])
 
-    def TotalForce(self, teammate, single):
+        Formation_position = self.getPosition(teammate)
 
-        force = self.FormationForce(teammate, single) + self.LeadForce(teammate, single) + self.DampForce()
+        FormationForce = self.FormationForce_K * (Formation_position - ownPos)
 
-        if np.linalg.norm(force) > self.MaxForce:
-            force = force * self.MaxForce / np.linalg.norm(force)
-        logging.debug("Total force: %s ", force)
-        return force
+        logging.debug("Own Position: %s", ownPos)
+        logging.debug("Formation force: %s ", FormationForce)
 
-    def SendVelocity(self, teammate, single):
-        add_vel = self.TotalForce(teammate, single) * self.network.POLL_RATE
-        velocity = np.array(self.network.vehicle_params.velocity) + add_vel
+    return 0
+    # return FormationForce
 
-        # For now Vz=0
-        velocity[-1] = 0.0
 
-        logging.debug("Current Velociy: %s", self.network.vehicle_params.velocity)
-        logging.debug("Add velocity: %s ", add_vel)
+def TotalForce(self, teammate, single):
+    force = self.FormationForce(teammate, single) + self.LeadForce(teammate, single) + self.DampForce()
 
-        return list(velocity)
+    if np.linalg.norm(force) > self.MaxForce:
+        force = force * self.MaxForce / np.linalg.norm(force)
+    logging.debug("Total force: %s ", force)
+    return force
+
+
+def SendVelocity(self, teammate, single):
+    add_vel = self.TotalForce(teammate, single) * self.network.POLL_RATE
+    velocity = np.array(self.network.vehicle_params.velocity) + add_vel
+
+    # For now Vz=0
+    velocity[-1] = 0.0
+
+    logging.debug("Current Velociy: %s", self.network.vehicle_params.velocity)
+    logging.debug("Add velocity: %s ", add_vel)
+
+    return list(velocity)
