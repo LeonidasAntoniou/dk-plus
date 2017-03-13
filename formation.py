@@ -163,8 +163,8 @@ class Formation:
             logging.debug("Own Position: %s", ownPos)
             logging.debug("Formation force: %s ", FormationForce)
 
-        return 0 * FormationForce
-        # return FormationForce
+            # return 0 * FormationForce
+        return FormationForce
 
     def TotalForce(self, teammate, single):
 
