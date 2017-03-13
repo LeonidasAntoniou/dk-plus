@@ -25,7 +25,7 @@ def get_location_metres(lat, lon, alt, dNorth, dEast):
     return LocationGlobal(newlat, newlon, alt)
 
 
-def get_location_formation(lat, lon, alt, dNorth, dEast, dDown):
+def get_location_formation(lat, lon, alt, dNorth, dEast, newalt):
     """
     Return global coordinates relate to formation center
     :param lat:
@@ -44,7 +44,7 @@ def get_location_formation(lat, lon, alt, dNorth, dEast, dDown):
     # New position in decimal degrees
     newlat = lat + (dLat * 180 / math.pi)
     newlon = lon + (dLon * 180 / math.pi)
-    return newlat, newlon, alt - dDown
+    return newlat, newlon, alt + newalt
 
 
 def get_distance_metres(lat1, lon1, lat2, lon2):

@@ -44,7 +44,7 @@ class Formation:
         # newlon = lon + (dLon * 180 / math.pi)
         # self.FormationPosition = np.matrix(set)
 
-    def set_target_Loc(self, lat, lon, alt=10, dNorth=-100, dEast=20):
+    def set_target_Loc(self, lat, lon, alt, dNorth, dEast):
         # self.targetLocation = get_location_metres(self.network.vehicle_params.global_lat,
         #                                           self.network.vehicle_params.global_lon,
         #                                           self.network.vehicle_params.global_alt, dNorth, dEast)
