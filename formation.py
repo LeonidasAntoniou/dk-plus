@@ -14,8 +14,8 @@ class Formation:
         self.network = network
         self.MaxLeadForce = 10
         self.MaxForce = 10
-        self.dampForce_K = 1
-        self.leadForce_K = 10e4
+        self.dampForce_K = -1.0
+        self.leadForce_K = 1
         self.FormationForce_K = 10e3
         self.TeamHomeLocation = None
         self.targetLocation = None
@@ -120,23 +120,24 @@ class Formation:
     def LeadForce(self, teammate, single):
         if len(teammate) == 0 or single:
             cenPos = np.array([self.network.vehicle_params.global_lat,
-                               self.network.vehicle_params.global_lon,
-                               self.network.vehicle_params.global_alt])
-
+                               self.network.vehicle_params.global_lon])
+            cenAlt = np.array([self.network.vehicle_params.global_alt])
         else:
-            cenPos = np.array(self.get_cenPos(teammate))
+            cenPos = self.get_cenPos(teammate)[0:2]
+            cenAlt = self.get_cenPos(teammate)[-1]
 
         tarPos = np.array([self.targetLocation.lat,
-                           self.targetLocation.lon,
-                           self.targetLocation.lat])
+                           self.targetLocation.lon])
+
+        tarAlt = np.array([self.targetLocation.lat])
 
         leadforce = self.leadForce_K * (tarPos - cenPos) / np.linalg.norm(tarPos - cenPos)
 
-        # For now ,no force on the altitude
-        leadforce[-1] = 0
-
         if np.linalg.norm(leadforce) > self.MaxLeadForce:
             leadforce = leadforce * self.MaxLeadForce / np.linalg.norm(leadforce)
+
+        # For now ,no force on altitude
+        np.append(leadforce, 0)
 
         logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate), tarPos)
         logging.debug("Lead force: %s", leadforce)
@@ -162,7 +163,6 @@ class Formation:
         # return FormationForce
 
     def TotalForce(self, teammate, single):
-
         LeadForce = self.LeadForce(teammate, single)
         FormationForce = self.FormationForce(teammate, single)
         DampForce = self.DampForce()
