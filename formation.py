@@ -167,6 +167,7 @@ class Formation:
         # return FormationForce
 
     def TotalForce(self, teammate, single):
+
         LeadForce = self.LeadForce(teammate, single)
         FormationForce = self.FormationForce(teammate, single)
         DampForce = self.DampForce()
