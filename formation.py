@@ -54,13 +54,15 @@ class Formation:
 
         Vx, Vy, Vz = self.get_cenVel(teammate)
 
-        if (Vx > 0 and Vy > 0) or (Vx > 0 and Vy < 0):
+        if Vx > 0:
             theta = math.pi / 2 - math.atan(Vy / Vx)
+        elif Vx < 0:
+            theta = - math.pi / 2 + math.atan(Vy / Vx)
         else:
-            if Vy != 0:
-                theta = math.pi + math.atan(Vx / Vy)
+            if Vy > 0:
+                theta = 0
             else:
-                theta = math.pi + math.pi / 2
+                theta = math.pi
 
         # phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
         phi = 0
