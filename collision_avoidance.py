@@ -105,7 +105,10 @@ class CollisionThread(threading.Thread):
 
         self.print_drones_in_vicinity()
 
-        if self.formation.target_reached and self.formation.home_returned:
+        if self.network.vehicle_params.mode == "RTL":
+            return
+
+        elif self.formation.target_reached and self.formation.home_returned:
             self.changePos("RTL")
 
         if not self.formation.reachTarget(self.teammate, self.single):
@@ -555,10 +558,8 @@ class CollisionThread(threading.Thread):
             # Give RC command so that we can bypass RC failsafe, 1500 means stay steady
             self.network.vehicle.channels.overrides['3'] = 1500  # throttle
 
-
         if mode == "GUIDED":
             # Cancel RC override
             self.network.vehicle.channels.overrides['3'] = None
-
 
         return
