@@ -21,6 +21,8 @@ class Formation:
         self.targetLocation = None
         self.FormationPosition = None
 
+        self.distancePrecise = 5  # in meters
+
     def setFormation(self, formation_set):
         self.FormationPosition = np.matrix(formation_set)
 
@@ -196,3 +198,23 @@ class Formation:
         logging.debug("Add velocity: %s ", add_vel)
 
         return list(velocity)
+
+    def reachTarget(self, teammate, single):
+        if single:
+            if get_distance_metres(self.network.vehicle_params.global_lat,
+                                   self.network.vehicle_params.global_lon,
+                                   self.targetLocation.lat,
+                                   self.targetLocation.lon) < self.distancePrecise:
+                logging.info("Reach the Target Location!!")
+                return True
+            else:
+                return False
+        else:
+            if get_distance_metres(self.get_cenPos(teammate)[0],
+                                   self.get_cenPos(teammate)[1],
+                                   self.targetLocation.lat,
+                                   self.targetLocation.lon) < self.distancePrecise:
+                logging.info("Reach the Target Location!!")
+                return True
+            else:
+                return False

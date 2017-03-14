@@ -106,8 +106,8 @@ class CollisionThread(threading.Thread):
         self.check_takeoff_land()
 
         # self.follow_leader_velocity()
-
-        self.APF_formation()
+        while not self.formation.reachTarget(self.teammate, self.single):
+            self.APF_formation()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -487,6 +487,26 @@ class CollisionThread(threading.Thread):
             self.network.vehicle.send_mavlink(msg)
             time.sleep(self.interval)
 
+    def follow_leader_velocity(self):
+        """
+        Temporary follow the SYSID_THISMAV 1 in speed.
+        :return:
+        """
+        if self.network.vehicle_params.SYSID_THISMAV != 1:
+            for drone in self.teammate:
+                if drone.SYSID_THISMAV == 1:
+                    velocity_x = drone.velocity[0]
+                    velocity_y = drone.velocity[1]
+                    velocity_z = drone.velocity[2]
+                    self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+
+    def APF_formation(self):
+
+        velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate, self.single)
+
+        self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+        # self.send_global_velocity(velocity_x, velocity_y, velocity_z)
+
     def check_takeoff_land(self):
         """
         Check whether the teammate has already taken off or it is landing
@@ -513,22 +533,11 @@ class CollisionThread(threading.Thread):
                     arm_and_takeoff(self.network.vehicle)
                     break
 
-    def follow_leader_velocity(self):
+    def changePos(self):
         """
-        Temporary follow the SYSID_THISMAV 1 in speed.
+        Change mode to Poshold
         :return:
         """
-        if self.network.vehicle_params.SYSID_THISMAV != 1:
-            for drone in self.teammate:
-                if drone.SYSID_THISMAV == 1:
-                    velocity_x = drone.velocity[0]
-                    velocity_y = drone.velocity[1]
-                    velocity_z = drone.velocity[2]
-                    self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
-
-    def APF_formation(self):
-
-        velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate, self.single)
-
-        self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
-        # self.send_global_velocity(velocity_x, velocity_y, velocity_z)
+        self.network.vehicle.mode = VehicleMode("POSHOLD")
+        while self.network.vehicle_params.mode != "POSHOLD":
+            pass
