@@ -551,6 +551,14 @@ class CollisionThread(threading.Thread):
         """
 
         self.network.vehicle.mode = VehicleMode(mode)
-        while self.network.vehicle_params.mode != mode:
-            pass
+        if mode == "POSHOLD":
+            # Give RC command so that we can bypass RC failsafe, 1500 means stay steady
+            self.network.vehicle.channels.overrides['3'] = 1500  # throttle
+
+
+        if mode == "GUIDED":
+            # Cancel RC override
+            self.network.vehicle.channels.overrides['3'] = None
+
+
         return
