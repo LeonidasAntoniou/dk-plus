@@ -57,7 +57,7 @@ class Formation:
         if Vx > 0:
             theta = math.pi / 2 - math.atan(Vy / Vx)
         elif Vx < 0:
-            theta = - math.pi / 2 + math.atan(Vy / Vx)
+            theta = - math.pi / 2 - math.atan(Vy / Vx)
         else:
             if Vy > 0:
                 theta = 0
