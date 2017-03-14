@@ -427,7 +427,7 @@ class CollisionThread(threading.Thread):
         At time of writing, acceleration and yaw bits are ignored.
         """
 
-        logging.info("Velocity send: %s", [velocity_x, velocity_y, velocity_z])
+        logging.info("NED Frame Velocity send: %s", [velocity_x, velocity_y, velocity_z])
 
         msg = self.network.vehicle.message_factory.set_position_target_local_ned_encode(
             0,  # time_boot_ms (not used)
@@ -462,6 +462,9 @@ class CollisionThread(threading.Thread):
         See the above link for information on the type_mask (0=enable, 1=ignore).
         At time of writing, acceleration and yaw bits are ignored.
         """
+
+        logging.info("Global Frame Velocity send: %s", [velocity_x, velocity_y, velocity_z])
+
         msg = self.network.vehicle.message_factory.set_position_target_global_int_encode(
             0,  # time_boot_ms (not used)
             0, 0,  # target system, target component
