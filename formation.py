@@ -114,7 +114,7 @@ class Formation:
 
     def DampForce(self):
         dampForce = self.dampForce_K * np.array(self.network.vehicle_params.velocity)
-        logging.debug("Damp Force: %s", dampForce)
+
         return dampForce
 
     def LeadForce(self, teammate, single):
@@ -140,7 +140,6 @@ class Formation:
         leadforce = np.append(leadforce, 0)
 
         logging.debug("Center_Position: %s ; Target_Position: %s ;", self.get_cenPos(teammate), tarPos)
-        logging.debug("Lead force: %s", leadforce)
 
         return leadforce
 
@@ -160,8 +159,8 @@ class Formation:
             # For now ,no force on altitude
             FormationForce = np.append(FormationForce, 0)
 
-            logging.debug("Own Position: %s", ownPos)
-            logging.debug("Formation force: %s ", FormationForce)
+            logging.debug("Own Position: %s", np.hstack((ownPos, ownAlt)))
+
 
             # return 0 * FormationForce
         return FormationForce
@@ -173,6 +172,10 @@ class Formation:
         DampForce = self.DampForce()
 
         force = LeadForce + FormationForce + DampForce
+
+        logging.debug("Lead force: %s", LeadForce)
+        logging.debug("Formation force: %s ", FormationForce)
+        logging.debug("Damp Force: %s", DampForce)
 
         if np.linalg.norm(force) > self.MaxForce:
             force = force * self.MaxForce / np.linalg.norm(force)

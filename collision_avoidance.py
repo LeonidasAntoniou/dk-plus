@@ -382,14 +382,14 @@ class CollisionThread(threading.Thread):
             elif self.algorithm == 'formation':
                 for drone in self.teammate:
                     logging.info("=========================================================")
-                    logging.info("Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
-                    logging.info("Time stamp last received: %s", drone.last_recv)
-                    logging.info("Distance: %s",
+                    logging.info("== Teammate drone; SYSID_THISMAV: %s !", drone.SYSID_THISMAV)
+                    logging.info("== Time stamp last received: %s", drone.last_recv)
+                    logging.info("== Distance: %s",
                                  geo.get_distance_metres(own_lat, own_lon, drone.global_lat, drone.global_lon))
-                    logging.info("Velocity: %s", drone.velocity)
-                    logging.info("Cental Velocity: %s", self.formation.get_cenVel(self.teammate))
-                    logging.info("Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
-                    logging.info("Cental Positon: %s", self.formation.get_cenPos(self.teammate))
+                    logging.info("== Velocity: %s", drone.velocity)
+                    logging.info("== Cental Velocity: %s", self.formation.get_cenVel(self.teammate))
+                    logging.info("== Position: %s %s %s", drone.global_lat, drone.global_lon, drone.global_alt)
+                    logging.info("== Cental Positon: %s", self.formation.get_cenPos(self.teammate))
                     logging.info("=========================================================")
 
     def current_mission(self):
