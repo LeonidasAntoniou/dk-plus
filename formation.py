@@ -21,6 +21,10 @@ class Formation:
         self.targetLocation = None
         self.FormationPosition = None
 
+        self.target_reached = False
+
+        self.home_returned = False
+
         self.distancePrecise = 5  # in meters
 
     def setFormation(self, formation_set):
@@ -36,7 +40,9 @@ class Formation:
         :param dEast:
         :return:
         """
-        self.TeamHomeLocation = np.array([lat, lon, 0])
+        self.TeamHomeLocation = get_location_metres(lat,
+                                                    lon,
+                                                    alt, 0, 0)
 
         self.targetLocation = get_location_metres(lat,
                                                   lon,
@@ -200,21 +206,60 @@ class Formation:
         return list(velocity)
 
     def reachTarget(self, teammate, single):
+        if not self.target_reached:
+            if single:
+                if get_distance_metres(self.network.vehicle_params.global_lat,
+                                       self.network.vehicle_params.global_lon,
+                                       self.targetLocation.lat,
+                                       self.targetLocation.lon) < self.distancePrecise:
+
+                    self.target_reached = True
+                    logging.info("Reach the Target Location!!")
+
+                    return True
+                else:
+                    return False
+            else:
+                if get_distance_metres(self.get_cenPos(teammate)[0],
+                                       self.get_cenPos(teammate)[1],
+                                       self.targetLocation.lat,
+                                       self.targetLocation.lon) < self.distancePrecise:
+
+                    self.target_reached = True
+                    logging.info("Reach the Target Location!!")
+
+                    return True
+                else:
+                    return False
+        else:
+            return self.reachHome(teammate, single)
+
+    def reachHome(self, teammate, single):
         if single:
             if get_distance_metres(self.network.vehicle_params.global_lat,
                                    self.network.vehicle_params.global_lon,
-                                   self.targetLocation.lat,
-                                   self.targetLocation.lon) < self.distancePrecise:
-                logging.info("Reach the Target Location!!")
+                                   self.TeamHomeLocation.lat,
+                                   self.TeamHomeLocation.lon) < self.distancePrecise:
+                self.home_returned = True
+                logging.info("Reach  Home Location!!")
                 return True
             else:
                 return False
         else:
             if get_distance_metres(self.get_cenPos(teammate)[0],
                                    self.get_cenPos(teammate)[1],
-                                   self.targetLocation.lat,
-                                   self.targetLocation.lon) < self.distancePrecise:
-                logging.info("Reach the Target Location!!")
+                                   self.TeamHomeLocation.lat,
+                                   self.TeamHomeLocation.lon) < self.distancePrecise:
+                self.home_returned = True
+                logging.info("Reach  Home Location!!")
                 return True
             else:
                 return False
+
+    def ChangetoHome(self):
+        """
+        Change target to home location
+        :return:
+        """
+        self.targetLocation = self.TeamHomeLocation
+        logging.info("Return to home Location")

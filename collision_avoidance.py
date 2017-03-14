@@ -35,6 +35,8 @@ class CollisionThread(threading.Thread):
         self.interval = interval  # send velocity interval
         self.duration = duration  # send velocity duration
 
+        self.waitingtime = 10  # waiting after reach the target
+
         self.formation = Formation(self.network)
         self.single = single  # For one UAV in formation
 
@@ -103,16 +105,19 @@ class CollisionThread(threading.Thread):
 
         self.print_drones_in_vicinity()
 
-        self.check_takeoff_land()
+        if self.formation.target_reached and self.formation.home_returned:
+            self.changePos("RTL")
 
-        # self.follow_leader_velocity()
         if not self.formation.reachTarget(self.teammate, self.single):
             self.APF_formation()
         else:
-            if self.network.vehicle_params.mode == "POSHOLD":
-                return
-            else:
-                self.changePos()
+            if not self.formation.home_returned:
+                self.changePos("POSHOLD")
+
+                time.sleep(self.waitingtime)
+
+                self.formation.ChangetoHome()
+
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -538,12 +543,13 @@ class CollisionThread(threading.Thread):
                     arm_and_takeoff(self.network.vehicle)
                     break
 
-    def changePos(self):
+    def changePos(self, mode):
         """
         Change mode to Poshold
         :return:
         """
 
-        self.network.vehicle.mode = VehicleMode("POSHOLD")
-        while self.network.vehicle_params.mode != "POSHOLD":
+        self.network.vehicle.mode = VehicleMode(mode)
+        while self.network.vehicle_params.mode != mode:
             pass
+        return
