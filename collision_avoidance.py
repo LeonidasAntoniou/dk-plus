@@ -109,6 +109,8 @@ class CollisionThread(threading.Thread):
         while not self.formation.reachTarget(self.teammate, self.single):
             self.APF_formation()
 
+        self.changePos()
+
     def no_protocol(self):
         # What to do if no protocol is specified
         # Currently it just outputs the drones in vicinity
