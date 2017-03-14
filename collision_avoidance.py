@@ -485,7 +485,7 @@ class CollisionThread(threading.Thread):
         # send command to vehicle on 1 Hz cycle
         for x in range(0, duration_range):
             self.network.vehicle.send_mavlink(msg)
-            time.sleep(1)
+            time.sleep(self.interval)
 
     def check_takeoff_land(self):
         """
