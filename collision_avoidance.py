@@ -106,10 +106,13 @@ class CollisionThread(threading.Thread):
         self.check_takeoff_land()
 
         # self.follow_leader_velocity()
-        while not self.formation.reachTarget(self.teammate, self.single):
+        if not self.formation.reachTarget(self.teammate, self.single):
             self.APF_formation()
-
-        self.changePos()
+        else:
+            if self.network.vehicle_params.mode == "POSHOLD":
+                return
+            else:
+                self.changePos()
 
     def no_protocol(self):
         # What to do if no protocol is specified
@@ -540,6 +543,7 @@ class CollisionThread(threading.Thread):
         Change mode to Poshold
         :return:
         """
+
         self.network.vehicle.mode = VehicleMode("POSHOLD")
         while self.network.vehicle_params.mode != "POSHOLD":
             pass
