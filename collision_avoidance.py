@@ -446,7 +446,7 @@ class CollisionThread(threading.Thread):
             self.network.vehicle.send_mavlink(msg)
             time.sleep(self.interval)
 
-    def send_global_velocity(self, velocity_x, velocity_y, velocity_z, duration):
+    def send_global_velocity(self, velocity_x, velocity_y, velocity_z):
         """
         Move vehicle in direction based on specified velocity vectors.
 
