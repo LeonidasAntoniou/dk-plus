@@ -524,7 +524,7 @@ class CollisionThread(threading.Thread):
                     velocity_x = drone.velocity[0]
                     velocity_y = drone.velocity[1]
                     velocity_z = drone.velocity[2]
-                    self.send_ned_velocity(velocity_x, velocity_y, velocity_z, duration=1)
+                    self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
 
     def APF_formation(self):
 
