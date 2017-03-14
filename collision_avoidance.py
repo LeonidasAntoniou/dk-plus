@@ -21,7 +21,7 @@ Context = namedtuple('Context', ['mode', 'mission', 'next_wp'])
 
 
 class CollisionThread(threading.Thread):
-    def __init__(self, network, algorithm=None, single=True, interval=0.1, duration=0.5, debug=False):
+    def __init__(self, network, algorithm=None, single=True, interval=0.1, duration=0.25, debug=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self.network = network
@@ -530,5 +530,5 @@ class CollisionThread(threading.Thread):
 
         velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate, self.single)
 
-        # self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
-        self.send_global_velocity(velocity_x, velocity_y, velocity_z)
+        self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+        # self.send_global_velocity(velocity_x, velocity_y, velocity_z)
