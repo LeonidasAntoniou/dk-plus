@@ -446,6 +446,44 @@ class CollisionThread(threading.Thread):
             self.network.vehicle.send_mavlink(msg)
             time.sleep(self.interval)
 
+    def send_global_velocity(self, velocity_x, velocity_y, velocity_z, duration):
+        """
+        Move vehicle in direction based on specified velocity vectors.
+
+        This uses the SET_POSITION_TARGET_GLOBAL_INT command with type mask enabling only
+        velocity components
+        (http://dev.ardupilot.com/wiki/copter-commands-in-guided-mode/#set_position_target_global_int).
+
+        Note that from AC3.3 the message should be re-sent every second (after about 3 seconds
+        with no message the velocity will drop back to zero). In AC3.2.1 and earlier the specified
+        velocity persists until it is canceled. The code below should work on either version
+        (sending the message multiple times does not cause problems).
+
+        See the above link for information on the type_mask (0=enable, 1=ignore).
+        At time of writing, acceleration and yaw bits are ignored.
+        """
+        msg = self.network.vehicle.message_factory.set_position_target_global_int_encode(
+            0,  # time_boot_ms (not used)
+            0, 0,  # target system, target component
+            mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,  # frame
+            0b0000111111000111,  # type_mask (only speeds enabled)
+            0,  # lat_int - X Position in WGS84 frame in 1e7 * meters
+            0,  # lon_int - Y Position in WGS84 frame in 1e7 * meters
+            0,  # alt - Altitude in meters in AMSL altitude(not WGS84 if absolute or relative)
+            # altitude above terrain if GLOBAL_TERRAIN_ALT_INT
+            velocity_x,  # X velocity in NED frame in m/s
+            velocity_y,  # Y velocity in NED frame in m/s
+            velocity_z,  # Z velocity in NED frame in m/s
+            0, 0, 0,  # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
+            0, 0)  # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
+
+        duration_range = int(self.duration / self.interval)
+
+        # send command to vehicle on 1 Hz cycle
+        for x in range(0, duration_range):
+            self.network.vehicle.send_mavlink(msg)
+            time.sleep(1)
+
     def check_takeoff_land(self):
         """
         Check whether the teammate has already taken off or it is landing
@@ -489,4 +527,5 @@ class CollisionThread(threading.Thread):
 
         velocity_x, velocity_y, velocity_z = self.formation.SendVelocity(self.teammate, self.single)
 
-        self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+        # self.send_ned_velocity(velocity_x, velocity_y, velocity_z)
+        self.send_global_velocity(velocity_x, velocity_y, velocity_z)
