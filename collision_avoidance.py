@@ -118,6 +118,7 @@ class CollisionThread(threading.Thread):
 
                 self.formation.ChangetoHome()
 
+                self.changePos("GUIDED")
 
     def no_protocol(self):
         # What to do if no protocol is specified
