@@ -62,7 +62,8 @@ class Formation:
             else:
                 theta = math.pi + math.pi / 2
 
-        phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
+        # phi = math.atan(Vz / math.sqrt(Vx ** 2 + Vy ** 2))
+        phi = 0
 
         Rotaz = np.matrix(
             [[math.cos(theta), math.sin(theta), 0],
